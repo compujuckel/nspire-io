@@ -1,13 +1,24 @@
-/* 
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version.
+/**
+ * @file console.c
+ * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
+ * @version 0.1
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
- * for more details.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ * Console functions
  */
 #include <os.h>
 #include "screen.h"
@@ -39,7 +50,7 @@ void c_init(char bgColor, char textColor)
 	c_clear();
 	c_draw();
 }
-void c_clear()
+void c_clear(void)
 {
 	cursorX		= 0;
 	cursorY		= 0;
