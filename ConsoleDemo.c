@@ -32,10 +32,17 @@ int main(void)
 	c_write("Features\n");
 	c_write("\t* Formatted text output\n");
 	c_write("\t* Char/String input\n");
-	c_write("\n\nInput a string: ");
 	char buffer[50];
-	if(c_read(buffer)) c_swrite("\nYour text was: %s",50,buffer);
-	else c_write("\nYou didn't write a string...");
+	while(1)
+	{
+		c_write("\n\nInput a string: ");
+		if(c_read(buffer)) c_swrite("\nYour text was: %s",50,buffer);
+		else
+		{
+			c_write("\nYou didn't write a string...");
+			break;
+		}
+	}
 	wait_key_pressed();
 	return 0;
 }

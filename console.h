@@ -47,11 +47,15 @@ void c_write(char *str);
 	@param ... Additional arguments
 */
 void c_swrite(char *format, int buflen, ...);
-/**	Reads a character from the keypad.
+/**	Reads a character from the keypad and does NOT write it to the console.
+	@return The char that has been read. If it is 0, the input has been aborted.
+*/
+char cn_readc(void);
+/**	Reads a character from the keypad and writes it to the console.
 	@return The char that has been read. If it is 0, the input has been aborted.
 */
 char c_readc(void);
-/** Reads a string from the keypad.
+/** Reads a string from the keypad and writes it to the console.
 	@param str String where the read string will be saved in
 	@return 1 on success, 0 on failure (user abort)
 */

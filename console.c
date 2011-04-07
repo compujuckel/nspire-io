@@ -62,7 +62,7 @@ void c_writec(char ch)
 	// Check for escape strings first
 	if(ch == '\n')
 	{
-		if(cursorY >= MAX_ROW)
+		if(cursorY > MAX_ROW)
 		{
 			// Scroll down here
 			// ****************
@@ -102,7 +102,7 @@ void c_writec(char ch)
 	{
 		if(cursorX >= MAX_COL)
 		{
-			if(cursorY >= MAX_ROW)
+			if(cursorY > MAX_ROW)
 			{
 				// Scroll down here
 				// ****************
@@ -188,7 +188,7 @@ char shiftOrCtrlKey(char normalc, char shiftc, char ctrlc)
 	}
 	else return normalc;
 }
-char c_readc(void)
+char cn_readc(void)
 {
 	while(1)
 	{
@@ -285,15 +285,22 @@ char c_readc(void)
 		if(isKeyPressed(KEY_NSPIRE_TAB))									return '\t';
 	}
 }
+char c_readc(void)
+{
+	char tmp = cn_readc();
+	c_writec(tmp);
+	return tmp;
+}
 
 int c_read(char* str)
 {
 	char tmp;
 	int i = 0;
-	int oldCursor = cursorX;
+	int oldCursorX = cursorX;
+	int oldCursorY = cursorY;
 	while(1)
 	{
-		tmp = c_readc();
+		tmp = cn_readc();
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
@@ -301,12 +308,15 @@ int c_read(char* str)
 		}
 		else if(tmp == '\b')
 		{
-			if(cursorX > oldCursor && i > 0)
+			if(cursorX == 0 && cursorY > oldCursorY && i > 0)
 			{
-				cursorX--;
+				cursorY--;
+				cursorX = MAX_COL;
+			}
+			if((cursorX > oldCursorX || (cursorX > 0 && cursorY > oldCursorY)) && i > 0)
+			{
+				c_write("\b \b");
 				i--;
-				c_writec(' ');
-				cursorX--;
 			}
 		}
 		else if(tmp == '\0')
