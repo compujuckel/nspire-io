@@ -21,8 +21,7 @@
  * Console functions
  */
 #include <os.h>
-#include "screen.h"
-#include "console.h"
+#include "nspireio.h"
 
 #define MAX_ROW 30
 #define MAX_COL 53
