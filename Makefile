@@ -28,4 +28,4 @@ $(LIB): $(OBJS)
 clean:
 	rm -rf *.o *.elf *.a
 	rm -f $(DISTDIR)/$(LIB)
-	rm -r $(NDLESS_PATH)/include/nspireio.h
+	rm -f $(NDLESS_PATH)/include/nspireio.h
