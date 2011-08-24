@@ -303,6 +303,7 @@ int c_read(char* str)
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
+			c_writec('\n');
 			return (i>0)?1:0;
 		}
 		else if(tmp == '\b')
