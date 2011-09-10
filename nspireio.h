@@ -27,42 +27,56 @@
 
 /* console.h */
 
+/** ONLY FOR USE WITH RSHELL: Call this function at the beginning of your program / replacement of c_init */
+void rshell_load(void);
+
+/** ONLY FOR USE WITH RSHELL: Call this function at the end of your program */
+void rshell_save(void);
+
 /** Needs to be called once before the I/O functions can be used
 	@param bgColor		Console background color
 	@param textColor	Console text color
 */
 void c_init(char bgColor, char textColor);
+
 /** Prints the console buffer to the screen. */
 void c_draw(void);
+
 /** Clears the console buffer. */
 void c_clear(void);
+
 /**	Writes a char to the console.
 	@param ch The character to write
 */
 void c_writec(char ch);
+
 /**	Writes a string to the console.
 	@param str The string to write
 */
 void c_write(char *str);
+
 /**	Writes a formatted string to the console.
 	@param format The string to write. It can contain format tags.
-	@param buflen The size that should be used for the internal buffer
 	@param ... Additional arguments
 */
-void c_swrite(char *format, int buflen, ...);
+void c_swrite(char *format, ...);
+
 /**	Reads a character from the keypad and does NOT write it to the console.
 	@return The char that has been read. If it is 0, the input has been aborted.
 */
 char cn_readc(void);
+
 /**	Reads a character from the keypad and writes it to the console.
 	@return The char that has been read. If it is 0, the input has been aborted.
 */
 char c_readc(void);
+
 /** Reads a string from the keypad and writes it to the console.
 	@param str String where the read string will be saved in
 	@return 1 on success, 0 on failure (user abort)
 */
 int  c_read(char* str);
+
 /** Draws a string to the screen without using the console buffer.
 	@param x Column (x*6)
 	@param y Row (y*8)
@@ -71,6 +85,7 @@ int  c_read(char* str);
 	@param textColor text color
 */
 void locate(int x, int y, char *str, char bgColor, char textColor);
+
 /** Draws a char to the screen without using the console buffer.
 	@param x Column (x*6)
 	@param y Row (y*8)
@@ -88,6 +103,7 @@ void locatec(int x, int y, char ch, char bgColor, char textColor);
 	@param color Pixel color
 */
 void setPixel(int x, int y, unsigned int color);
+
 /** Draws a char to the screen using the charmap.
 	@param x X coordinate
 	@param y Y coordinate
@@ -96,6 +112,7 @@ void setPixel(int x, int y, unsigned int color);
 	@param textColor Color of the character
 */
 void putChar(int x, int y, char ch, int bgColor, int textColor);
+
 /** Draws a string to the screen using the charmap.
 	@param x X coordinate
 	@param y Y coordinate

@@ -49,6 +49,29 @@ void c_init(char bgColor, char textColor)
 	c_clear();
 	c_draw();
 }
+
+void rshell_save(void)
+{
+	FILE* write = fopen("/console.dat","wb");
+	fwrite(&c_buffer,sizeof(char),MAX_ROW*MAX_COL,write);
+	fwrite(&c_bgColor,sizeof(char),1,write);
+	fwrite(&c_textColor,sizeof(char),1,write);
+	fwrite(&cursorX,sizeof(int),1,write);
+	fwrite(&cursorY,sizeof(int),1,write);
+	fclose(write);
+}
+
+void rshell_load(void)
+{
+	FILE* read = fopen("/console.dat","rb");
+	fread(&c_buffer,sizeof(char),MAX_ROW*MAX_COL,read);
+	fread(&c_bgColor,sizeof(char),1,read);
+	fread(&c_textColor,sizeof(char),1,read);
+	fread(&cursorX,sizeof(int),1,read);
+	fread(&cursorY,sizeof(int),1,read);
+	fclose(read);
+}
+
 void c_clear(void)
 {
 	cursorX		= 0;
@@ -130,12 +153,12 @@ void c_write(char *str)
 	}
 }
 
-void c_swrite(char *format, int buflen, ...)
+void c_swrite(char *format, ...)
 {
-	char buf[buflen];
-	memset(buf,'\0',sizeof(char)*buflen);
+	char buf[256];
+	memset(buf,'\0',256);
 	__builtin_va_list arglist;
-	__builtin_va_start(arglist,buflen);
+	__builtin_va_start(arglist,format);
 	vsprintf(buf,format,*(char **)&arglist);
 	c_write(buf);
 	__builtin_va_end(arglist);
