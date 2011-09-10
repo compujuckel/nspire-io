@@ -27,7 +27,7 @@ int main(void)
 {
 	clrscr();
 	c_init(0x0,0xF);
-	c_swrite("Demo: %s built at %s %s\n\n",50,__FILE__,__DATE__,__TIME__);
+	c_swrite("Demo: %s built at %s %s\n\n",__FILE__,__DATE__,__TIME__);
 	c_write("Features\n");
 	c_write("\t* Formatted text output\n");
 	c_write("\t* Char/String input\n");
@@ -35,7 +35,7 @@ int main(void)
 	while(1)
 	{
 		c_write("\n\nInput a string: ");
-		if(c_read(buffer)) c_swrite("\nYour text was: %s",50,buffer);
+		if(c_read(buffer)) c_swrite("\nYour text was: %s",buffer);
 		else
 		{
 			c_write("\nYou didn't write a string...");
