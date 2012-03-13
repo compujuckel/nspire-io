@@ -122,4 +122,20 @@ void putChar(int x, int y, char ch, int bgColor, int textColor);
 */
 void putStr(int x, int y, char* str, int bgColor, int textColor);
 
+/* registry.h */
+
+/** Stores binary data in a file.
+	@param dataptr Pointer to the data to be stored
+	@param size Length in bytes
+	@param regpath Path to file
+	@return 0 on success, -1 on failure
+*/
+int reg_store(void* dataptr, size_t size, char* regpath);
+
+/** Reads binary data from a file.
+	@param regpath Path to file
+	@return Pointer to the data, NULL on failure
+*/
+void* reg_get(char* regpath);
+
 #endif

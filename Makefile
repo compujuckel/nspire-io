@@ -1,4 +1,4 @@
-NDLESS_PATH = SET THIS VALUE
+NDLESS_PATH = ../../ndless
 AR := "$(shell (which arm-elf-ar arm-none-eabi-ar arm-linux-gnueabi-ar | head -1) 2>/dev/null)"
 GCC = nspire-gcc
 GCCFLAGS = -Os -nostdlib
@@ -8,7 +8,7 @@ OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnuea
 LIB = libnspireio.a
 DISTDIR = $(NDLESS_PATH)/lib
 vpath %.a $(DISTDIR)
-OBJS = console.o screen.o
+OBJS = console.o screen.o registry.o
 
 all: static $(LIB)
 

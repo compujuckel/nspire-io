@@ -26,7 +26,7 @@
  
 void setPixel(int x, int y, unsigned int color)
 {
-	static unsigned char *scr = (unsigned char *) SCREEN_BASE_ADDRESS;
+	unsigned char *scr = (unsigned char *) SCREEN_BASE_ADDRESS;
 	if(x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
 	{
 		scr[y*SCREEN_WIDTH/2+x/2]=x&1? (scr[y*SCREEN_WIDTH/2+x/2]&0xF0)+color : (scr[y*SCREEN_WIDTH/2+x/2]&0x0F)+(color<< 4);

@@ -302,9 +302,9 @@ char cn_readc(void)
 		if(isKeyPressed(KEY_NSPIRE_SQU))		return '²';
 		
 		// Special chars
-		if(isKeyPressed(KEY_NSPIRE_DEL)||isKeyPressed(KEY_NSPIRE_CLEAR))	return '\b';
-		if(isKeyPressed(KEY_NSPIRE_RET))									return '\n';
-		if(isKeyPressed(KEY_NSPIRE_TAB))									return '\t';
+		if(isKeyPressed(KEY_NSPIRE_DEL))		return '\b';
+		if(isKeyPressed(KEY_NSPIRE_RET))		return '\n';
+		if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
 	}
 }
 char c_readc(void)
