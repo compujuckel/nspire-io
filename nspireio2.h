@@ -1,3 +1,25 @@
+/**
+ * @file nspireio2.h
+ * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
+ * @version 2.0
+ *
+ * @section LICENSE
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ * @section DESCRIPTION
+ *
+ * Nspire I/O 2.0 header file
+ */
 #include <os.h>
 
 #ifndef NSPIREIO2_H
@@ -17,6 +39,14 @@ struct nio_console
 	char default_foreground_color;
 };
 typedef struct nio_console nio_console;
+
+
+// rshell integration is currently not implemented; It has to be updated to Nspire I/O 2.0.
+/** ONLY FOR USE WITH RSHELL: Call this function at the beginning of your program / replacement of c_init */
+//void rshell_load(void);
+
+/** ONLY FOR USE WITH RSHELL: Call this function at the end of your program */
+//void rshell_save(void);
 
 /** Draws a pixel to the screen.
 	@param x X coordinate
@@ -115,6 +145,18 @@ void nio_PrintChar(nio_console* c, char ch, BOOL draw);
 */
 void nio_PrintStr(nio_console* c, char* str, BOOL draw);
 
+/** Reads a char and prints it to the console.
+	@param c Console
+	@return ASCII char
+*/
+char nio_GetChar(nio_console* c);
+
+/** Reads a string and prints it to the console.
+	@param c Console
+	@param str String destination
+*/
+int nio_GetStr(nio_console* c, char* str);
+
 /** Sets the Foreground/Background color.
 	@param c Console
 	@param background_color Background color
@@ -126,5 +168,19 @@ void nio_SetColor(nio_console* c, char background_color, char foreground_color);
 	@param c Console
 */
 void nio_CleanUp(nio_console* c);
+
+/** Stores binary data in a file.
+	@param dataptr Pointer to the data to be stored
+	@param size Length in bytes
+	@param regpath Path to file
+	@return 0 on success, -1 on failure
+*/
+int reg_store(void* dataptr, size_t size, char* regpath);
+
+/** Reads binary data from a file.
+	@param regpath Path to file
+	@return Pointer to the data, NULL on failure
+*/
+void* reg_get(char* regpath);
 
 #endif

@@ -1,7 +1,7 @@
 /**
  * @file screen.c
  * @author Julian Mackeben aka compu <compujucke@googlemail.com>
- * @version 0.1
+ * @version 2.0
  *
  * @section LICENSE
  *
