@@ -50,6 +50,22 @@ void c_init(char bgColor, char textColor)
 	c_draw();
 }
 
+void c_cursor(int x, int y)
+{
+	cursorX = x;
+	cursorY = y;
+}
+
+int c_posx(void)
+{
+	return cursorX;
+}
+
+int c_posy(void)
+{
+	return cursorY;
+}
+
 void rshell_save(void)
 {
 	FILE* write = fopen("/console.dat","wb");
@@ -84,7 +100,7 @@ void c_writec(char ch)
 	// Check for escape strings first
 	if(ch == '\n')
 	{
-		if(cursorY > MAX_ROW)
+		if(cursorY >= MAX_ROW)
 		{
 			// Scroll down here
 			// ****************
@@ -124,7 +140,7 @@ void c_writec(char ch)
 	{
 		if(cursorX >= MAX_COL)
 		{
-			if(cursorY > MAX_ROW)
+			if(cursorY >= MAX_ROW)
 			{
 				// Scroll down here
 				// ****************
@@ -214,7 +230,9 @@ char cn_readc(void)
 {
 	while(1)
 	{
-		wait_key_pressed();
+		//wait_key_pressed();
+		while (!any_key_pressed())
+			idle();
 		
 		// Ctrl, Shift, Caps first
 		if(isKeyPressed(KEY_NSPIRE_CTRL))
@@ -302,7 +320,12 @@ char cn_readc(void)
 		if(isKeyPressed(KEY_NSPIRE_SQU))		return '²';
 		
 		// Special chars
+		#ifdef KEY_NSPIRE_CLEAR // Keep better Ndless 2 compatibility (clickpad)
+		if(isKeyPressed(KEY_NSPIRE_DEL)
+		 ||isKeyPressed(KEY_NSPIRE_CLEAR))		return '\b';
+		#else
 		if(isKeyPressed(KEY_NSPIRE_DEL))		return '\b';
+		#endif
 		if(isKeyPressed(KEY_NSPIRE_RET))		return '\n';
 		if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
 	}

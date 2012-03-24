@@ -39,6 +39,22 @@ void rshell_save(void);
 */
 void c_init(char bgColor, char textColor);
 
+/** Sets the cursor position.
+	@param x cursor X position
+	@param y cursor Y position
+*/
+void c_cursor(int x, int y);
+
+/** Returns X position.
+	@return x cursor
+*/
+int c_posx(void);
+
+/** Returns Y position.
+	@return y cursor
+*/
+int c_posy(void);
+
 /** Prints the console buffer to the screen. */
 void c_draw(void);
 
