@@ -1,209 +1,19 @@
-/**
- * @file console.c
- * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 0.1
- *
- * @section LICENSE
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details at
- * http://www.gnu.org/copyleft/gpl.html
- *
- * @section DESCRIPTION
- *
- * Console functions
- */
+#include "nspireio2.h"
 #include <os.h>
-#include "nspireio.h"
 
-#define MAX_ROW 30
-#define MAX_COL 53
-
-char	c_buffer[MAX_COL][MAX_ROW];
-char	c_bgColor;
-char	c_textColor;
-int		cursorX;
-int		cursorY;
-
-// Functions that can be used without c_init()
-void locate(int x, int y, char *str, char bgColor, char textColor)
+void nio_drawstr(int offset_x, int offset_y, int x, int y, char *str, char bgColor, char textColor)
 {
-	putStr(x*6,y*8,str,bgColor,textColor);
+	putStr(offset_x+x*6,offset_y+y*8,str,bgColor,textColor);
 }
-void locatec(int x, int y, char ch, char bgColor, char textColor)
+void nio_drawch(int offset_x, int offset_y, int x, int y, char ch, char bgColor, char textColor)
 {
-	putChar(x*6,y*8,ch,bgColor,textColor);
+	putChar(offset_x+x*6,offset_y+y*8,ch,bgColor,textColor);
 }
 
-void c_init(char bgColor, char textColor)
-{
-	c_bgColor	= bgColor;
-	c_textColor	= textColor;
-	c_clear();
-	c_draw();
-}
-
-void c_cursor(int x, int y)
-{
-	cursorX = x;
-	cursorY = y;
-}
-
-int c_posx(void)
-{
-	return cursorX;
-}
-
-int c_posy(void)
-{
-	return cursorY;
-}
-
-void rshell_save(void)
-{
-	FILE* write = fopen("/console.dat","wb");
-	fwrite(&c_buffer,sizeof(char),MAX_ROW*MAX_COL,write);
-	fwrite(&c_bgColor,sizeof(char),1,write);
-	fwrite(&c_textColor,sizeof(char),1,write);
-	fwrite(&cursorX,sizeof(int),1,write);
-	fwrite(&cursorY,sizeof(int),1,write);
-	fclose(write);
-}
-
-void rshell_load(void)
-{
-	FILE* read = fopen("/console.dat","rb");
-	fread(&c_buffer,sizeof(char),MAX_ROW*MAX_COL,read);
-	fread(&c_bgColor,sizeof(char),1,read);
-	fread(&c_textColor,sizeof(char),1,read);
-	fread(&cursorX,sizeof(int),1,read);
-	fread(&cursorY,sizeof(int),1,read);
-	fclose(read);
-}
-
-void c_clear(void)
-{
-	cursorX		= 0;
-	cursorY		= 0;
-	memset(c_buffer,'\0',sizeof(c_buffer));
-}
-
-void c_writec(char ch)
-{
-	// Check for escape strings first
-	if(ch == '\n')
-	{
-		if(cursorY >= MAX_ROW)
-		{
-			// Scroll down here
-			// ****************
-			c_clear();
-			c_draw();
-		}
-		else
-		{
-			cursorX = 0;
-			cursorY++;
-		}
-	}
-	else if(ch == '\r')
-	{
-		cursorX = 0;
-	}
-	else if(ch == '\b')
-	{
-		if(cursorX > 0)
-		{
-			cursorX--;
-		}
-	}
-	else if(ch == '\t')
-	{
-		int t;
-		for(t=5;t<=MAX_COL;t+=5)
-		{
-			if(cursorX < t)
-			{
-				cursorX = t;
-				break;
-			}
-		}
-	}
-	else
-	{
-		if(cursorX >= MAX_COL)
-		{
-			if(cursorY >= MAX_ROW)
-			{
-				// Scroll down here
-				// ****************
-				c_clear();
-				c_draw();
-			}
-			else
-			{
-				cursorY++;
-				cursorX = 0;
-			}
-		}
-		c_buffer[cursorX][cursorY] = ch;
-		locatec(cursorX,cursorY,ch,c_bgColor,c_textColor);
-		cursorX++;
-	}
-}
-
-void c_write(char *str)
-{
-	int len = strlen(str);
-	int i;
-	for(i = 0; i < len; i++)
-	{
-		c_writec(str[i]);
-	}
-}
-
-void c_swrite(char *format, ...)
-{
-	char buf[256];
-	memset(buf,'\0',256);
-	__builtin_va_list arglist;
-	__builtin_va_start(arglist,format);
-	vsprintf(buf,format,*(char **)&arglist);
-	c_write(buf);
-	__builtin_va_end(arglist);
-}
-
-void c_draw(void)
-{
-	int row,col;
-	for(row = 0; row < MAX_ROW; row++)
-	{
-		for(col = 0; col < MAX_COL; col++)
-		{
-			if(c_buffer[col][row] != '\0')
-			{
-				locatec(col,row,c_buffer[col][row],c_bgColor,c_textColor);
-			}
-			else
-			{
-				locatec(col,row,' ',c_bgColor,c_textColor);
-			}
-		}
-	}
-}
-
-// Input
 BOOL shift = FALSE;
 BOOL caps = FALSE;
 BOOL ctrl = FALSE;
-char shiftKey(char normalc, char shiftc)
+static char shiftKey(char normalc, char shiftc)
 {
 	if(shift || caps) 
 	{
@@ -212,7 +22,7 @@ char shiftKey(char normalc, char shiftc)
 	}
 	else return normalc;
 }
-char shiftOrCtrlKey(char normalc, char shiftc, char ctrlc)
+static char shiftOrCtrlKey(char normalc, char shiftc, char ctrlc)
 {
 	if(shift || caps)
 	{
@@ -226,7 +36,7 @@ char shiftOrCtrlKey(char normalc, char shiftc, char ctrlc)
 	}
 	else return normalc;
 }
-char cn_readc(void)
+char nio_getch(void)
 {
 	while(1)
 	{
@@ -330,38 +140,160 @@ char cn_readc(void)
 		if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
 	}
 }
-char c_readc(void)
+
+
+
+
+void nio_InitConsole(nio_console* c, int size_x, int size_y, int offset_x, int offset_y, char background_color, char foreground_color)
 {
-	char tmp = cn_readc();
-	c_writec(tmp);
-	return tmp;
+	c->max_x = size_x;
+	c->max_y = size_y;
+	c->offset_x = offset_x;
+	c->offset_y = offset_y;
+	c->cursor_x = 0;
+	c->cursor_y = 0;
+	c->default_background_color = background_color;
+	c->default_foreground_color = foreground_color;
+	c->data = malloc(c->max_x*c->max_y);
+	c->color = malloc(c->max_x*c->max_y);
+	char color = (background_color << 4) | foreground_color;
+	memset(c->data,0,c->max_x*c->max_y);
+	memset(c->color,color,c->max_x*c->max_y);
 }
 
-int c_read(char* str)
+void nio_DrawConsole(nio_console* c)
+{
+	int row, col;
+	for(row = 0; row < c->max_y; row++)
+	{
+		for(col = 0; col < c->max_x; col++)
+		{
+			nio_DrawChar(c,col,row);
+		}
+	}
+}
+
+void nio_DrawChar(nio_console* c, int pos_x, int pos_y)
+{
+	char ch = c->data[pos_y*c->max_x+pos_x];
+	char color = c->color[pos_y*c->max_x+pos_x];
+	
+	char background_color = (color & 0xF0) >> 4;
+	char foreground_color = color & 0x0F;
+	
+	nio_drawch(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
+}
+
+void nio_SetChar(nio_console* c, char ch, int pos_x, int pos_y)
+{
+	char color = (c->default_background_color << 4) | c->default_foreground_color;
+	
+	c->data[pos_y*c->max_x+pos_x] = ch;
+	c->color[pos_y*c->max_x+pos_x] = color;
+}
+
+void nio_PrintChar(nio_console* c, char ch, BOOL draw)
+{
+	// Newline. Increment Y cursor, set X cursor to zero. Scroll if necessary.
+	if(ch == '\n')
+	{
+		c->cursor_x = 0;
+		c->cursor_y++;
+		// Scrolling necessary?
+		if(c->cursor_y > c->max_y-1)
+		{
+			c->cursor_y = 0;
+			c->cursor_x = 0;
+			// I'm lazy
+		}
+	}
+	// Carriage return. Set X cursor to zero.
+	else if(ch == '\r')
+	{
+		c->cursor_x = 0;
+	}
+	// Backspace. Decrement X pointer.
+	else if(ch == '\b')
+	{
+		if(c->cursor_x > 0)
+			c->cursor_x--;
+	}
+	
+	// Must be a normal character...
+	else
+	{
+		// Check if the cursor is valid
+		if(c->cursor_x > c->max_x-1)
+		{
+			c->cursor_x = 0;
+			c->cursor_y++;
+		}
+		if(c->cursor_y > c->max_y-1)
+		{
+			c->cursor_x = 0;
+			c->cursor_y = 0;
+		}
+		// Then store it.
+		nio_SetChar(c,ch,c->cursor_x,c->cursor_y);
+		
+		// Draw it when BOOL draw is true
+		if(draw) nio_DrawChar(c,c->cursor_x,c->cursor_y);
+		
+		// Increment X cursor. It will be checked for validity next time.
+		c->cursor_x++;
+	}
+}
+
+void nio_PrintStr(nio_console* c, char* str, BOOL draw)
+{
+	int len = strlen(str);
+	int i;
+	for(i = 0; i < len; i++)
+	{
+		nio_PrintChar(c, str[i],draw);
+	}
+}
+
+void nio_SetColor(nio_console* c, char background_color, char foreground_color)
+{
+	c->default_background_color = background_color;
+	c->default_foreground_color = foreground_color;
+}
+
+char nio_GetChar(nio_console* c)
+{
+	char ch = nio_getch();
+	nio_PrintChar(c,ch,TRUE);
+	return ch;
+}
+
+int nio_GetStr(nio_console* c, char* str)
 {
 	char tmp;
+	int old_x = c->cursor_x;
+	int old_y = c->cursor_y;
+	
 	int i = 0;
-	int oldCursorX = cursorX;
-	int oldCursorY = cursorY;
 	while(1)
 	{
-		tmp = cn_readc();
+		tmp = nio_getch();
+		wait_no_key_pressed();
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
-			c_writec('\n');
-			return (i>0)?1:0;
+			nio_PrintChar(c,'\n',TRUE);
+			return i > 0 ? 1 : 0;
 		}
 		else if(tmp == '\b')
 		{
-			if(cursorX == 0 && cursorY > oldCursorY && i > 0)
+			if(c->cursor_x == 0 && c->cursor_y > old_y && i > 0)
 			{
-				cursorY--;
-				cursorX = MAX_COL;
+				c->cursor_y--;
+				c->cursor_x = c->max_x;
 			}
-			if((cursorX > oldCursorX || (cursorX > 0 && cursorY > oldCursorY)) && i > 0)
+			if((c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y )) && i > 0)
 			{
-				c_write("\b \b");
+				nio_PrintStr(c,"\b \b",TRUE);
 				i--;
 			}
 		}
@@ -372,8 +304,54 @@ int c_read(char* str)
 		else
 		{
 			str[i] = tmp;
-			c_writec(tmp);
+			nio_PrintChar(c,tmp,TRUE);
 			i++;
 		}
 	}
+}
+
+void nio_CleanUp(nio_console* c)
+{
+	free(c->data);
+	free(c->color);
+}
+
+int main(void)
+{
+	wait_no_key_pressed();
+	
+	nio_console c;
+	nio_InitConsole(&c,53,30,0,0,15,0);
+	nio_DrawConsole(&c);
+	
+	while(1)
+	{
+		nio_PrintStr(&c,"Enter some text:",TRUE);
+		
+		char str[50];
+		if(nio_GetStr(&c,str))
+		{
+			nio_PrintStr(&c,"Your text was: ",TRUE);
+			nio_PrintStr(&c,str,TRUE);
+		}
+		else
+		{
+			nio_PrintStr(&c,"ENTER. SOME. TEXT.",TRUE);
+			break;
+		}
+	}
+	/*int i, j;
+	for(i = 0; i < 16; i++)
+	{
+		for(j = 15; j >= 0; j--)
+		{
+			nio_SetColor(&c, i, j);
+			nio_PrintChar(&c,'x',TRUE);
+		}
+		nio_PrintChar(&c,'\n',TRUE);
+	}*/
+	
+	nio_CleanUp(&c);
+	wait_key_pressed();
+	return 0;
 }

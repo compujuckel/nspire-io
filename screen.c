@@ -22,7 +22,7 @@
  */
 #include <os.h>
 #include "charmap.h"
-#include "nspireio.h"
+#include "nspireio2.h"
  
 void setPixel(int x, int y, unsigned int color)
 {
