@@ -23,13 +23,13 @@
 #include <os.h>
 #include "nspireio2.h"
 
-BOOL n_ready(void)
+BOOL uart_ready(void)
 {
 	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
 	return *line_status_reg & 0b1;
 }
 
-char n_getc(void)
+char uart_getc(void)
 {
 	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
 	volatile unsigned *recv_buffer_reg = (unsigned*)0x90020000;
@@ -37,12 +37,12 @@ char n_getc(void)
 	return *recv_buffer_reg;
 }
 
-void n_getline(char* dest)
+void uart_getline(char* dest)
 {
 	int i = 0;
 	while(1)
 	{
-		char c = n_getc();
+		char c = uart_getc();
 		dest[i++] = c;
 		if(c == '\n')
 		{
@@ -52,7 +52,7 @@ void n_getline(char* dest)
 	}
 }
 
-void n_putc(char c)
+void uart_putc(char c)
 {
 	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
 	volatile unsigned *xmit_holding_reg = (unsigned*)0x90020000;
@@ -60,20 +60,20 @@ void n_putc(char c)
 		*xmit_holding_reg = c;
 }
 
-void n_puts(const char *str)
+void uart_puts(const char *str)
 {
 	while(*str) {
-		n_putc(*str++);
+		uart_putc(*str++);
 	}
 }
 
-void n_printf(char *format, ...)
+void uart_printf(char *format, ...)
 {
 	char buf[256];
 	memset(buf,'\0',256);
 	__builtin_va_list arglist;
 	__builtin_va_start(arglist,format);
 	vsprintf(buf,format,*(char **)&arglist);
-	n_puts(buf);
+	uart_puts(buf);
 	__builtin_va_end(arglist);
 }

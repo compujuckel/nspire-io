@@ -116,6 +116,11 @@ void nio_InitConsole(nio_console* c, int size_x, int size_y, int offset_x, int o
 */
 void nio_DrawConsole(nio_console* c);
 
+/** Clears a console.
+	@param c Console
+*/
+void nio_Clear(nio_console* c);
+
 /** Draws a char from a console to the screen.
 	@param c Console
 	@param pos_x Column
@@ -186,33 +191,33 @@ void* reg_get(char* regpath);
 /** Checks if there is data available at the serial port.
 	@return TRUE if new data is available.
 */
-BOOL n_ready(void);
+BOOL uart_ready(void);
 
 /** Gets a char from RS232.
 	@return Char
 */
-char n_getc(void);
+char uart_getc(void);
 
 /** Gets a line (ended with \n) from RS232.
 	@return Destination
 */
-void n_getline(char* dest);
+void uart_getline(char* dest);
 
 /** Puts a char to RS232.
 	@param c Char
 */
-void n_putc(char c);
+void uart_putc(char c);
 
 /** Puts a string to RS232.
 	@param str String
 */
-void n_puts(const char *str);
+void uart_puts(const char *str);
 
 /** Puts a formatted string to RS232.
 	@param format Format string
 	@param ... Additional arguments
 */
-void n_printf(char *format, ...);
+void uart_printf(char *format, ...);
 
 
 #endif
