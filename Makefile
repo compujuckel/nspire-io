@@ -8,7 +8,7 @@ OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnuea
 LIB = libnspireio2.a
 DISTDIR = $(NDLESS_PATH)/lib
 vpath %.a $(DISTDIR)
-OBJS = console.o screen.o registry.o
+OBJS = console.o screen.o registry.o uart.o
 
 all: static $(LIB)
 

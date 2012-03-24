@@ -183,4 +183,36 @@ int reg_store(void* dataptr, size_t size, char* regpath);
 */
 void* reg_get(char* regpath);
 
+/** Checks if there is data available at the serial port.
+	@return TRUE if new data is available.
+*/
+BOOL n_ready(void);
+
+/** Gets a char from RS232.
+	@return Char
+*/
+char n_getc(void);
+
+/** Gets a line (ended with \n) from RS232.
+	@return Destination
+*/
+void n_getline(char* dest);
+
+/** Puts a char to RS232.
+	@param c Char
+*/
+void n_putc(char c);
+
+/** Puts a string to RS232.
+	@param str String
+*/
+void n_puts(const char *str);
+
+/** Puts a formatted string to RS232.
+	@param format Format string
+	@param ... Additional arguments
+*/
+void n_printf(char *format, ...);
+
+
 #endif
