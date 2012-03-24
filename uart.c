@@ -21,7 +21,7 @@
  * Alternative functions for serial communication, no clock on the screen.
  */
 #include <os.h>
-#include <nspireio2.h>
+#include "nspireio2.h"
 
 BOOL n_ready(void)
 {
