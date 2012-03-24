@@ -281,14 +281,14 @@ void nio_PrintStr(nio_console* c, char* str, BOOL draw)
 	}
 }
 
-void nio_printf(char *format, ...)
+void nio_printf(nio_console* c, char *format, ...)
 {
 	char buf[256];
 	memset(buf,'\0',256);
 	__builtin_va_list arglist;
 	__builtin_va_start(arglist,format);
 	vsprintf(buf,format,*(char **)&arglist);
-	nio_PutStr(buf);
+	nio_PrintStr(c,buf,TRUE);
 	__builtin_va_end(arglist);
 }
 

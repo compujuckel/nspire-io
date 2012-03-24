@@ -150,6 +150,13 @@ void nio_PrintChar(nio_console* c, char ch, BOOL draw);
 */
 void nio_PrintStr(nio_console* c, char* str, BOOL draw);
 
+/** Prints a formatted string to a console.
+	@param c Console
+	@param format Format string
+	@param ... Additional arguments
+*/
+void nio_printf(nio_console* c, char *format, ...);
+
 /** Reads a char and prints it to the console.
 	@param c Console
 	@return ASCII char
