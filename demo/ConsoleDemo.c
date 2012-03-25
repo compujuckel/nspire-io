@@ -27,38 +27,32 @@ int main(void)
 {
 	wait_no_key_pressed();
 	
-	nio_console c;
-	nio_InitConsole(&c,53,30,0,0,15,0);
-	nio_DrawConsole(&c);
+	// Initialize console 1.
+	nio_console c1;
+	// 53 columns, 15 rows. 0px offset for x/y. Background color 15 (white), foreground color 0 (black)
+	nio_InitConsole(&c1,53,15,0,0,15,0);
+	nio_DrawConsole(&c1);
+	
+	nio_console c2;
+	nio_InitConsole(&c2,53,15,0,15*8,0,15);
+	nio_DrawConsole(&c2);
+	
+	// Just showing printf
+	nio_printf(&c1,"%s build at %s, %s\n",__FILE__,__DATE__,__TIME__);
 	
 	while(1)
 	{
-		nio_PrintStr(&c,"Enter some text:",TRUE);
-		
-		char str[50];
-		if(nio_GetStr(&c,str))
-		{
-			nio_PrintStr(&c,"Your text was: ",TRUE);
-			nio_PrintStr(&c,str,TRUE);
-		}
-		else
-		{
-			nio_PrintStr(&c,"ENTER. SOME. TEXT.",TRUE);
+		char text[100];
+		// If no text was entered, exit
+		if(!nio_GetStr(&c1,text))
 			break;
-		}
+		// Write the text into 2nd console
+		nio_printf(&c2,"%s\n",text);
 	}
-	/*int i, j;
-	for(i = 0; i < 16; i++)
-	{
-		for(j = 15; j >= 0; j--)
-		{
-			nio_SetColor(&c, i, j);
-			nio_PrintChar(&c,'x',TRUE);
-		}
-		nio_PrintChar(&c,'\n',TRUE);
-	}*/
 	
-	nio_CleanUp(&c);
-	wait_key_pressed();
+	
+	
+	nio_CleanUp(&c1);
+	nio_CleanUp(&c2);
 	return 0;
 }

@@ -254,6 +254,8 @@ void nio_PrintChar(nio_console* c, char ch)
 		if(c->cursor_y > c->max_y-1)
 		{
 			nio_ScrollDown(c);
+			if(c->drawing_enabled)
+				nio_DrawConsole(c);
 		}
 	}
 	// Carriage return. Set X cursor to zero.
@@ -280,6 +282,8 @@ void nio_PrintChar(nio_console* c, char ch)
 		if(c->cursor_y > c->max_y-1)
 		{
 			nio_ScrollDown(c);
+			if(c->drawing_enabled)
+				nio_DrawConsole(c);
 		}
 		// Then store it.
 		nio_SetChar(c,ch,c->cursor_x,c->cursor_y);
@@ -340,8 +344,8 @@ int nio_GetStr(nio_console* c, char* str)
 	int i = 0;
 	while(1)
 	{
-		tmp = nio_getch();
 		wait_no_key_pressed();
+		tmp = nio_getch();
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
