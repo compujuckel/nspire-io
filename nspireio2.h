@@ -37,15 +37,16 @@ struct nio_console
 	int offset_y;
 	char default_background_color;
 	char default_foreground_color;
+	BOOL drawing_enabled;
 };
 typedef struct nio_console nio_console;
 
 
 // rshell integration is currently not implemented; It has to be updated to Nspire I/O 2.0.
-/** ONLY FOR USE WITH RSHELL: Call this function at the beginning of your program / replacement of c_init */
+/* * ONLY FOR USE WITH RSHELL: Call this function at the beginning of your program / replacement of c_init */
 //void rshell_load(void);
 
-/** ONLY FOR USE WITH RSHELL: Call this function at the end of your program */
+/* * ONLY FOR USE WITH RSHELL: Call this function at the end of your program */
 //void rshell_save(void);
 
 /** Draws a pixel to the screen.
@@ -116,6 +117,11 @@ void nio_InitConsole(nio_console* c, int size_x, int size_y, int offset_x, int o
 */
 void nio_DrawConsole(nio_console* c);
 
+/** Scrolls the console one line down.
+	@param c Console
+*/
+void nio_ScrollDown(nio_console* c);
+
 /** Clears a console.
 	@param c Console
 */
@@ -139,16 +145,20 @@ void nio_SetChar(nio_console* c, char ch, int pos_x, int pos_y);
 /** Prints a char in a console.
 	@param c Console
 	@param ch Char
-	@param draw When this is true, the char will be drawn to the screen, false: just save it
 */
-void nio_PrintChar(nio_console* c, char ch, BOOL draw);
+void nio_PrintChar(nio_console* c, char ch);
+
+/** Enables immediate drawing when a character is written to the console.
+	@param c Console
+	@param drawing_enabled When this is true, a char will be immediately drawn to the screen, false: just save it
+*/
+void nio_EnableDrawing(nio_console* c, BOOL drawing_enabled);
 
 /** Prints a string in a console.
 	@param c Console
 	@param str String
-	@param draw When this is true, the char will be drawn to the screen, false: just save it
 */
-void nio_PrintStr(nio_console* c, char* str, BOOL draw);
+void nio_PrintStr(nio_console* c, char* str);
 
 /** Prints a formatted string to a console.
 	@param c Console
