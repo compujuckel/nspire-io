@@ -32,6 +32,57 @@ void nio_drawch(int offset_x, int offset_y, int x, int y, char ch, char bgColor,
 	putChar(offset_x+x*6,offset_y+y*8,ch,bgColor,textColor);
 }
 
+void nio_load(char* path, nio_console* c)
+{
+	FILE* f = fopen(path,"rb");
+	
+	fread(&c->cursor_x,sizeof(int),1,f);
+	fread(&c->cursor_y,sizeof(int),1,f);
+	
+	fread(&c->max_x,sizeof(int),1,f);
+	fread(&c->max_y,sizeof(int),1,f);
+	
+	fread(&c->offset_x,sizeof(int),1,f);
+	fread(&c->offset_y,sizeof(int),1,f);
+	
+	fread(&c->default_background_color,sizeof(char),1,f);
+	fread(&c->default_foreground_color,sizeof(char),1,f);
+	
+	fread(&c->drawing_enabled,sizeof(BOOL),1,f);
+	
+	c->data = malloc(c->max_x*c->max_y);
+	c->color = malloc(c->max_x*c->max_y);
+	
+	fread(c->data,sizeof(char),c->max_x*c->max_y,f);
+	fread(c->color,sizeof(char),c->max_x*c->max_y,f);
+	
+	fclose(f);
+}
+
+void nio_save(char* path, nio_console* c)
+{
+	FILE* f = fopen(path,"wb");
+	
+	fwrite(&c->cursor_x,sizeof(int),1,f);
+	fwrite(&c->cursor_y,sizeof(int),1,f);
+	
+	fwrite(&c->max_x,sizeof(int),1,f);
+	fwrite(&c->max_y,sizeof(int),1,f);
+	
+	fwrite(&c->offset_x,sizeof(int),1,f);
+	fwrite(&c->offset_y,sizeof(int),1,f);
+	
+	fwrite(&c->default_background_color,sizeof(char),1,f);
+	fwrite(&c->default_foreground_color,sizeof(char),1,f);
+	
+	fwrite(&c->drawing_enabled,sizeof(BOOL),1,f);
+	
+	fwrite(c->data,sizeof(char),c->max_x*c->max_y,f);
+	fwrite(c->color,sizeof(char),c->max_x*c->max_y,f);
+	
+	fclose(f);
+}
+
 BOOL shift = FALSE;
 BOOL caps = FALSE;
 BOOL ctrl = FALSE;
@@ -251,7 +302,7 @@ void nio_PrintChar(nio_console* c, char ch)
 		c->cursor_x = 0;
 		c->cursor_y++;
 		// Scrolling necessary?
-		if(c->cursor_y > c->max_y-1)
+		if(c->cursor_y > c->max_y)
 		{
 			nio_ScrollDown(c);
 			if(c->drawing_enabled)
@@ -274,12 +325,12 @@ void nio_PrintChar(nio_console* c, char ch)
 	else
 	{
 		// Check if the cursor is valid
-		if(c->cursor_x > c->max_x-1)
+		if(c->cursor_x > c->max_x)
 		{
 			c->cursor_x = 0;
 			c->cursor_y++;
 		}
-		if(c->cursor_y > c->max_y-1)
+		if(c->cursor_y > c->max_y)
 		{
 			nio_ScrollDown(c);
 			if(c->drawing_enabled)

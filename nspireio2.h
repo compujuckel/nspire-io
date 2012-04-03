@@ -41,13 +41,17 @@ struct nio_console
 };
 typedef struct nio_console nio_console;
 
+/** Loads a console to flash storage.
+	@param path File path
+	@param c Console
+*/
+void nio_load(char* path, nio_console* c);
 
-// rshell integration is currently not implemented; It has to be updated to Nspire I/O 2.0.
-/* * ONLY FOR USE WITH RSHELL: Call this function at the beginning of your program / replacement of c_init */
-//void rshell_load(void);
-
-/* * ONLY FOR USE WITH RSHELL: Call this function at the end of your program */
-//void rshell_save(void);
+/** Saves a console to flash storage.
+	@param path File path
+	@param c Console
+*/
+void nio_save(char* path, nio_console* c);
 
 /** Draws a pixel to the screen.
 	@param x X coordinate
