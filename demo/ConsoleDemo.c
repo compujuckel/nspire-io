@@ -25,6 +25,9 @@
 
 int main(void)
 {
+	if(has_colors)
+		lcd_ingray();
+	
 	wait_no_key_pressed();
 	
 	// Initialize console 1.
@@ -54,5 +57,9 @@ int main(void)
 	
 	nio_CleanUp(&c1);
 	nio_CleanUp(&c2);
+	
+	if(has_colors)
+		lcd_incolor();
+		
 	return 0;
 }
