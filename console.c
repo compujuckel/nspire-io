@@ -320,7 +320,12 @@ void nio_PrintChar(nio_console* c, char ch)
 		if(c->cursor_x > 0)
 			c->cursor_x--;
 	}
-	
+	else if(ch == '\t')
+	{
+		// tabs are 8 character long
+		c->cursor_x += (9-1) - c->cursor_x % 8;
+		ch = ' ';
+	}
 	// Must be a normal character...
 	else
 	{
@@ -359,8 +364,8 @@ void nio_PrintStr(nio_console* c, char* str)
 
 void nio_printf(nio_console* c, char *format, ...)
 {
-	char buf[256];
-	memset(buf,'\0',256);
+	char buf[1000];
+	memset(buf,'\0',sizeof(buf));
 	__builtin_va_list arglist;
 	__builtin_va_start(arglist,format);
 	vsprintf(buf,format,*(char **)&arglist);
@@ -418,6 +423,8 @@ int nio_GetStr(nio_console* c, char* str)
 		}
 		else if(tmp == '\0')
 		{
+			str[0] = '\0';
+			nio_PrintChar(c,'\n');
 			return 0;
 		}
 		else
