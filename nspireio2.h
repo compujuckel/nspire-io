@@ -25,19 +25,20 @@
 #ifndef NSPIREIO2_H
 #define NSPIREIO2_H
 
+/** Console structure. */
 struct nio_console
 {
-	char* data;
-	char* color;
-	int cursor_x;
-	int cursor_y;
-	int max_x;
-	int max_y;
-	int offset_x;
-	int offset_y;
-	char default_background_color;
-	char default_foreground_color;
-	BOOL drawing_enabled;
+	char* data; /**< Data pointer */
+	char* color; /**< Color pointer */
+	int cursor_x; /**< Current X position */
+	int cursor_y; /**< Current Y position */
+	int max_x; /**< Column count */
+	int max_y; /**< Row count */
+	int offset_x; /**< X pixel offset */
+	int offset_y; /**< Y pixel offset */
+	char default_background_color; /**< Color that will be used as default background */
+	char default_foreground_color; /**< Color that will be used as default foreground */
+	BOOL drawing_enabled; /**< Automatically draw any new text to the screen */
 };
 typedef struct nio_console nio_console;
 
@@ -131,14 +132,14 @@ void nio_ScrollDown(nio_console* c);
 */
 void nio_Clear(nio_console* c);
 
-/** Draws a char from a console to the screen.
+/** Draws a char from a console to the screen at the given position; It is not saved.
 	@param c Console
 	@param pos_x Column
 	@param pos_y Row
 */
 void nio_DrawChar(nio_console* c, int pos_x, int pos_y);
 
-/** Saves a char in a console.
+/** Saves a char in a console at the given position; It is not drawn.
 	@param c Console
 	@param ch char to be stored
 	@param pos_x Column
@@ -154,7 +155,7 @@ void nio_PrintChar(nio_console* c, char ch);
 
 /** Enables immediate drawing when a character is written to the console.
 	@param c Console
-	@param drawing_enabled When this is true, a char will be immediately drawn to the screen, false: just save it
+	@param drawing_enabled When this is true, a char will be immediately drawn to the screen, false: The console will not refresh if you write data to it
 */
 void nio_EnableDrawing(nio_console* c, BOOL drawing_enabled);
 
@@ -220,7 +221,7 @@ BOOL uart_ready(void);
 char uart_getc(void);
 
 /** Gets a line (ended with \n) from RS232.
-	@return Destination
+	@param dest String destination
 */
 void uart_getline(char* dest);
 
