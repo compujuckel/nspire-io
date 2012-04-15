@@ -57,6 +57,8 @@ void nio_load(char* path, nio_console* c)
 	fread(c->color,sizeof(char),c->max_x*c->max_y,f);
 	
 	fclose(f);
+	
+	uart_printf("x: %d y: %d -- max_x: %d max_y: %d -- off_x: %d off_y: %d -- bg: %d fg: %d -- malloc: %d\n",c->cursor_x,c->cursor_y,c->max_x,c->max_y,c->offset_x,c->offset_y,c->default_background_color,c->default_foreground_color,c->max_x*c->max_y);
 }
 
 void nio_save(char* path, nio_console* c)
@@ -81,6 +83,8 @@ void nio_save(char* path, nio_console* c)
 	fwrite(c->color,sizeof(char),c->max_x*c->max_y,f);
 	
 	fclose(f);
+	
+	uart_printf("x: %d y: %d -- max_x: %d max_y: %d -- off_x: %d off_y: %d -- bg: %d fg: %d -- malloc: %d\n",c->cursor_x,c->cursor_y,c->max_x,c->max_y,c->offset_x,c->offset_y,c->default_background_color,c->default_foreground_color,c->max_x*c->max_y);
 }
 
 BOOL shift = FALSE;
@@ -302,7 +306,7 @@ void nio_PrintChar(nio_console* c, char ch)
 		c->cursor_x = 0;
 		c->cursor_y++;
 		// Scrolling necessary?
-		if(c->cursor_y > c->max_y)
+		if(c->cursor_y >= c->max_y)
 		{
 			nio_ScrollDown(c);
 			if(c->drawing_enabled)
@@ -330,12 +334,12 @@ void nio_PrintChar(nio_console* c, char ch)
 	else
 	{
 		// Check if the cursor is valid
-		if(c->cursor_x > c->max_x)
+		if(c->cursor_x >= c->max_x)
 		{
 			c->cursor_x = 0;
 			c->cursor_y++;
 		}
-		if(c->cursor_y > c->max_y)
+		if(c->cursor_y >= c->max_y)
 		{
 			nio_ScrollDown(c);
 			if(c->drawing_enabled)
