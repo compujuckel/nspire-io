@@ -252,6 +252,8 @@ void nio_Clear(nio_console* c)
 	memset(c->color,color,c->max_x*c->max_y);
 	c->cursor_x = 0;
 	c->cursor_y = 0;
+	if(c->drawing_enabled)
+		nio_DrawConsole(c);
 }
 
 void nio_ScrollDown(nio_console* c)
