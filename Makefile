@@ -5,6 +5,7 @@ LD = nspire-ld
 LDFLAGS = -nostdlib
 OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnueabi-objcopy | head -1) 2>/dev/null)"
 LIB = libnspireio2.a
+USERPROFILE ?= $(HOME)
 DISTDIR = $(USERPROFILE)/.ndless/lib
 vpath %.a $(DISTDIR)
 OBJS = console.o screen.o registry.o uart.o
