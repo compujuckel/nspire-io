@@ -25,6 +25,7 @@
  * A simple demo program showing some of the I/O functions.
  */
 #include <os.h>
+#define NIO_KEEP_COMPATIBILITY
 #include <nspireio2.h>
 
 int main(void)
@@ -64,6 +65,24 @@ int main(void)
 	
 	if(has_colors)
 		lcd_incolor();
-		
+        /*
+    nio_console csl;
+    nio_init(&csl,53,30,0,0,15,0);
+    nio_set_default(&csl);
+    
+    nio_puts("Hello World!\n");
+    nio_fputs("Hallo Welt!\n",&csl);
+    
+    nio_printf("Zahl: %d\n",1);
+    nio_fprintf(&csl,"String: %s\n","Hi");
+    
+    char str[100];
+    nio_gets(str);
+    
+    nio_puts(str);
+    
+    nio_free(&csl);
+	
+    wait_key_pressed();*/
 	return 0;
 }

@@ -27,16 +27,18 @@
 #include "nspireio2.h"
 #include <os.h>
 
-void nio_drawstr(int offset_x, int offset_y, int x, int y, char *str, char bgColor, char textColor)
+nio_console* nio_default = NULL;
+
+void nio_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const char bgColor, const char textColor)
 {
-	putStr(offset_x+x*6,offset_y+y*8,str,bgColor,textColor);
+	nio_pixel_puts(offset_x+x*6,offset_y+y*8,str,bgColor,textColor);
 }
-void nio_drawch(int offset_x, int offset_y, int x, int y, char ch, char bgColor, char textColor)
+void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const char bgColor, const char textColor)
 {
-	putChar(offset_x+x*6,offset_y+y*8,ch,bgColor,textColor);
+	nio_pixel_putc(offset_x+x*6,offset_y+y*8,ch,bgColor,textColor);
 }
 
-void nio_load(char* path, nio_console* c)
+void nio_load(const char* path, nio_console* c)
 {
 	FILE* f = fopen(path,"rb");
 	
@@ -63,7 +65,7 @@ void nio_load(char* path, nio_console* c)
 	fclose(f);
 }
 
-void nio_save(char* path, nio_console* c)
+void nio_save(const char* path, const nio_console* c)
 {
 	FILE* f = fopen(path,"wb");
 	
@@ -87,10 +89,15 @@ void nio_save(char* path, nio_console* c)
 	fclose(f);
 }
 
+void nio_set_default(nio_console* c)
+{
+    nio_default = c;
+}
+
 BOOL shift = FALSE;
 BOOL caps = FALSE;
 BOOL ctrl = FALSE;
-static char shiftKey(char normalc, char shiftc)
+static char shiftKey(const char normalc, const char shiftc)
 {
 	if(shift || caps) 
 	{
@@ -99,7 +106,7 @@ static char shiftKey(char normalc, char shiftc)
 	}
 	else return normalc;
 }
-static char shiftOrCtrlKey(char normalc, char shiftc, char ctrlc)
+static char shiftOrCtrlKey(const char normalc, const char shiftc, const char ctrlc)
 {
 	if(shift || caps)
 	{
@@ -218,10 +225,7 @@ char nio_getch(void)
 	}
 }
 
-
-
-
-void nio_InitConsole(nio_console* c, int size_x, int size_y, int offset_x, int offset_y, char background_color, char foreground_color)
+void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const char background_color, const char foreground_color)
 {
 	c->max_x = size_x;
 	c->max_y = size_y;
@@ -234,22 +238,23 @@ void nio_InitConsole(nio_console* c, int size_x, int size_y, int offset_x, int o
 	c->default_foreground_color = foreground_color;
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y);
-	nio_Clear(c);
+	nio_clear(c);
 }
 
-void nio_DrawConsole(nio_console* c)
+int nio_fflush(nio_console* c)
 {
 	int row, col;
 	for(row = 0; row < c->max_y; row++)
 	{
 		for(col = 0; col < c->max_x; col++)
 		{
-			nio_DrawChar(c,col,row);
+			nio_csl_drawchar(c,col,row);
 		}
 	}
+    return 0;
 }
 
-void nio_Clear(nio_console* c)
+void nio_clear(nio_console* c)
 {
 	char color = (c->default_background_color << 4) | c->default_foreground_color;
 	memset(c->data,0,c->max_x*c->max_y);
@@ -257,10 +262,10 @@ void nio_Clear(nio_console* c)
 	c->cursor_x = 0;
 	c->cursor_y = 0;
 	if(c->drawing_enabled)
-		nio_DrawConsole(c);
+		nio_fflush(c);
 }
 
-void nio_ScrollDown(nio_console* c)
+void nio_scroll(nio_console* c)
 {
 	char* temp;
 	temp = malloc(c->max_x*c->max_y);
@@ -281,7 +286,7 @@ void nio_ScrollDown(nio_console* c)
 	free(temp);
 }
 
-void nio_DrawChar(nio_console* c, int pos_x, int pos_y)
+void nio_csl_drawchar(nio_console* c, const int pos_x, const int pos_y)
 {
 	char ch = c->data[pos_y*c->max_x+pos_x];
 	char color = c->color[pos_y*c->max_x+pos_x];
@@ -289,10 +294,10 @@ void nio_DrawChar(nio_console* c, int pos_x, int pos_y)
 	char background_color = (color & 0xF0) >> 4;
 	char foreground_color = color & 0x0F;
 	
-	nio_drawch(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
+	nio_grid_putc(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
 }
 
-void nio_SetChar(nio_console* c, char ch, int pos_x, int pos_y)
+void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int pos_y)
 {
 	char color = (c->default_background_color << 4) | c->default_foreground_color;
 	
@@ -300,7 +305,7 @@ void nio_SetChar(nio_console* c, char ch, int pos_x, int pos_y)
 	c->color[pos_y*c->max_x+pos_x] = color;
 }
 
-void nio_PrintChar(nio_console* c, char ch)
+char nio_fputc(char ch, nio_console* c)
 {
 	// Newline. Increment Y cursor, set X cursor to zero. Scroll if necessary.
 	if(ch == '\n')
@@ -310,9 +315,9 @@ void nio_PrintChar(nio_console* c, char ch)
 		// Scrolling necessary?
 		if(c->cursor_y >= c->max_y)
 		{
-			nio_ScrollDown(c);
+			nio_scroll(c);
 			if(c->drawing_enabled)
-				nio_DrawConsole(c);
+				nio_fflush(c);
 		}
 	}
 	// Carriage return. Set X cursor to zero.
@@ -343,61 +348,119 @@ void nio_PrintChar(nio_console* c, char ch)
 		}
 		if(c->cursor_y >= c->max_y)
 		{
-			nio_ScrollDown(c);
+			nio_scroll(c);
 			if(c->drawing_enabled)
-				nio_DrawConsole(c);
+				nio_fflush(c);
 		}
 		// Then store it.
-		nio_SetChar(c,ch,c->cursor_x,c->cursor_y);
+		nio_csl_savechar(c,ch,c->cursor_x,c->cursor_y);
 		
 		// Draw it when BOOL draw is true
-		if(c->drawing_enabled) nio_DrawChar(c,c->cursor_x,c->cursor_y);
+		if(c->drawing_enabled) nio_csl_drawchar(c,c->cursor_x,c->cursor_y);
 		
 		// Increment X cursor. It will be checked for validity next time.
 		c->cursor_x++;
 	}
+    return ch;
 }
 
-void nio_PrintStr(nio_console* c, char* str)
+char nio_putchar(const char ch)
+{
+    return nio_fputc(ch,nio_default);
+}
+
+int nio_fputs(const char* str, nio_console* c)
 {
 	int len = strlen(str);
 	int i;
 	for(i = 0; i < len; i++)
 	{
-		nio_PrintChar(c, str[i]);
+		nio_fputc(str[i], c);
 	}
+    return 1;
 }
 
-void nio_printf(nio_console* c, char *format, ...)
+int nio_puts(const char* str)
 {
-	char buf[1000];
-	memset(buf,'\0',sizeof(buf));
-	__builtin_va_list arglist;
-	__builtin_va_start(arglist,format);
-	vsprintf(buf,format,*(char **)&arglist);
-	nio_PrintStr(c,buf);
-	__builtin_va_end(arglist);
+    return nio_fputs(str,nio_default);
 }
 
-void nio_SetColor(nio_console* c, char background_color, char foreground_color)
+int nio_fprintf(nio_console* c, const char *format, ...)
+{
+    char buf[1000];
+    memset(buf,'\0',sizeof(buf));
+    __builtin_va_list arglist;
+    __builtin_va_start(arglist,format);
+    vsprintf(buf,format,*(char **)&arglist);
+    nio_fputs(buf,c);
+    __builtin_va_end(arglist);
+    return strlen(buf);
+}
+
+int nio_printf(const char *format, ...)
+{
+    char buf[1000];
+    memset(buf,'\0',sizeof(buf));
+    __builtin_va_list arglist;
+    __builtin_va_start(arglist,format);
+    vsprintf(buf,format,*(char **)&arglist);
+    nio_puts(buf);
+    __builtin_va_end(arglist);
+    return strlen(buf);
+}
+
+// This implementation won't work...
+/*int nio_vfprintf(nio_console* c, const char* format, va_list* arglist)
+{
+    char buf[1000];
+    memset(buf,'\0',sizeof(buf));
+    vsprintf(buf,format,arglist);
+    nio_fputs(buf,c);
+    return strlen(buf);
+}
+
+int nio_fprintf(nio_console* c, const char* format, ...)
+{
+	va_list arglist;
+	va_start(arglist,format);
+	int ret = nio_vfprintf(c,format,&arglist);
+	va_end(arglist);
+    return ret;
+}
+
+int nio_printf(const char* format, ...)
+{
+    va_list arglist;
+	va_start(arglist,format);
+	int ret = nio_vfprintf(nio_default,format,&arglist);
+	va_end(arglist);
+    return ret;
+}*/
+
+void nio_color(nio_console* c, const char background_color, const char foreground_color)
 {
 	c->default_background_color = background_color;
 	c->default_foreground_color = foreground_color;
 }
 
-void nio_EnableDrawing(nio_console* c, BOOL enable_drawing)
+void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 {
 	c->drawing_enabled = enable_drawing;
 }
 
-char nio_GetChar(nio_console* c)
+char nio_fgetc(nio_console* c)
 {
 	char ch = nio_getch();
-	nio_PrintChar(c,ch);
+	nio_fputc(ch,c);
 	return ch;
 }
 
-int nio_GetStr(nio_console* c, char* str)
+char nio_getchar(void)
+{
+    return nio_fgetc(nio_default);
+}
+
+char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
 {
 	char tmp;
 	int old_x = c->cursor_x;
@@ -411,8 +474,8 @@ int nio_GetStr(nio_console* c, char* str)
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
-			nio_PrintChar(c,'\n');
-			return i > 0 ? 1 : 0;
+			nio_fputc('\n', c);
+			return i > 0 ? str : NULL;
 		}
 		else if(tmp == '\b')
 		{
@@ -423,26 +486,31 @@ int nio_GetStr(nio_console* c, char* str)
 			}
 			if((c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y )) && i > 0)
 			{
-				nio_PrintStr(c,"\b \b");
+				nio_fputs("\b \b", c);
 				i--;
 			}
 		}
 		else if(tmp == '\0')
 		{
 			str[0] = '\0';
-			nio_PrintChar(c,'\n');
-			return 0;
+			nio_fputc('\n',c);
+			return NULL;
 		}
 		else
 		{
 			str[i] = tmp;
-			nio_PrintChar(c,tmp);
+			nio_fputc(tmp, c);
 			i++;
 		}
 	}
 }
 
-void nio_CleanUp(nio_console* c)
+char* nio_gets(char* str)
+{
+    return nio_fgets(str,1000,nio_default); // using 1000 as default here
+}
+
+void nio_free(nio_console* c)
 {
 	free(c->data);
 	free(c->color);

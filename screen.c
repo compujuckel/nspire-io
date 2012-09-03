@@ -28,7 +28,7 @@
 #include "charmap.h"
 #include "nspireio2.h"
  
-void setPixel(int x, int y, unsigned int color)
+void nio_pixel_set(int x, int y, unsigned int color)
 {
 	unsigned char *scr = (unsigned char *) SCREEN_BASE_ADDRESS;
 	if(x >= 0 && x < SCREEN_WIDTH && y >= 0 && y < SCREEN_HEIGHT)
@@ -37,7 +37,7 @@ void setPixel(int x, int y, unsigned int color)
 	}
 }
 
-void putChar(int x, int y, char ch, int bgColor, int textColor)
+void nio_pixel_putc(int x, int y, char ch, int bgColor, int textColor)
 {
 	int i, j, pixelOn;
 	for(i = 0; i < CHAR_WIDTH; i++)
@@ -46,19 +46,19 @@ void putChar(int x, int y, char ch, int bgColor, int textColor)
 		{
 			pixelOn = MBCharSet8x6_definition[(unsigned char)ch][i] << j ;
 			pixelOn = pixelOn & 0x80 ;
-			if (pixelOn) 		setPixel(x+i,y+CHAR_HEIGHT-j,textColor);
-			else if(!pixelOn) 	setPixel(x+i,y+CHAR_HEIGHT-j,bgColor);
+			if (pixelOn) 		nio_pixel_set(x+i,y+CHAR_HEIGHT-j,textColor);
+			else if(!pixelOn) 	nio_pixel_set(x+i,y+CHAR_HEIGHT-j,bgColor);
 		}
 	}
 }
-void putStr(int x, int y, char* str, int bgColor, int textColor)
+void nio_pixel_puts(int x, int y, char* str, int bgColor, int textColor)
 {
 	int l = strlen(str);
 	int i;
 	int stop=0;
 	for (i = 0; i < l && !stop; i++)
 	{
-		putChar(x, y, str[i], bgColor, textColor);
+		nio_pixel_putc(x, y, str[i], bgColor, textColor);
 		x += CHAR_WIDTH;
 		if (x >= SCREEN_WIDTH-CHAR_WIDTH)
 		{
