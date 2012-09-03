@@ -38,6 +38,17 @@ void nio_grid_putc(const int offset_x, const int offset_y, const int x, const in
 	nio_pixel_putc(offset_x+x*6,offset_y+y*8,ch,bgColor,textColor);
 }
 
+void nio_use_stdio(void)
+{
+    nio_default = malloc(sizeof(nio_console));
+    nio_init(nio_default,53,30,0,0,WHITE,BLACK);
+}
+
+void nio_free_stdio(void)
+{
+    nio_free(nio_default);
+}
+
 void nio_load(const char* path, nio_console* c)
 {
 	FILE* f = fopen(path,"rb");
