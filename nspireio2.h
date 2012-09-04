@@ -155,7 +155,7 @@ void nio_use_stdio(void);
 void nio_free_stdio(void);
 
 /** See [fflush](http://www.cplusplus.com/reference/clibrary/cstdio/fflush/)
-	This is useful for consoles with enable_drawing set to false. Using this function will result in the console being drawn.
+	\note This is useful for consoles with enable_drawing set to false. Using this function will result in the console being drawn.
 */
 int nio_fflush(nio_console* c);
 
@@ -184,6 +184,7 @@ char nio_fgetc(nio_console* c);
 char nio_getchar(void);
 
 /** See [fgets](http://www.cplusplus.com/reference/clibrary/cstdio/fgets/)
+    \todo Do not ignore num
 */
 char* nio_fgets(char* str, int num, nio_console* c);
 
@@ -230,29 +231,28 @@ void* reg_get(char* regpath);
 */
 BOOL uart_ready(void);
 
-/** Gets a char from RS232.
+/** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
 	@return Char
 */
-char uart_getc(void);
+char uart_getchar(void);
 
-/** Gets a line (ended with \\n) from RS232.
+/** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
 	@return Destination
 */
-void uart_getline(char* dest);
+char* uart_gets(char* str);
 
-/** Puts a char to RS232.
+/** See [putchar](http://www.cplusplus.com/reference/clibrary/cstdio/putchar/)
 	@param c Char
 */
-void uart_putc(char c);
+char uart_putchar(char character);
 
-/** Puts a string to RS232.
+/** See [puts](http://www.cplusplus.com/reference/clibrary/cstdio/puts/)
+    \note This DOES NOT append a newline (\\n) character.
 	@param str String
 */
-void uart_puts(const char *str);
+int uart_puts(const char *str);
 
-/** Puts a formatted string to RS232.
-	@param format Format string
-	@param ... Additional arguments
+/** See [printf](http://www.cplusplus.com/reference/clibrary/cstdio/printf/)
 */
 void uart_printf(char *format, ...);
 
@@ -279,6 +279,9 @@ void uart_printf(char *format, ...);
 #define nio_DrawChar                    nio_csl_drawchar
 #define nio_SetChar                     nio_csl_savechar
 #define nio_printf                      nio_fprintf
+
+#define uart_putc                       uart_putchar
+#define uart_getc                       uart_getchar
 #endif
 
 #ifdef NIO_REPLACE_STDIO
@@ -288,6 +291,14 @@ void uart_printf(char *format, ...);
 #define gets                            nio_gets
 #define printf                          nio_printf
 #define perror                          nio_perror
+#endif
+
+#ifdef UART_REPLACE_STDIO
+#define putchar                         uart_putchar
+#define puts                            uart_puts
+#define getchar                         uart_getchar
+#define gets                            uart_gets
+#define printf                          uart_printf
 #endif
 
 #endif

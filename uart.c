@@ -33,7 +33,7 @@ BOOL uart_ready(void)
 	return *line_status_reg & 0b1;
 }
 
-char uart_getc(void)
+char uart_getchar(void)
 {
 	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
 	volatile unsigned *recv_buffer_reg = (unsigned*)0x90020000;
@@ -41,34 +41,36 @@ char uart_getc(void)
 	return *recv_buffer_reg;
 }
 
-void uart_getline(char* dest)
+char* uart_gets(char* str)
 {
 	int i = 0;
 	while(1)
 	{
-		char c = uart_getc();
-		dest[i++] = c;
+		char c = uart_getchar();
+		str[i++] = c;
 		if(c == '\n')
 		{
-			dest[i] = 0;
-			break;
+			str[i] = 0;
+			return str;
 		}
 	}
 }
 
-void uart_putc(char c)
+char uart_putchar(char character)
 {
 	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
 	volatile unsigned *xmit_holding_reg = (unsigned*)0x90020000;
 	while(!(*line_status_reg & 0b100000)); // wait for empty xmit holding reg
-		*xmit_holding_reg = c;
+		*xmit_holding_reg = character;
+    return character;
 }
 
-void uart_puts(const char *str)
+int uart_puts(const char *str)
 {
 	while(*str) {
 		uart_putc(*str++);
 	}
+    return 1;
 }
 
 void uart_printf(char *format, ...)
