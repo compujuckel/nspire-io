@@ -22,67 +22,39 @@
  *
  * @section DESCRIPTION
  *
- * A simple demo program showing some of the I/O functions.
+ * Splitscreen demo
  */
 #include <os.h>
-#define NIO_KEEP_COMPATIBILITY
 #include <nspireio2.h>
 
 int main(void)
 {
-	if(has_colors)
-		lcd_ingray();
+	lcd_ingray();
 	
 	wait_no_key_pressed();
 	
-	// Initialize console 1.
 	nio_console c1;
 	// 53 columns, 15 rows. 0px offset for x/y. Background color 15 (white), foreground color 0 (black)
-	nio_InitConsole(&c1,53,15,0,0,15,0);
-	nio_DrawConsole(&c1);
+	nio_init(&c1,53,15,0,0,WHITE,BLACK,TRUE);
 	
 	nio_console c2;
-	nio_InitConsole(&c2,53,15,0,15*8,0,15);
-	nio_DrawConsole(&c2);
+	nio_init(&c2,53,15,0,15*8,BLACK,WHITE,TRUE);
 	
 	// Just showing printf
-	nio_printf(&c1,"%s build at %s, %s\n",__FILE__,__DATE__,__TIME__);
+	nio_fprintf(&c1,"%s build at %s, %s\n",__FILE__,__DATE__,__TIME__);
 	
 	while(1)
 	{
 		char text[100];
 		// If no text was entered, exit
-		if(!nio_GetStr(&c1,text))
+		if(!nio_fgets(text,100,&c1))
 			break;
 		// Write the text into 2nd console
-		nio_printf(&c2,"%s\n",text);
+		nio_fprintf(&c2,"%s\n",text);
 	}
 	
-	
-	
-	nio_CleanUp(&c1);
-	nio_CleanUp(&c2);
-	
-	if(has_colors)
-		lcd_incolor();
-        /*
-    nio_console csl;
-    nio_init(&csl,53,30,0,0,15,0);
-    nio_set_default(&csl);
-    
-    nio_puts("Hello World!\n");
-    nio_fputs("Hallo Welt!\n",&csl);
-    
-    nio_printf("Zahl: %d\n",1);
-    nio_fprintf(&csl,"String: %s\n","Hi");
-    
-    char str[100];
-    nio_gets(str);
-    
-    nio_puts(str);
-    
-    nio_free(&csl);
-	
-    wait_key_pressed();*/
+	nio_free(&c1);
+	nio_free(&c2);
+
 	return 0;
 }

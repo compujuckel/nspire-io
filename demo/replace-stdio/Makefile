@@ -6,8 +6,8 @@ OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnuea
 ifeq (${OBJCOPY},"")
 	OBJCOPY := arm-none-eabi-objcopy
 endif
-EXE = ConsoleDemo.tns
-OBJS = ConsoleDemo.o
+EXE = replace-stdio.tns
+OBJS = replace-stdio.o
 DISTDIR = .
 vpath %.tns $(DISTDIR)
 

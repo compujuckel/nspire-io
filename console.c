@@ -41,7 +41,7 @@ void nio_grid_putc(const int offset_x, const int offset_y, const int x, const in
 void nio_use_stdio(void)
 {
     nio_default = malloc(sizeof(nio_console));
-    nio_init(nio_default,53,30,0,0,WHITE,BLACK);
+    nio_init(nio_default,53,30,0,0,WHITE,BLACK,TRUE);
 }
 
 void nio_free_stdio(void)
@@ -236,7 +236,7 @@ char nio_getch(void)
 	}
 }
 
-void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const char background_color, const char foreground_color)
+void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const char background_color, const char foreground_color, const BOOL drawing_enabled)
 {
 	c->max_x = size_x;
 	c->max_y = size_y;
@@ -244,7 +244,7 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	c->offset_y = offset_y;
 	c->cursor_x = 0;
 	c->cursor_y = 0;
-	c->drawing_enabled = TRUE;
+	c->drawing_enabled = drawing_enabled;
 	c->default_background_color = background_color;
 	c->default_foreground_color = foreground_color;
 	c->data = malloc(c->max_x*c->max_y);
