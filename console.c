@@ -420,6 +420,11 @@ int nio_printf(const char *format, ...)
     return strlen(buf);
 }
 
+void nio_perror(const char* str)
+{
+    nio_printf("%s%s",str,strerror(errno));
+}
+
 // This implementation won't work...
 /*int nio_vfprintf(nio_console* c, const char* format, va_list* arglist)
 {

@@ -201,6 +201,10 @@ int nio_fprintf(nio_console* c, const char* format, ...);
 */
 int nio_printf(const char* format, ...);
 
+/** See [perror](http://www.cplusplus.com/reference/clibrary/cstdio/perror/)
+*/
+void nio_perror(const char* str);
+
 // Macro of nio_fgetc
 #define nio_getc nio_fgetc
 
@@ -231,7 +235,7 @@ BOOL uart_ready(void);
 */
 char uart_getc(void);
 
-/** Gets a line (ended with \n) from RS232.
+/** Gets a line (ended with \\n) from RS232.
 	@return Destination
 */
 void uart_getline(char* dest);
@@ -283,6 +287,7 @@ void uart_printf(char *format, ...);
 #define getchar                         nio_getchar
 #define gets                            nio_gets
 #define printf                          nio_printf
+#define perror                          nio_perror
 #endif
 
 #endif
