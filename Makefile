@@ -20,7 +20,7 @@ demo:
 	make -C demo/hello
 	make -C demo/replace-stdio
 	make -C demo/splitscreen
-	#make -C demo/tests
+	make -C demo/tests
 	
 lib: $(LIB)
 	
