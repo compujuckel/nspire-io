@@ -157,10 +157,10 @@ char nio_getch(nio_console* c)
 	while(1)
 	{
 		while (!any_key_pressed())
-            nio_DrawBlinkingCursor(c);
+            nio_cursor_blinking_draw(c);
 			idle();
 		
-        nio_EraseCursor(c);
+        nio_cursor_erase(c);
         
 		// Ctrl, Shift, Caps first
 		if(isKeyPressed(KEY_NSPIRE_CTRL))
@@ -496,7 +496,7 @@ char nio_fgetc(nio_console* c)
 {
 	char ch = nio_getch(c);
 	nio_fputc(ch,c);
-    nio_DrawCursor(c);
+    nio_cursor_draw(c);
 	return ch;
 }
 
@@ -514,9 +514,9 @@ char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
 	int i = 0;
 	while(1)
 	{
-		nio_DrawCursor(c);
+		nio_cursor_draw(c);
 		c->cursor_blink_status = TRUE;
-		nio_ResetBlinkingCursor(c);
+		nio_cursor_blinking_reset(c);
         wait_no_key_pressed();
 		tmp = nio_getch(c);
 		if(tmp == '\n')

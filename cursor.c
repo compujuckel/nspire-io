@@ -28,11 +28,11 @@
 #include <os.h>
 #include "nspireio2.h"
 
-inline unsigned get_current_time() {
+inline unsigned nio_time_get() {
     return *(volatile unsigned*)0x90090000;
 }
 
-void nio_DrawCursor(nio_console* c)
+void nio_cursor_draw(nio_console* c)
 {
 	char color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 	
@@ -118,7 +118,7 @@ void nio_DrawCursor(nio_console* c)
 	}
 }
 
-void nio_EraseCursor(nio_console* c)
+void nio_cursor_erase(nio_console* c)
 {
 	char color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 	
@@ -138,49 +138,49 @@ void nio_EraseCursor(nio_console* c)
 	}
 }
 
-void nio_DrawBlinkingCursor(nio_console* c)
+void nio_cursor_blinking_draw(nio_console* c)
 {
 	if (!c->cursor_blink_enabled) return;
-	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = get_current_time();
+	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = nio_time_get();
 	if (c->cursor_blink_duration == 0) c->cursor_blink_duration = 1;
 	
-	if ((get_current_time() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
+	if ((nio_time_get() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
 		if (c->cursor_blink_status)
-			nio_DrawCursor(c);
+			nio_cursor_draw(c);
 		else
-			nio_EraseCursor(c);
+			nio_cursor_erase(c);
 		c->cursor_blink_status = !c->cursor_blink_status;
-		c->cursor_blink_timestamp = get_current_time();
+		c->cursor_blink_timestamp = nio_time_get();
 	}
 }
 
-void nio_ResetBlinkingCursor(nio_console* c)
+void nio_cursor_blinking_reset(nio_console* c)
 {
 	if (!c->cursor_blink_enabled) return;
-	c->cursor_blink_timestamp = get_current_time();
+	c->cursor_blink_timestamp = nio_time_get();
 }
 
-void nio_EnableCursor(nio_console* c, BOOL enable_cursor)
+void nio_cursor_enable(nio_console* c, BOOL enable_cursor)
 {
 	c->cursor_enabled = enable_cursor;
 	if (!enable_cursor)
-		nio_EraseCursor(c);
+		nio_cursor_erase(c);
 	else
-		nio_DrawCursor(c);
+		nio_cursor_draw(c);
 }
 
-void nio_EnableCursorBlink(nio_console* c, BOOL enable_cursor_blink)
+void nio_cursor_blinking_enable(nio_console* c, BOOL enable_cursor_blink)
 {
 	c->cursor_blink_enabled = enable_cursor_blink;
-	if (!enable_cursor_blink) nio_DrawCursor(c);
+	if (!enable_cursor_blink) nio_cursor_draw(c);
 }
 
-void nio_SetCursorBlinkDuration(nio_console* c, int duration)
+void nio_cursor_blinking_duration(nio_console* c, int duration)
 {
 	c->cursor_blink_duration = (unsigned) duration;
 }
 
-void nio_SetCursorType(nio_console* c, int cursor_type)
+void nio_cursor_type(nio_console* c, int cursor_type)
 {
 	if (!((c->cursor_type >= 0) && (c->cursor_type <= 3))) {
 		// Set the cursor type to a valid one
@@ -189,12 +189,12 @@ void nio_SetCursorType(nio_console* c, int cursor_type)
 	c->cursor_type = cursor_type;
 }
 
-void nio_SetCursorWidth(nio_console* c, int cursor_width)
+void nio_cursor_width(nio_console* c, int cursor_width)
 {
 	c->cursor_line_width = cursor_width;
 }
 
-void nio_SetCursorCustom(nio_console* c, unsigned char cursor_data[6])
+void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6])
 {
 	int i;
 	for(i = 0; i <= 5; i++) {

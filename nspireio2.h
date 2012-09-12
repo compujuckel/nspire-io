@@ -278,45 +278,45 @@ void uart_printf(char *format, ...);
 /** Returns the current time.
 	@return Current RTC time
 */
-inline unsigned get_current_time();
+inline unsigned nio_time_get();
 
 /** Draws the cursor of the console, if enabled.
 	@param c Console
 */
-void nio_DrawCursor(nio_console* c);
+void nio_cursor_draw(nio_console* c);
 
 /** Erases the cursor of the console, if enabled.
 	@param c Console
 */
-void nio_EraseCursor(nio_console* c);
+void nio_cursor_erase(nio_console* c);
 
 /** Draws a blinking cursor, if enabled. Blinking occurs on an interval set inside the console.
 	@param c Console
 */
-void nio_DrawBlinkingCursor(nio_console* c);
+void nio_cursor_blinking_draw(nio_console* c);
 
 /** Resets the blinking cursor timer.
 	@param c Console
 */
-void nio_ResetBlinkingCursor(nio_console* c);
+void nio_cursor_blinking_reset(nio_console* c);
 
 /** Enables the console cursor.
 	@param c Console
 	@param enable_cursor When this is true, a cursor will be drawn to the screen, false: no cursor shown.
 */
-void nio_EnableCursor(nio_console* c, BOOL enable_cursor);
+void nio_cursor_enable(nio_console* c, BOOL enable_cursor);
 
 /** Enables console cursor blinking.
 	@param c Console
 	@param enable_cursor_blink When this is true, the cursor will blink, false: no cursor blinking will occur.
 */
-void nio_EnableCursorBlink(nio_console* c, BOOL enable_cursor_blink);
+void nio_cursor_blinking_enable(nio_console* c, BOOL enable_cursor_blink);
 
 /** Sets the console cursor blink duration (the time it takes to switch on or off)
 	@param c Console
 	@param duration The time (in seconds) it takes to switch on or off.
 */
-void nio_SetCursorBlinkDuration(nio_console* c, int duration);
+void nio_cursor_blinking_duration(nio_console* c, int duration);
 
 /** Sets the console cursor type.
 	@param c Console
@@ -330,7 +330,7 @@ void nio_SetCursorBlinkDuration(nio_console* c, int duration);
 	
 	You may also use the predefined types as arguments. (NIO_CURSOR_*)
 */
-void nio_SetCursorType(nio_console* c, int cursor_type);
+void nio_cursor_type(nio_console* c, int cursor_type);
 
 /** Sets the console cursor width.
 	@param c Console
@@ -353,7 +353,7 @@ void nio_SetCursorType(nio_console* c, int cursor_type);
 	Note that if you specify an out-of-range value, NspireIO will silently fail
 	and reset the cursor width to 1.
 */
-void nio_SetCursorWidth(nio_console* c, int cursor_width);
+void nio_cursor_width(nio_console* c, int cursor_width);
 
 /** Sets the console cursor width.
 	@param c Console
@@ -366,7 +366,7 @@ void nio_SetCursorWidth(nio_console* c, int cursor_width);
 	custom cursor type (3), the custom cursor will be set to
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
-void nio_SetCursorCustom(nio_console* c, unsigned char cursor_data[6]);
+void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
 
 #ifdef NIO_KEEP_COMPATIBILITY
 #define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,TRUE)
@@ -391,6 +391,18 @@ void nio_SetCursorCustom(nio_console* c, unsigned char cursor_data[6]);
 
 #define uart_putc                       uart_putchar
 #define uart_getc                       uart_getchar
+
+#define get_current_time				nio_time_get
+#define nio_DrawCursor					nio_cursor_draw
+#define nio_EraseCursor					nio_cursor_erase
+#define nio_DrawBlinkingCursor			nio_cursor_blinking_draw
+#define nio_ResetBlinkingCursor			nio_cursor_blinking_reset
+#define nio_EnableCursor				nio_cursor_enable
+#define nio_EnableCursorBlink			nio_cursor_blinking_enable
+#define nio_SetCursorBlinkDuration		nio_cursor_blinking_duration
+#define nio_SetCursorType				nio_cursor_type
+#define nio_SetCursorWidth				nio_cursor_width
+#define nio_SetCursorCustom				nio_cursor_custom
 #endif
 
 #ifdef NIO_REPLACE_STDIO
