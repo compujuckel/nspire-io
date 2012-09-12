@@ -66,6 +66,15 @@ void nio_load(const char* path, nio_console* c)
 	fread(&c->default_foreground_color,sizeof(char),1,f);
 	
 	fread(&c->drawing_enabled,sizeof(BOOL),1,f);
+    
+    fread(&c->cursor_enabled,sizeof(BOOL),1,f);
+    fread(&c->cursor_type,sizeof(int),1,f);
+    fread(&c->cursor_line_width,sizeof(int),1,f);
+    fread(&c->cursor_custom_data,sizeof(char)*6,1,f);
+    fread(&c->cursor_blink_enabled,sizeof(BOOL),1,f);
+    fread(&c->cursor_blink_status,sizeof(BOOL),1,f);
+    fread(&c->cursor_blink_timestamp,sizeof(BOOL),1,f);
+    fread(&c->cursor_blink_duration,sizeof(BOOL),1,f);
 	
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y);
@@ -73,6 +82,9 @@ void nio_load(const char* path, nio_console* c)
 	fread(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fread(c->color,sizeof(char),c->max_x*c->max_y,f);
 	
+    if(c->drawing_enabled)
+        nio_fflush(c);
+    
 	fclose(f);
 }
 
@@ -93,6 +105,15 @@ void nio_save(const char* path, const nio_console* c)
 	fwrite(&c->default_foreground_color,sizeof(char),1,f);
 	
 	fwrite(&c->drawing_enabled,sizeof(BOOL),1,f);
+    
+    fwrite(&c->cursor_enabled,sizeof(BOOL),1,f);
+    fwrite(&c->cursor_type,sizeof(int),1,f);
+    fwrite(&c->cursor_line_width,sizeof(int),1,f);
+    fwrite(&c->cursor_custom_data,sizeof(char)*6,1,f);
+    fwrite(&c->cursor_blink_enabled,sizeof(BOOL),1,f);
+    fwrite(&c->cursor_blink_status,sizeof(BOOL),1,f);
+    fwrite(&c->cursor_blink_timestamp,sizeof(BOOL),1,f);
+    fwrite(&c->cursor_blink_duration,sizeof(BOOL),1,f);
 	
 	fwrite(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fwrite(c->color,sizeof(char),c->max_x*c->max_y,f);
