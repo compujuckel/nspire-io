@@ -10,10 +10,20 @@ DESTDIR = $(USERPROFILE)/.ndless
 vpath %.a $(DISTDIR)
 OBJS = console.o screen.o registry.o uart.o cursor.o
 
-all: $(LIB)
-	#make -C demo
-	#make -C demoadv
+.PHONY: all lib demo install uninstall clean
 
+all: lib demo
+
+demo:
+	make -C demo/adv
+	make -C demo/compatibility
+	make -C demo/hello
+	make -C demo/replace-stdio
+	make -C demo/splitscreen
+	#make -C demo/tests
+	
+lib: $(LIB)
+	
 %.o: %.c
 	$(GCC) $(GCCFLAGS) -c $<
 
@@ -33,5 +43,8 @@ uninstall:
 clean:
 	rm -rf *.o *.elf *.a
 	rm -f $(LIB)
-	#make -C demo clean
-	#make -C demoadv clean
+	make -C demo/adv clean
+	make -C demo/compatibility clean
+	make -C demo/hello clean
+	make -C demo/replace-stdio clean
+	make -C demo/splitscreen clean
