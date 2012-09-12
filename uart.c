@@ -68,7 +68,7 @@ char uart_putchar(char character)
 int uart_puts(const char *str)
 {
 	while(*str) {
-		uart_putc(*str++);
+		uart_putchar(*str++);
 	}
     return 1;
 }
