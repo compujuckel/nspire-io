@@ -25,11 +25,8 @@
  * This file contains all characters.
  */
  
-#ifndef CHARMAP2_H
-#define CHARMAP2_H
-
-#define CHAR_WIDTH 6
-#define CHAR_HEIGHT 8
+#ifndef CHARMAP_H
+#define CHARMAP_H
 
 const char MBCharSet8x6_definition[256][6] = {
 /*000*/ {0x00,0x49,0x7A,0x40,0x00,0x00},

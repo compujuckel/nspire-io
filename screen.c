@@ -40,14 +40,14 @@ void nio_pixel_set(int x, int y, unsigned int color)
 void nio_pixel_putc(int x, int y, char ch, int bgColor, int textColor)
 {
 	int i, j, pixelOn;
-	for(i = 0; i < CHAR_WIDTH; i++)
+	for(i = 0; i < NIO_CHAR_WIDTH; i++)
 	{
-		for(j = CHAR_HEIGHT; j > 0; j--)
+		for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 		{
 			pixelOn = MBCharSet8x6_definition[(unsigned char)ch][i] << j ;
 			pixelOn = pixelOn & 0x80 ;
-			if (pixelOn) 		nio_pixel_set(x+i,y+CHAR_HEIGHT-j,textColor);
-			else if(!pixelOn) 	nio_pixel_set(x+i,y+CHAR_HEIGHT-j,bgColor);
+			if (pixelOn) 		nio_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,textColor);
+			else if(!pixelOn) 	nio_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,bgColor);
 		}
 	}
 }
@@ -59,8 +59,8 @@ void nio_pixel_puts(int x, int y, char* str, int bgColor, int textColor)
 	for (i = 0; i < l && !stop; i++)
 	{
 		nio_pixel_putc(x, y, str[i], bgColor, textColor);
-		x += CHAR_WIDTH;
-		if (x >= SCREEN_WIDTH-CHAR_WIDTH)
+		x += NIO_CHAR_WIDTH;
+		if (x >= SCREEN_WIDTH-NIO_CHAR_WIDTH)
 		{
 			stop=1;
 		}

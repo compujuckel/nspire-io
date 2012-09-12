@@ -27,8 +27,7 @@
  */
 #include <os.h>
 #include "nspireio2.h"
-#define CHAR_WIDTH 6
-#define CHAR_HEIGHT 8
+
 inline unsigned get_current_time() {
     return *(volatile unsigned*)0x90090000;
 }
@@ -48,45 +47,45 @@ void nio_DrawCursor(nio_console* c)
 		
 		if (c->cursor_type == 0) {
 			// Draw a box for the cursor
-			for(i = 0; i < CHAR_WIDTH; i++)
+			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
-				for(j = CHAR_HEIGHT; j > 0; j--)
+				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j, foreground_color);
+					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 1) {
 			// Draw a horizontal underline (underscore) for the cursor
 			
 			// Sanity check for cursor_line_width
-			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= CHAR_HEIGHT))) {
+			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= NIO_CHAR_HEIGHT))) {
 				// Set the cursor width to 1 (regular cursor width)
 				c->cursor_line_width = 1;
 			}
 			
 			// Draw it!
-			for(i = 0; i < CHAR_WIDTH; i++)
+			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
-				//for(j = CHAR_HEIGHT; j > (CHAR_HEIGHT - c->cursor_line_width); j--)
+				//for(j = NIO_CHAR_HEIGHT; j > (NIO_CHAR_HEIGHT - c->cursor_line_width); j--)
 				for(j = 0; j < c->cursor_line_width; j++)
 				{
-					nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j-1, foreground_color);
+					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j-1, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 2) {
 			// Draw a vertical bar for the cursor
 			
 			// Sanity check for cursor_line_width
-			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= CHAR_WIDTH))) {
+			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= NIO_CHAR_WIDTH))) {
 				// Set the cursor width to 1 (regular cursor width)
 				c->cursor_line_width = 1;
 			}
 			
 			// Draw it!
 			for(i = 0; i < c->cursor_line_width; i++) {
-				for(j = CHAR_HEIGHT; j > 0; j--)
+				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j, foreground_color);
+					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 3) {
@@ -105,14 +104,14 @@ void nio_DrawCursor(nio_console* c)
 			
 			// Draw it!
 			int pixelOn;
-			for(i = 0; i < CHAR_WIDTH; i++)
+			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
-				for(j = CHAR_HEIGHT; j > 0; j--)
+				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
 					pixelOn = c->cursor_custom_data[i];
 					pixelOn = pixelOn & 0x80 ;
-					if (pixelOn) 		nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j,foreground_color);
-					else if(!pixelOn) 	nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j,background_color);
+					if (pixelOn) 		nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,foreground_color);
+					else if(!pixelOn) 	nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,background_color);
 				}
 			}
 		}
@@ -128,11 +127,11 @@ void nio_EraseCursor(nio_console* c)
 	// Draw a box for the cursor
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
 		int i, j;
-		for(i = 0; i < CHAR_WIDTH; i++)
+		for(i = 0; i < NIO_CHAR_WIDTH; i++)
 		{
-			for(j = CHAR_HEIGHT; j > 0; j--)
+			for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 			{
-				nio_pixel_set((c->cursor_x*CHAR_WIDTH)+i,(c->cursor_y*CHAR_HEIGHT)+CHAR_HEIGHT-j, background_color);
+				nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, background_color);
 			}
 		}
 		nio_csl_drawchar(c,c->cursor_x,c->cursor_y);

@@ -59,6 +59,12 @@ typedef struct nio_console nio_console;
 #define NIO_CURSOR_VERTICAL 2
 #define NIO_CURSOR_CUSTOM 3
 
+#define NIO_CHAR_WIDTH 6
+#define NIO_CHAR_HEIGHT 8
+
+#define NIO_MAX_ROWS 30
+#define NIO_MAX_COLS 53
+
 /** Draws a string to the screen on the given position.
 	@param offset_x x offset in px
 	@param offset_y y offset in px
@@ -361,9 +367,6 @@ void nio_SetCursorWidth(nio_console* c, int cursor_width);
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
 void nio_SetCursorCustom(nio_console* c, unsigned char cursor_data[6]);
-
-#define NIO_MAX_ROWS 30
-#define NIO_MAX_COLS 53
 
 #ifdef NIO_KEEP_COMPATIBILITY
 #define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,TRUE)
