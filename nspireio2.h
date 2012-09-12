@@ -43,9 +43,21 @@ struct nio_console
 	char default_background_color; /**< Color that will be used as default background */
 	char default_foreground_color; /**< Color that will be used as default foreground */
 	BOOL drawing_enabled; /**< Automatically draw any new text to the screen */
+    BOOL cursor_enabled;
+	int cursor_type;
+	int cursor_line_width;
+	unsigned char cursor_custom_data[6];
+	BOOL cursor_blink_enabled;
+	BOOL cursor_blink_status;
+	unsigned cursor_blink_timestamp;
+	unsigned cursor_blink_duration;
 };
 typedef struct nio_console nio_console;
 
+#define NIO_CURSOR_BLOCK 0
+#define NIO_CURSOR_UNDERSCORE 1
+#define NIO_CURSOR_VERTICAL 2
+#define NIO_CURSOR_CUSTOM 3
 
 /** Draws a string to the screen on the given position.
 	@param offset_x x offset in px
@@ -112,9 +124,10 @@ void nio_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int pos_y);
 
 /** Immediately gets a char from the keyboard.
+    @param c Console
 	@return Char
 */
-char nio_getch(void);
+char nio_getch(nio_console* c);
 
 /** Sets the background- and text color of a console. Possible values are 0-15.
 	@param c Console
@@ -255,6 +268,99 @@ int uart_puts(const char *str);
 /** See [printf](http://www.cplusplus.com/reference/clibrary/cstdio/printf/)
 */
 void uart_printf(char *format, ...);
+
+/** Returns the current time.
+	@return Current RTC time
+*/
+inline unsigned get_current_time();
+
+/** Draws the cursor of the console, if enabled.
+	@param c Console
+*/
+void nio_DrawCursor(nio_console* c);
+
+/** Erases the cursor of the console, if enabled.
+	@param c Console
+*/
+void nio_EraseCursor(nio_console* c);
+
+/** Draws a blinking cursor, if enabled. Blinking occurs on an interval set inside the console.
+	@param c Console
+*/
+void nio_DrawBlinkingCursor(nio_console* c);
+
+/** Resets the blinking cursor timer.
+	@param c Console
+*/
+void nio_ResetBlinkingCursor(nio_console* c);
+
+/** Enables the console cursor.
+	@param c Console
+	@param enable_cursor When this is true, a cursor will be drawn to the screen, false: no cursor shown.
+*/
+void nio_EnableCursor(nio_console* c, BOOL enable_cursor);
+
+/** Enables console cursor blinking.
+	@param c Console
+	@param enable_cursor_blink When this is true, the cursor will blink, false: no cursor blinking will occur.
+*/
+void nio_EnableCursorBlink(nio_console* c, BOOL enable_cursor_blink);
+
+/** Sets the console cursor blink duration (the time it takes to switch on or off)
+	@param c Console
+	@param duration The time (in seconds) it takes to switch on or off.
+*/
+void nio_SetCursorBlinkDuration(nio_console* c, int duration);
+
+/** Sets the console cursor type.
+	@param c Console
+	@param cursor_type The cursor type. 0 is a block cursor (default, like a
+	Linux X11 terminal), 1 is an underscore cursor (like a Windows Command
+	Prompt window), 2 is a vertical bar cursor (like a regular text box),
+	and 3 is a custom cursor that is set via SetCursorCustom.
+	
+	If you specify an invalid value, NspireIO will silenty fail and set the
+	cursor type to 0, a block cursor.
+	
+	You may also use the predefined types as arguments. (NIO_CURSOR_*)
+*/
+void nio_SetCursorType(nio_console* c, int cursor_type);
+
+/** Sets the console cursor width.
+	@param c Console
+	@param cursor_width The cursor line width. This only applies to cursors
+	1 and 2 (underscore and vertical bar). All others cursor types will not
+	be affected by this setting.
+	
+	For the underscore cursor, it must be greater than 0 and less than or
+	equal to CHAR_HEIGHT (as defined by	charmap.h). At the time of writing,
+	CHAR_HEIGHT is 8. Therefore, for an underscore cursor,
+	0 < cursor_width <= 8.
+	
+	For a vertical bar cursor, it must be greater than 0 and less than or
+	equal to CHAR_WIDTH (as defined by charmap.h). At the time of writing,
+	CHAR_WIDTH is 6. Therefore, for a vertical bar cursor, 0 < cursor_width < 6.
+	
+	If you wish to draw a blank cursor, you probably should disable the cursor
+	altogether with EnableCursor(nio_console, FALSE).
+	
+	Note that if you specify an out-of-range value, NspireIO will silently fail
+	and reset the cursor width to 1.
+*/
+void nio_SetCursorWidth(nio_console* c, int cursor_width);
+
+/** Sets the console cursor width.
+	@param c Console
+	@param cursor_data The custom cursor data. This is in the form of a char[6]
+	array. This pretty much uses the format (and the drawing code) for character
+	drawing, so take a look at charmap.h for examples. Note that the characters
+	in charmap.h are truncated, so they will display differently.
+	
+	By default, if this is not specified and the cursor type is set to the
+	custom cursor type (3), the custom cursor will be set to
+	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
+*/
+void nio_SetCursorCustom(nio_console* c, unsigned char cursor_data[6]);
 
 #define NIO_MAX_ROWS 30
 #define NIO_MAX_COLS 53

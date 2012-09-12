@@ -131,14 +131,16 @@ static char shiftOrCtrlKey(const char normalc, const char shiftc, const char ctr
 	}
 	else return normalc;
 }
-char nio_getch(void)
+char nio_getch(nio_console* c)
 {
 	while(1)
 	{
-		//wait_key_pressed();
 		while (!any_key_pressed())
+            nio_DrawBlinkingCursor(c);
 			idle();
 		
+        nio_EraseCursor(c);
+        
 		// Ctrl, Shift, Caps first
 		if(isKeyPressed(KEY_NSPIRE_CTRL))
 		{
@@ -249,6 +251,11 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	c->default_foreground_color = foreground_color;
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y);
+    c->cursor_enabled = TRUE;
+	c->cursor_blink_enabled = TRUE;
+	c->cursor_blink_duration = 1;
+	c->cursor_type = 0;
+	c->cursor_line_width = 1;
 	nio_clear(c);
 }
 
@@ -466,8 +473,9 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 
 char nio_fgetc(nio_console* c)
 {
-	char ch = nio_getch();
+	char ch = nio_getch(c);
 	nio_fputc(ch,c);
+    nio_DrawCursor(c);
 	return ch;
 }
 
@@ -485,8 +493,11 @@ char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
 	int i = 0;
 	while(1)
 	{
-		wait_no_key_pressed();
-		tmp = nio_getch();
+		nio_DrawCursor(c);
+		c->cursor_blink_status = TRUE;
+		nio_ResetBlinkingCursor(c);
+        wait_no_key_pressed();
+		tmp = nio_getch(c);
 		if(tmp == '\n')
 		{
 			str[i] = '\0';
