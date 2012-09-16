@@ -1,23 +1,40 @@
 +----------------------+
-|    Nspire I/O 2.0    |
+|    Nspire I/O 3.0    |
 +----------------------+
+
 
 Installation
 ------------
-To install it, just copy the "lib" and "include" directories over
+Just copy the "lib" and "include" directories over
 to your .ndless directory located at the userpath, for example
 C:\Users\Name\.ndless or /home/name/.ndless
-or build the code yourself from the "src" directory.
+
+Building the code
+-----------------
+make lib 	- Compiles Nspire I/O
+make demo 	- Compiles demos (Install first!)
+make install 	- Install Nspire I/O
+make uninstall 	- Uninstall Nspire I/O
 
 Usage
 -----
-Add "-lnspireio2" to LDFLAGS in your Makefile and include
-"nspireio2.h" in your code.
-Nspire I/O 2.0 is not compatible to older versions.
+Add "-lnspireio" to LDFLAGS in your Makefile and include
+"nspireio.h" in your code.
 
 A color support for CX is currently not implemented, but it
 will work fine on CXes with the LCD set to grayscale mode
 by using "lcd_ingray()".
+
+Migrate from 2.0 to 3.0
+-----------------------
+For the lazy people:
+Change "-lnspireio2" in you Makefile to "-lnspireio".
+Programs that include nspireio2.h will compile in compatibility mode (old syntax).
+
+To use the new syntax, include nspireio.h instead nspireio2.h and
+replace the function calls with their new names.
+
+Nspire I/O is not compatible to versions < 2.0.
 
 Documentation
 -------------
