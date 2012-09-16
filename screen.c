@@ -1,7 +1,7 @@
 /**
  * @file screen.c
  * @author Julian Mackeben aka compu <compujucke@googlemail.com>
- * @version 2.0
+ * @version 3.0
  *
  * @section LICENSE
  *
@@ -26,7 +26,7 @@
  */
 #include <os.h>
 #include "charmap.h"
-#include "nspireio2.h"
+#include "nspireio.h"
  
 void nio_pixel_set(int x, int y, unsigned int color)
 {

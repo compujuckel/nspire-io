@@ -1,7 +1,7 @@
 /**
  * @file uart.c
  * @author Julian Mackeben aka compu <compujucke@googlemail.com>
- * @version 2.0
+ * @version 3.0
  *
  * @section LICENSE
  *
@@ -25,19 +25,22 @@
  * Alternative functions for serial communication, no clock on the screen.
  */
 #include <os.h>
-#include "nspireio2.h"
+#include "nspireio.h"
 
 BOOL uart_ready(void)
 {
-	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
-	return *line_status_reg & 0b1;
+	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
+	return is_classic ? *line_status_reg & 0b1 : !(*line_status_reg & 0b10);
 }
 
 char uart_getchar(void)
 {
-	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
+	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
 	volatile unsigned *recv_buffer_reg = (unsigned*)0x90020000;
-	while(!(*line_status_reg & 0b1));
+	if(is_classic)
+		while(!(*line_status_reg & 0b1));
+	else
+		while(*line_status_reg &0b10);
 	return *recv_buffer_reg;
 }
 
@@ -58,10 +61,13 @@ char* uart_gets(char* str)
 
 char uart_putchar(char character)
 {
-	volatile unsigned *line_status_reg = is_classic ? (unsigned*)0x90020014 : (unsigned*)0x90020018;
+	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
 	volatile unsigned *xmit_holding_reg = (unsigned*)0x90020000;
-	while(!(*line_status_reg & 0b100000)); // wait for empty xmit holding reg
-		*xmit_holding_reg = character;
+	if(is_classic)
+		while(!(*line_status_reg & 0b100000)); // wait for empty xmit holding reg
+	else
+		while(!(*line_status_reg & 0b10000000)); // According to PL011 docs bit 7 is set when transmit reg is empty... I didn't notice this for over a half year o_O
+	*xmit_holding_reg = character;
     return character;
 }
 

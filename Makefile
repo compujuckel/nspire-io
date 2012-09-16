@@ -4,7 +4,7 @@ GCCFLAGS = -Os -nostdlib -g
 LD = nspire-ld
 LDFLAGS = -nostdlib
 OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnueabi-objcopy | head -1) 2>/dev/null)"
-LIB = libnspireio2.a
+LIB = libnspireio.a
 USERPROFILE ?= $(HOME)
 DESTDIR = $(USERPROFILE)/.ndless
 vpath %.a $(DISTDIR)
@@ -12,7 +12,7 @@ OBJS = console.o screen.o registry.o uart.o cursor.o
 
 .PHONY: all lib demo install uninstall clean
 
-all: lib demo
+all: lib
 
 demo:
 	make -C demo/adv
@@ -35,10 +35,12 @@ $(LIB): $(OBJS)
 
 install:
 	cp -u nspireio2.h "$(DESTDIR)/include"
+	cp -u nspireio.h "$(DESTDIR)/include"
 	cp -u $(LIB) "$(DESTDIR)/lib"
 
 uninstall:
 	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h"
+	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio.h"
 
 clean:
 	rm -rf *.o *.elf *.a
@@ -48,3 +50,4 @@ clean:
 	make -C demo/hello clean
 	make -C demo/replace-stdio clean
 	make -C demo/splitscreen clean
+	make -C demo/tests clean

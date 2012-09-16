@@ -17,7 +17,7 @@ all: $(EXE)
 	$(GCC) $(GCCFLAGS) -I../ -c $<
 
 $(EXE): $(OBJS)
-	$(LD) $(LDFLAGS) $^ -o $(@:.tns=.elf) -L.. -lnspireio2
+	$(LD) $(LDFLAGS) $^ -o $(@:.tns=.elf) -lnspireio
 	mkdir -p $(DISTDIR)
 	$(OBJCOPY) -O binary $(@:.tns=.elf) $(DISTDIR)/$@
 

@@ -1,7 +1,7 @@
 /**
  * @file console.c
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 2.0
+ * @version 3.0
  *
  * @section LICENSE
  *
@@ -24,7 +24,7 @@
  *
  * Console functions
  */
-#include "nspireio2.h"
+#include "nspireio.h"
 #include <os.h>
 
 nio_console* nio_default = NULL;

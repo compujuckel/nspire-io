@@ -1,7 +1,7 @@
 /**
  * @file charmap.h
  * @author  Manfred Becker <mani.becker@web.de>
- * @version 0.1
+ * @version 3.0
  *
  * @section LICENSE
  *

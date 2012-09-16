@@ -1,7 +1,7 @@
 /**
- * @file ConsoleDemo.c
+ * @file splitscreen.c
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 2.0
+ * @version 3.0
  *
  * @section LICENSE
  *
@@ -25,7 +25,7 @@
  * Splitscreen demo
  */
 #include <os.h>
-#include <nspireio2.h>
+#include <nspireio.h>
 
 int main(void)
 {

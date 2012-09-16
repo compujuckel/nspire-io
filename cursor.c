@@ -2,7 +2,7 @@
  * @file cursor.c
  * @author Albert Huang aka alberthrocks <alberthrocks.public@gmail.com>
  * @author Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 2.0
+ * @version 3.0
  *
  * @section LICENSE
  *
@@ -26,7 +26,7 @@
  * Cursor functions
  */
 #include <os.h>
-#include "nspireio2.h"
+#include "nspireio.h"
 
 inline unsigned nio_time_get() {
     return *(volatile unsigned*)0x90090000;
