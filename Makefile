@@ -8,7 +8,7 @@ LIB = libnspireio.a
 USERPROFILE ?= $(HOME)
 DESTDIR = $(USERPROFILE)/.ndless
 vpath %.a $(DISTDIR)
-OBJS = console.o screen.o registry.o uart.o cursor.o nspire.o
+OBJS = console.o registry.o uart.o cursor.o nspire.o
 
 .PHONY: all lib demo install uninstall clean
 
