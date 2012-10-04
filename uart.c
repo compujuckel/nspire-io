@@ -1,6 +1,6 @@
 /**
  * @file uart.c
- * @author Julian Mackeben aka compu <compujucke@googlemail.com>
+ * @author Julian Mackeben aka compu <compujuckel@googlemail.com>
  * @version 3.0
  *
  * @section LICENSE
@@ -24,7 +24,7 @@
  *
  * Alternative functions for serial communication, no clock on the screen.
  */
-#include <os.h>
+
 #include "nspireio.h"
 
 BOOL uart_ready(void)

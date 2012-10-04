@@ -25,7 +25,6 @@
  *
  * Cursor functions
  */
-#include <os.h>
 #include "nspireio.h"
 
 inline unsigned nio_time_get() {

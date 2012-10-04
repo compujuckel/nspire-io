@@ -1,6 +1,6 @@
 /**
  * @file screen.c
- * @author Julian Mackeben aka compu <compujucke@googlemail.com>
+ * @author Julian Mackeben aka compu <compujuckel@googlemail.com>
  * @version 3.0
  *
  * @section LICENSE
@@ -24,10 +24,9 @@
  *
  * Screen functions
  */
-#include <os.h>
-#include "charmap.h"
-#include "nspireio.h"
- 
+
+//#include "nspireio.h"
+/* 
 void nio_pixel_set(int x, int y, unsigned int color)
 {
 	unsigned char *scr = (unsigned char *) SCREEN_BASE_ADDRESS;
@@ -66,3 +65,4 @@ void nio_pixel_puts(int x, int y, char* str, int bgColor, int textColor)
 		}
 	}
 }
+*/

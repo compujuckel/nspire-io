@@ -24,27 +24,39 @@
  *
  * Tests a lot of nspireio functions
  */
-#include <os.h>
+
 #include <nspireio.h>
 
 int main(void)
 {
-	lcd_ingray();
+	//lcd_ingray();
 	clrscr();
 	
 	nio_console csl;
-	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,WHITE,BLACK,TRUE);
+	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
 	nio_set_default(&csl);
-	nio_color(&csl,BLACK,WHITE);
+	nio_color(&csl,NIO_COLOR_BLACK,NIO_COLOR_WHITE);
 	nio_puts("Nspire I/O testing tool\n");
-	nio_color(&csl,WHITE,BLACK);
+	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
 	nio_printf("Compiled %s %s\n",__DATE__,__TIME__);
 	nio_puts("Press any key to flush console...\n");
 	nio_drawing_enabled(&csl,FALSE);
 	nio_putchar('A');
 	nio_fputc('a',&csl);
 	nio_putchar('\n');
-	nio_puts("This line is too long for the Nspire's screen so we have te continue it on the next line...\n");
+	nio_puts("Color palette test:\n");
+	int i, j;
+	for(i = 0; i < 16; i++)
+	{
+		for(j = 0; j < 16; j++)
+		{
+			nio_color(&csl,i,j);
+			nio_putchar('X');
+		}
+		nio_putchar('\n');
+	}
+	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
+	nio_puts("This line is too long for the Nspire's screen so we have to continue it on the next line...\n");
 	wait_key_pressed();
 	nio_fflush(&csl);
 	nio_drawing_enabled(&csl,TRUE);

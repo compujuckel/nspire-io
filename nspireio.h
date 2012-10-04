@@ -24,23 +24,49 @@
  *
  * Nspire I/O 3.0 header file
  */
-#include <os.h>
 
-#ifndef NSPIREIO2_H
-#define NSPIREIO2_H
+#ifndef NSPIREIO_H
+#define NSPIREIO_H
 
-struct nio_console
+#ifdef BUILDLIB
+#include "platform.h"
+#else
+#include <platform.h>
+#endif
+
+/** Color defines */
+typedef enum {
+	NIO_COLOR_BLACK = 0,
+	NIO_COLOR_RED,
+	NIO_COLOR_GREEN,
+	NIO_COLOR_YELLOW,
+	NIO_COLOR_BLUE,
+	NIO_COLOR_MAGENTA,
+	NIO_COLOR_CYAN,
+	NIO_COLOR_GRAY,
+	NIO_COLOR_LIGHTBLACK,
+	NIO_COLOR_LIGHTRED,
+	NIO_COLOR_LIGHTGREEN,
+	NIO_COLOR_LIGHTYELLOW,
+	NIO_COLOR_LIGHTBLUE,
+	NIO_COLOR_LIGHTMAGENTA,
+	NIO_COLOR_LIGHTCYAN,
+	NIO_COLOR_WHITE
+} nio_colour;
+
+/** console structure */
+typedef struct
 {
 	char* data;
-	char* color;
+	unsigned short* color;
 	int cursor_x;
 	int cursor_y;
 	int max_x;
 	int max_y;
 	int offset_x;
 	int offset_y;
-	char default_background_color;
-	char default_foreground_color;
+	unsigned char default_background_color;
+	unsigned char default_foreground_color;
 	BOOL drawing_enabled;
     BOOL cursor_enabled;
 	int cursor_type;
@@ -50,41 +76,100 @@ struct nio_console
 	BOOL cursor_blink_status;
 	unsigned cursor_blink_timestamp;
 	unsigned cursor_blink_duration;
-};
-typedef struct nio_console nio_console;
+} nio_console;
 
 #define NIO_CURSOR_BLOCK 0
 #define NIO_CURSOR_UNDERSCORE 1
 #define NIO_CURSOR_VERTICAL 2
 #define NIO_CURSOR_CUSTOM 3
 
-#define NIO_CHAR_WIDTH 6
-#define NIO_CHAR_HEIGHT 8
-
-#define NIO_MAX_ROWS 30
-#define NIO_MAX_COLS 53
+/** Draws a char to the screen on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns
+	@param y y position in rows
+	@param ch Char
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
 
 /** Draws a string to the screen on the given position. For internal use.
 	@param offset_x x offset in px
 	@param offset_y y offset in px
-	@param x x position in columns (px*6)
-	@param y y position in rows (px*8)
+	@param x x position in columns
+	@param y y position in rows
 	@param str String
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const char bgColor, const char textColor);
+void nio_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor);
+
+/** Draws a string to the screen on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns (px*NIO_CHAR_WIDTH)
+	@param y y position in rows (px*NIO_CHAR_HEIGHT)
+	@param str String
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor);
 
 /** Draws a char to the screen on the given position. For internal use.
 	@param offset_x x offset in px
 	@param offset_y y offset in px
-	@param x x position in columns (px*6)
-	@param y y position in rows (px*8)
-	@param c Char
+	@param x x position in columns (px*NIO_CHAR_WIDTH)
+	@param y y position in rows (px*NIO_CHAR_HEIGHT)
+	@param ch Char
 	@param bgColor Background color
 	@param textColor text color
 */
-void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const char bgColor, const char textColor);
+void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor);
+
+/** Draws a char to the VRAM on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns
+	@param y y position in rows
+	@param ch Char
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
+
+/** Draws a string to the VRAM on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns
+	@param y y position in rows
+	@param str String
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_vram_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor);
+
+/** Draws a string to the VRAM on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns (px*NIO_CHAR_WIDTH)
+	@param y y position in rows (px*NIO_CHAR_HEIGHT)
+	@param str String
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_vram_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor);
+
+/** Draws a char to the VRAM on the given position. For internal use.
+	@param offset_x x offset in px
+	@param offset_y y offset in px
+	@param x x position in columns (px*NIO_CHAR_WIDTH)
+	@param y y position in rows (px*NIO_CHAR_HEIGHT)
+	@param ch Char
+	@param bgColor Background color
+	@param textColor text color
+*/
+void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor);
 
 /** Loads a console from a file on flash storage.
     @param path File path
@@ -120,6 +205,13 @@ void nio_scroll(nio_console* c);
 */
 void nio_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 
+/** Draws a char from the console to the VRAM. For internal use.
+	@param c Console
+	@param pos_x x position
+	@param pos_y y position
+*/
+void nio_vram_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
+
 /** Saves a char in a console without drawing it. For internal use.
 	@param c Console
 	@param ch Char
@@ -139,7 +231,7 @@ char nio_getch(nio_console* c);
 	@param background_color Background color
 	@param foreground_color Text color
 */
-void nio_color(nio_console* c, const char background_color, const char foreground_color);
+void nio_color(nio_console* c, const unsigned char background_color, const unsigned char foreground_color);
 
 /** Changes the drawing behavior of a console.
 	@param c Console
@@ -157,7 +249,7 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing);
 	@param foreground_color Text color
     @param drawing_enabled See nio_enable_drawing()
 */
-void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const char background_color, const char foreground_color, const BOOL drawing_enabled);
+void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled);
 
 /** Uninitializes a console. This should always be called before the program ends.
 	@param c Console

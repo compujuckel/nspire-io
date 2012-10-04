@@ -8,7 +8,7 @@ LIB = libnspireio.a
 USERPROFILE ?= $(HOME)
 DESTDIR = $(USERPROFILE)/.ndless
 vpath %.a $(DISTDIR)
-OBJS = console.o screen.o registry.o uart.o cursor.o
+OBJS = console.o screen.o registry.o uart.o cursor.o nspire.o
 
 .PHONY: all lib demo install uninstall clean
 
@@ -25,7 +25,7 @@ demo:
 lib: $(LIB)
 	
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -c $<
+	$(GCC) -DBUILDLIB $(GCCFLAGS) -c $<
 
 %.elf: %.o
 	$(LD) $(LDFLAGS) $^ -o $@
@@ -36,11 +36,13 @@ $(LIB): $(OBJS)
 install:
 	cp -u nspireio2.h "$(DESTDIR)/include"
 	cp -u nspireio.h "$(DESTDIR)/include"
+	cp -u platform.h "$(DESTDIR)/include"
+	cp -u nspire.h "$(DESTDIR)/include"
 	cp -u $(LIB) "$(DESTDIR)/lib"
 
 uninstall:
-	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h"
-	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio.h"
+	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/platform.h" "$(DESTDIR)/include/nspire.h"
+	
 
 clean:
 	rm -rf *.o *.elf *.a
