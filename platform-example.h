@@ -40,11 +40,6 @@
 // wait_no_key_pressed() - blocks until all keys are released (internally calls wait_key_pressed first)
 // any_key_pressed() - non-blocking, TRUE if any key pressed
 
-// Font size goes here
-
-#define NIO_CHAR_WIDTH 6
-#define NIO_CHAR_HEIGHT 8
-
 // Fullscreen console size goes here
 
 #define NIO_MAX_ROWS 50
