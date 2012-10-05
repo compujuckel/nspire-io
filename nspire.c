@@ -111,6 +111,10 @@ void nio_vram_draw(void)
 	memcpy(SCREEN_BASE_ADDRESS,VRAM,SCREEN_BYTES_SIZE);
 }
 
+unsigned int nio_cursor_clock(void) {
+    return *(volatile unsigned*)0x90090000;
+}
+
 BOOL shift = FALSE;
 BOOL caps = FALSE;
 BOOL ctrl = FALSE;

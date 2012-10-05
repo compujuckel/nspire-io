@@ -437,34 +437,6 @@ void nio_perror(const char* str)
     nio_printf("%s%s",str,strerror(errno));
 }
 
-// This implementation won't work...
-/*int nio_vfprintf(nio_console* c, const char* format, va_list* arglist)
-{
-    char buf[1000];
-    memset(buf,'\0',sizeof(buf));
-    vsprintf(buf,format,arglist);
-    nio_fputs(buf,c);
-    return strlen(buf);
-}
-
-int nio_fprintf(nio_console* c, const char* format, ...)
-{
-	va_list arglist;
-	va_start(arglist,format);
-	int ret = nio_vfprintf(c,format,&arglist);
-	va_end(arglist);
-    return ret;
-}
-
-int nio_printf(const char* format, ...)
-{
-    va_list arglist;
-	va_start(arglist,format);
-	int ret = nio_vfprintf(nio_default,format,&arglist);
-	va_end(arglist);
-    return ret;
-}*/
-
 void nio_color(nio_console* c, const unsigned char background_color, const unsigned char foreground_color)
 {
 	c->default_background_color = background_color;

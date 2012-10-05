@@ -1,5 +1,5 @@
 +----------------------+
-|    Nspire I/O 3.0    |
+|    Nspire I/O 3.1    |
 +----------------------+
 
 
@@ -11,28 +11,39 @@ C:\Users\Name\.ndless or /home/name/.ndless
 
 Building the code
 -----------------
-make lib 	- Compiles Nspire I/O
-make demo 	- Compiles demos (Install first!)
-make install 	- Install Nspire I/O
-make uninstall 	- Uninstall Nspire I/O
+make lib        - Compiles Nspire I/O
+make demo       - Compiles demos (Install first!)
+make install    - Install Nspire I/O
+make uninstall  - Uninstall Nspire I/O
+make clean      - Deletes binaries
 
 Usage
 -----
 Add "-lnspireio" to LDFLAGS in your Makefile and include
-"nspireio.h" in your code.
+<nspireio.h> in your code.
 
-A color support for CX is currently not implemented, but it
-will work fine on CXes with the LCD set to grayscale mode
-by using "lcd_ingray()".
+Demos
+-----
+adv	            - Implements a small CLI where you can test
+                  several features of Nspire I/O.
+compatibility   - Hello World with Nspire I/O 2.0 Syntax
+                  (interesting for developers).
+hello           - Hello World
+replace-stdio   - Hello World with stdio syntax (interesting for
+                  developers).
+splitscreen	    - Old Nspire I/O demo. Enter text in 1st console
+                  and it will be printed to 2nd console.
+tests           - Tests almost all functions of Nspire I/O.
 
-Migrate from 2.0 to 3.0
+Migrate from 2.0 to 3.x
 -----------------------
 For the lazy people:
 Change "-lnspireio2" in you Makefile to "-lnspireio".
-Programs that include nspireio2.h will compile in compatibility mode (old syntax).
+Programs that include nspireio2.h will compile in compatibility
+mode (old syntax).
 
-To use the new syntax, include nspireio.h instead nspireio2.h and
-replace the function calls with their new names.
+To use the new syntax, include nspireio.h instead of nspireio2.h 
+and replace the function calls with their new names.
 
 Nspire I/O is not compatible to versions < 2.0.
 
@@ -45,6 +56,6 @@ The code of the demo application can be found in "src/demo".
 
 Contact
 -------
-Julian Mackeben aka compu
+Julian Mackeben (compu)
 E-Mail: compujuckel@googlemail.com
 Discussion topic: http://www.omnimaga.org/index.php?topic=6871.0

@@ -48,7 +48,7 @@
 void nio_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_draw(void);
-
+unsigned int nio_cursor_clock(void);
 char nio_ascii_get(void);
 
 #endif

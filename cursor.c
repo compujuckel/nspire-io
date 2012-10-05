@@ -27,10 +27,6 @@
  */
 #include "nspireio.h"
 
-inline unsigned nio_time_get() {
-    return *(volatile unsigned*)0x90090000;
-}
-
 void nio_cursor_draw(nio_console* c)
 {
 	char color = c->color[c->cursor_y*c->max_x+c->cursor_x];
@@ -140,23 +136,23 @@ void nio_cursor_erase(nio_console* c)
 void nio_cursor_blinking_draw(nio_console* c)
 {
 	if (!c->cursor_blink_enabled) return;
-	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = nio_time_get();
+	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = nio_cursor_clock();
 	if (c->cursor_blink_duration == 0) c->cursor_blink_duration = 1;
 	
-	if ((nio_time_get() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
+	if ((nio_cursor_clock() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
 		if (c->cursor_blink_status)
 			nio_cursor_draw(c);
 		else
 			nio_cursor_erase(c);
 		c->cursor_blink_status = !c->cursor_blink_status;
-		c->cursor_blink_timestamp = nio_time_get();
+		c->cursor_blink_timestamp = nio_cursor_clock();
 	}
 }
 
 void nio_cursor_blinking_reset(nio_console* c)
 {
 	if (!c->cursor_blink_enabled) return;
-	c->cursor_blink_timestamp = nio_time_get();
+	c->cursor_blink_timestamp = nio_cursor_clock();
 }
 
 void nio_cursor_enable(nio_console* c, BOOL enable_cursor)
