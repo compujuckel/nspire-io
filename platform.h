@@ -51,4 +51,32 @@ void nio_vram_draw(void);
 unsigned int nio_cursor_clock(void);
 char nio_ascii_get(void);
 
+/** Checks if there is data available at the serial port.
+	@return TRUE if new data is available.
+*/
+BOOL uart_ready(void);
+
+/** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
+	@return Char
+*/
+char uart_getchar(void);
+
+/** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
+	@return Destination
+*/
+char* uart_gets(char* str);
+
+/** See [putchar](http://www.cplusplus.com/reference/clibrary/cstdio/putchar/)
+*/
+char uart_putchar(char character);
+
+/** See [puts](http://www.cplusplus.com/reference/clibrary/cstdio/puts/)
+    \note This DOES NOT append a newline (\\n) character.
+*/
+int uart_puts(const char *str);
+
+/** See [printf](http://www.cplusplus.com/reference/clibrary/cstdio/printf/)
+*/
+void uart_printf(char *format, ...);
+
 #endif
