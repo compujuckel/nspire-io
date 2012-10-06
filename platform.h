@@ -49,7 +49,7 @@ void nio_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_draw(void);
 unsigned int nio_cursor_clock(void);
-char nio_ascii_get(void);
+char nio_ascii_get(int* adaptive_cursor_state);
 
 /** Checks if there is data available at the serial port.
 	@return TRUE if new data is available.

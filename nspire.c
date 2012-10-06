@@ -141,13 +141,22 @@ static char shiftOrCtrlKey(const char normalc, const char shiftc, const char ctr
 	}
 	else return normalc;
 }
-char nio_ascii_get(void)
+
+char nio_ascii_get(int* adaptive_cursor_state)
 {
 	// Ctrl, Shift, Caps first
 	if(isKeyPressed(KEY_NSPIRE_CTRL))
 	{
-		if(ctrl) ctrl = FALSE;
-		else ctrl = TRUE;
+		if(ctrl)
+		{
+			ctrl = FALSE;
+			*adaptive_cursor_state = 0;
+		}
+		else
+		{
+			ctrl = TRUE;
+			*adaptive_cursor_state = 4;
+		}
 		return 1; // Indicates that no key has been pressed - the cursor will continue flashing.
 	}
 	if(isKeyPressed(KEY_NSPIRE_SHIFT))
@@ -157,12 +166,28 @@ char nio_ascii_get(void)
 			ctrl = FALSE;
 			shift = FALSE;
 			caps = TRUE;
+			*adaptive_cursor_state = 2;
 		}
-		else if(caps) caps = FALSE;
-		else if(shift) shift = FALSE;
-		else shift = TRUE;
+		else if(caps)
+		{
+			caps = FALSE;
+			*adaptive_cursor_state = 0;
+		}
+		else if(shift)
+		{
+			shift = FALSE;
+			*adaptive_cursor_state = 0;
+		}
+		else
+		{
+			shift = TRUE;
+			*adaptive_cursor_state = 1;
+		}
 		return 1;
 	}
+	
+	if(caps)
+		*adaptive_cursor_state = 2;
 	
 	if(isKeyPressed(KEY_NSPIRE_ESC)) return 0;
 	

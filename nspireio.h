@@ -82,6 +82,7 @@ typedef struct
 #define NIO_CURSOR_UNDERSCORE 1
 #define NIO_CURSOR_VERTICAL 2
 #define NIO_CURSOR_CUSTOM 3
+#define NIO_CURSOR_ADAPTIVE 4
 
 /** Draws a char to the screen on the given position. For internal use.
 	@param offset_x x offset in px
@@ -409,10 +410,11 @@ void nio_cursor_blinking_duration(nio_console* c, int duration);
 
 /** Sets the console cursor type.
 	@param c Console
-	@param cursor_type The cursor type. 0 is a block cursor (default, like a
+	@param cursor_type The cursor type. 0 is a block cursor (like a
 	Linux X11 terminal), 1 is an underscore cursor (like a Windows Command
 	Prompt window), 2 is a vertical bar cursor (like a regular text box),
-	and 3 is a custom cursor that is set via SetCursorCustom.
+	3 is a custom cursor that is set via nio_cursor_custom, and 4 is an
+	adaptive cursor: It shows the current state of shift/ctrl/caps (default).
 	
 	If you specify an invalid value, NspireIO will silenty fail and set the
 	cursor type to 0, a block cursor.

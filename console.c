@@ -29,6 +29,15 @@
 
 nio_console* nio_default = NULL;
 
+char adaptive_cursor[5][6] =
+{
+	{0xFF,0xFF,0xFF,0xFF,0xFF,0xFF}, // block cursor
+	{0xF7,0xF3,0x01,0x01,0xF3,0xF7}, // arrow cursor
+	{0x83,0xED,0xEE,0xED,0x83,0xFF}, // 'A' cursor
+	{0xDF,0xAB,0xAB,0xAB,0xC7,0xFF}, // 'a' cursor
+	{0xDB,0x81,0xDB,0xDB,0x81,0xDB}  // '#' cursor
+};
+
 void nio_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor)
 {
 	int i, j, pixelOn;
@@ -217,8 +226,11 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
     c->cursor_enabled = TRUE;
 	c->cursor_blink_enabled = TRUE;
 	c->cursor_blink_duration = 1;
-	c->cursor_type = 0;
+	c->cursor_type = 4; // Defaults to "adaptive" cursor
 	c->cursor_line_width = 1;
+	int p;
+	for(p = 0; p <= 5; p++)
+		c->cursor_custom_data[p] = 0xFF;
 	nio_clear(c);
 }
 
@@ -318,7 +330,14 @@ char nio_getch(nio_console* c)
 			idle();
 		
         nio_cursor_erase(c);
-        char tmp = nio_ascii_get();
+		int adaptive_cursor_state = 0;
+        char tmp = nio_ascii_get(&adaptive_cursor_state);
+		
+		if(c->cursor_type == 4)
+		{
+			nio_cursor_custom(c,&adaptive_cursor[adaptive_cursor_state][0]);
+		}
+		
 		if(tmp == 1)
 		{
 			wait_no_key_pressed();

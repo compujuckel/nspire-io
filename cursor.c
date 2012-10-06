@@ -29,11 +29,12 @@
 
 void nio_cursor_draw(nio_console* c)
 {
-	char color = c->color[c->cursor_y*c->max_x+c->cursor_x];
+	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 	
-	char foreground_color = color & 0x0F;
+	unsigned char foreground_color = color;
+
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
-		if (!((c->cursor_type >= 0) && (c->cursor_type <= 3))) {
+		if (!((c->cursor_type >= 0) && (c->cursor_type <= 4))) {
 			// Set the cursor type to a valid one
 			c->cursor_type = 0;
 		}
@@ -83,11 +84,11 @@ void nio_cursor_draw(nio_console* c)
 					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, foreground_color);
 				}
 			}
-		} else if (c->cursor_type == 3) {
+		} else if (c->cursor_type == 3 || c->cursor_type == 4) {
 			// Draw a custom cursor
 			// This uses pretty much the same code as the regular character drawing
 			
-			char background_color = (color & 0xF0) >> 4;
+			unsigned char background_color = color >> 8;
 			
 			// Sanity check to make sure the user defined something for the character
 			if (c->cursor_custom_data == NULL) {
@@ -103,7 +104,7 @@ void nio_cursor_draw(nio_console* c)
 			{
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					pixelOn = c->cursor_custom_data[i];
+					pixelOn = c->cursor_custom_data[i] << j;
 					pixelOn = pixelOn & 0x80 ;
 					if (pixelOn) 		nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,foreground_color);
 					else if(!pixelOn) 	nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,background_color);
@@ -115,9 +116,9 @@ void nio_cursor_draw(nio_console* c)
 
 void nio_cursor_erase(nio_console* c)
 {
-	char color = c->color[c->cursor_y*c->max_x+c->cursor_x];
+	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 	
-	char background_color = (color & 0xF0) >> 4;
+	char background_color = color >> 8;
 	
 	// Draw a box for the cursor
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
@@ -177,7 +178,7 @@ void nio_cursor_blinking_duration(nio_console* c, int duration)
 
 void nio_cursor_type(nio_console* c, int cursor_type)
 {
-	if (!((c->cursor_type >= 0) && (c->cursor_type <= 3))) {
+	if (!((c->cursor_type >= 0) && (c->cursor_type <= 4))) {
 		// Set the cursor type to a valid one
 		cursor_type = 0;
 	}
