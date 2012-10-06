@@ -24,14 +24,10 @@
  *
  * Hello World
  */
-#include <os.h>
 #include <nspireio.h>
 
 int main(void)
 {
-    // For Nspire CX compatibility
-	lcd_ingray();
-	
 	// Create a console named csl
     nio_console csl;
     // Initialize the console. It has 53 columns, 30 rows, x coordinate 0 and y coordinate 0. This will create a full-screen console with background color white and text color black.

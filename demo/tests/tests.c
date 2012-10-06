@@ -29,7 +29,6 @@
 
 int main(void)
 {
-	//lcd_ingray();
 	clrscr();
 	
 	nio_console csl;

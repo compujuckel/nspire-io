@@ -24,13 +24,11 @@
  *
  * stdio demo
  */
-#include <os.h>
 #define NIO_REPLACE_STDIO
 #include <nspireio.h>
 
 int main(void)
 {
-    lcd_ingray();
 	// Use this function at the beginning of your code
     nio_use_stdio();
     puts("Hello World!");

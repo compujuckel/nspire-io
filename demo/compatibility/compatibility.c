@@ -24,7 +24,6 @@
  *
  * Compatibility demo
  */
-#include <os.h>
 
 // Including nspireio2.h compiles the program in compatibility mode automatically
 // Alternatively, you could use:
@@ -34,8 +33,6 @@
 
 int main(void)
 {
-    lcd_ingray();
-	
 	nio_console csl;
     nio_InitConsole(&csl,53,30,0,0,WHITE,BLACK);
     nio_PrintStr(&csl,"Hello World!");

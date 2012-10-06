@@ -24,12 +24,10 @@
  *
  * Splitscreen demo
  */
-#include <os.h>
 #include <nspireio.h>
 
 int main(void)
 {
-	lcd_ingray();
 	
 	wait_no_key_pressed();
 	

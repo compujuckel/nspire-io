@@ -25,13 +25,10 @@
  *
  * A more complex demo program showing the cursor functions of NspireIO.
  */
-#include <os.h>
 #include <nspireio.h>
 
 int main(void)
 {
-	lcd_ingray();
-	
 	wait_no_key_pressed();
 	
 	// Initialize console 1.
