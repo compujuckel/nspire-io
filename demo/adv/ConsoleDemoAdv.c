@@ -34,7 +34,7 @@ int main(void)
 	// Initialize console 1.
 	nio_console c1;
 	
-	nio_init(&c1,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,BLACK,WHITE,TRUE);
+	nio_init(&c1,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_BLACK,NIO_COLOR_WHITE,TRUE);
 	nio_set_default(&c1);
 	nio_fflush(&c1);
 	
@@ -128,8 +128,8 @@ int main(void)
 	
 	nio_free(&c1);
 	
-	if(has_colors)
-		lcd_incolor();
+	//if(has_colors)
+	//	lcd_incolor();
 		
 	return 0;
 }
