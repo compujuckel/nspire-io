@@ -1,26 +1,23 @@
-AR := "$(shell (which arm-elf-ar arm-none-eabi-ar arm-linux-gnueabi-ar | head -1) 2>/dev/null)"
-GCC = nspire-gcc
-GCCFLAGS = -Os -nostdlib -g
-LD = nspire-ld
-LDFLAGS = -nostdlib
-OBJCOPY := "$(shell (which arm-elf-objcopy arm-none-eabi-objcopy arm-linux-gnueabi-objcopy | head -1) 2>/dev/null)"
+ifeq ($(strip $(ARCH)),)
+ARCH = nspire
+endif
+include $(ARCH).mk
+
 LIB = libnspireio.a
-USERPROFILE ?= $(HOME)
-DESTDIR = $(USERPROFILE)/.ndless
-vpath %.a $(DISTDIR)
-OBJS = console.o registry.o nspire-uart.o cursor.o nspire.o
+vpath %.a $(DESTDIR)
+OBJS = console.o registry.o $(ARCH)-uart.o cursor.o $(ARCH).o
 
 .PHONY: all lib demo install uninstall clean
 
 all: lib
 
 demo:
-	make -C demo/adv
-	make -C demo/compatibility
-	make -C demo/hello
-	make -C demo/replace-stdio
-	make -C demo/splitscreen
-	make -C demo/tests
+	make -C demo/adv ARCH=$(ARCH)
+	make -C demo/compatibility ARCH=$(ARCH)
+	make -C demo/hello ARCH=$(ARCH)
+	make -C demo/replace-stdio ARCH=$(ARCH)
+	make -C demo/splitscreen ARCH=$(ARCH)
+	make -C demo/tests ARCH=$(ARCH)
 	
 lib: $(LIB)
 	
@@ -37,19 +34,18 @@ install:
 	cp -u nspireio2.h "$(DESTDIR)/include"
 	cp -u nspireio.h "$(DESTDIR)/include"
 	cp -u platform.h "$(DESTDIR)/include"
-	cp -u nspire.h "$(DESTDIR)/include"
+	cp -u $(ARCH).h "$(DESTDIR)/include"
 	cp -u $(LIB) "$(DESTDIR)/lib"
 
 uninstall:
-	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/platform.h" "$(DESTDIR)/include/nspire.h"
-	
+	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/platform.h" "$(DESTDIR)/include/$(ARCH).h"
 
 clean:
 	rm -rf *.o *.elf *.a
 	rm -f $(LIB)
-	make -C demo/adv clean
-	make -C demo/compatibility clean
-	make -C demo/hello clean
-	make -C demo/replace-stdio clean
-	make -C demo/splitscreen clean
-	make -C demo/tests clean
+	make -C demo/adv ARCH=$(ARCH) clean
+	make -C demo/compatibility ARCH=$(ARCH) clean
+	make -C demo/hello ARCH=$(ARCH) clean
+	make -C demo/replace-stdio ARCH=$(ARCH) clean
+	make -C demo/splitscreen ARCH=$(ARCH) clean
+	make -C demo/tests ARCH=$(ARCH) clean

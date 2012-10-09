@@ -35,7 +35,8 @@
 #endif
 
 /** Color defines */
-typedef enum {
+enum
+{
 	NIO_COLOR_BLACK = 0,
 	NIO_COLOR_RED,
 	NIO_COLOR_GREEN,
@@ -52,7 +53,7 @@ typedef enum {
 	NIO_COLOR_LIGHTMAGENTA,
 	NIO_COLOR_LIGHTCYAN,
 	NIO_COLOR_WHITE
-} nio_colour;
+};
 
 /** console structure */
 typedef struct
@@ -68,7 +69,7 @@ typedef struct
 	unsigned char default_background_color;
 	unsigned char default_foreground_color;
 	BOOL drawing_enabled;
-    BOOL cursor_enabled;
+	BOOL cursor_enabled;
 	int cursor_type;
 	int cursor_line_width;
 	unsigned char cursor_custom_data[6];

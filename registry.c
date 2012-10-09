@@ -24,7 +24,7 @@
  *
  * Store/Get binary data from files
  */
-#include <os.h>
+#include "platform.h"
 #include "nspireio.h"
 
 int reg_store(void* dataptr, size_t size, char* regpath)

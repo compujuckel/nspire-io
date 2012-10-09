@@ -5,17 +5,20 @@
 
 Installation
 ------------
-Just copy the "lib" and "include" directories over
+Nspire: Just copy the "lib" and "include" directories over
 to your .ndless directory located at the userpath, for example
 C:\Users\Name\.ndless or /home/name/.ndless
+Prizm: Make sure you set the FXCGSDK environment variable, for example
+export FXCGSDK=/home/name/PrizmSDK
 
 Building the code
 -----------------
-make lib        - Compiles Nspire I/O
-make demo       - Compiles demos (Install first!)
-make install    - Install Nspire I/O
-make uninstall  - Uninstall Nspire I/O
-make clean      - Deletes binaries
+make lib             - Compiles Nspire I/O
+make demo            - Compiles demos (Install first!)
+make install         - Install Nspire I/O
+make uninstall       - Uninstall Nspire I/O
+make clean           - Deletes binaries
+make ARCH=prizm lib  - Compiles Nspire I/O for Prizm
 
 Usage
 -----

@@ -37,9 +37,15 @@
 	#ifdef _TINSPIRE
 		#include "nspire.h"
 	#endif
+	#ifdef PRIZM
+		#include "prizm.h"
+	#endif
 #else
 	#ifdef _TINSPIRE
 		#include <nspire.h>
+	#endif
+	#ifdef PRIZM
+		#include <prizm.h>
 	#endif
 #endif
 
