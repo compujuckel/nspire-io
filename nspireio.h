@@ -190,6 +190,11 @@ void nio_save(const char* path, const nio_console* c);
 */
 void nio_set_default(nio_console* c);
 
+/** Gets the default console.
+	@return default console
+*/
+nio_console* nio_get_default(void);
+
 /** Clears a console.
 	@param c Console
 */
@@ -221,12 +226,6 @@ void nio_vram_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 	@param pos_y y position
 */
 void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int pos_y);
-
-/** Immediately gets a char from the keyboard. For internal use.
-    @param c Console
-	@return Char
-*/
-char nio_getch(nio_console* c);
 
 /** Sets the background- and text color of a console. Possible values are 0-15.
 	@param c Console
@@ -273,11 +272,11 @@ int nio_fflush(nio_console* c);
 
 /** See [fputc](http://www.cplusplus.com/reference/clibrary/cstdio/fputc/)
 */
-char nio_fputc(char ch, nio_console* c);
+int nio_fputc(int character, nio_console* c);
 
 /** See [putchar](http://www.cplusplus.com/reference/clibrary/cstdio/putchar/)
 */
-char nio_putchar(const char ch);
+int nio_putchar(int character);
 
 /** See [fputs](http://www.cplusplus.com/reference/clibrary/cstdio/fputs/)
 */
@@ -289,11 +288,11 @@ int nio_puts(const char* str);
 
 /** See [fgetc](http://www.cplusplus.com/reference/clibrary/cstdio/fgetc)
 */
-char nio_fgetc(nio_console* c);
+int nio_fgetc(nio_console* c);
 
 /** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar)
 */
-char nio_getchar(void);
+int nio_getchar(void);
 
 /** See [fgets](http://www.cplusplus.com/reference/clibrary/cstdio/fgets/)
     \todo Do not ignore num
@@ -323,6 +322,24 @@ void nio_perror(const char* str);
 
 // Macro of nio_fputc
 #define nio_putc nio_fputc
+
+/** See [_getch](http://msdn.microsoft.com/de-de/library/078sfkak(v=vs.80).aspx)
+	\note unlike _getch, this takes a console as an argument!
+*/
+int nio_getch(nio_console* c);
+
+/** See [_getch](http://msdn.microsoft.com/de-de/library/078sfkak(v=vs.80).aspx)
+*/
+int nio__getch(void);
+
+/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429(v=vs.80).aspx)
+	\note unlike _getche, this takes a console as an argument!
+*/
+int nio_getche(nio_console* c);
+
+/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429(v=vs.80).aspx)
+*/
+int nio__getche(void);
 
 /** Stores binary data in a file.
 	@param dataptr Pointer to the data to be stored
@@ -504,6 +521,12 @@ void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
 #define gets                            nio_gets
 #define printf                          nio_printf
 #define perror                          nio_perror
+#define _getch							nio__getch
+#define _getche							nio__getche
+#undef stdin
+#undef stdout
+#define stdin							nio_get_default() // experimental
+#define stdout							nio_get_default() // experimental
 #endif
 
 #ifdef UART_REPLACE_STDIO

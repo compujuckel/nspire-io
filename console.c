@@ -321,7 +321,12 @@ void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int 
 	c->color[pos_y*c->max_x+pos_x] = color;
 }
 
-char nio_getch(nio_console* c)
+nio_console* nio_get_default(void)
+{
+	return nio_default;
+}
+
+int nio_getch(nio_console* c)
 {
 	while(1)
 	{
@@ -337,20 +342,36 @@ char nio_getch(nio_console* c)
 		{
 			nio_cursor_custom(c,&adaptive_cursor[adaptive_cursor_state][0]);
 		}
-		
-		if(tmp == 1)
-		{
+		if(tmp == 1 || tmp == 0) // To be compatible with the ANSI C++ _getch, pressing ESC does not abort this function (if 0 is returned from nio_ascii_get)
+		{						// 1 is just a special case for modifier keys
 			wait_no_key_pressed();
-			continue; // This won't stop the cursor from flashing if a modifier key (shift, ctrl) is pressed
+			continue;
 		}
 		else return tmp;
 	}
 }
 
-char nio_fputc(char ch, nio_console* c)
+int nio__getch(void)
+{
+	return nio_getch(nio_default);
+}
+
+int nio_getche(nio_console* c)
+{
+	char tmp = nio_getch(c);
+	nio_fputc(tmp,c);
+	return tmp;
+}
+
+int nio__getche(void)
+{
+	return nio_getche(nio_default);
+}
+
+int nio_fputc(int character, nio_console* c)
 {
 	// Newline. Increment Y cursor, set X cursor to zero. Scroll if necessary.
-	if(ch == '\n')
+	if(character == '\n')
 	{
 		c->cursor_x = 0;
 		c->cursor_y++;
@@ -363,21 +384,21 @@ char nio_fputc(char ch, nio_console* c)
 		}
 	}
 	// Carriage return. Set X cursor to zero.
-	else if(ch == '\r')
+	else if(character == '\r')
 	{
 		c->cursor_x = 0;
 	}
 	// Backspace. Decrement X cursor.
-	else if(ch == '\b')
+	else if(character == '\b')
 	{
 		if(c->cursor_x > 0)
 			c->cursor_x--;
 	}
-	else if(ch == '\t')
+	else if(character == '\t')
 	{
 		// tabs are 8 character long
 		c->cursor_x += (9-1) - c->cursor_x % 8;
-		ch = ' ';
+		character = ' ';
 	}
 	// Must be a normal character...
 	else
@@ -395,7 +416,7 @@ char nio_fputc(char ch, nio_console* c)
 				nio_fflush(c);
 		}
 		// Then store it.
-		nio_csl_savechar(c,ch,c->cursor_x,c->cursor_y);
+		nio_csl_savechar(c,character,c->cursor_x,c->cursor_y);
 		
 		// Draw it when BOOL draw is true
 		if(c->drawing_enabled) nio_csl_drawchar(c,c->cursor_x,c->cursor_y);
@@ -403,12 +424,12 @@ char nio_fputc(char ch, nio_console* c)
 		// Increment X cursor. It will be checked for validity next time.
 		c->cursor_x++;
 	}
-    return ch;
+    return character;
 }
 
-char nio_putchar(const char ch)
+int nio_putchar(int character)
 {
-    return nio_fputc(ch,nio_default);
+    return nio_fputc(character,nio_default);
 }
 
 int nio_fputs(const char* str, nio_console* c)
@@ -467,15 +488,14 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 	c->drawing_enabled = enable_drawing;
 }
 
-char nio_fgetc(nio_console* c)
+int nio_fgetc(nio_console* c)
 {
-	char ch = nio_getch(c);
-	nio_fputc(ch,c);
-    nio_cursor_draw(c);
-	return ch;
+	char str[100];
+	nio_fgets(&str[0],100,c);
+	return str[0];
 }
 
-char nio_getchar(void)
+int nio_getchar(void)
 {
     return nio_fgetc(nio_default);
 }
@@ -487,7 +507,7 @@ char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
 	int old_y = c->cursor_y;
 	
 	int i = 0;
-	while(1)
+	while(i < num-2)
 	{
 		nio_cursor_draw(c);
 		c->cursor_blink_status = TRUE;
@@ -526,11 +546,16 @@ char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
 			i++;
 		}
 	}
+	str[num-1] = '\0';
+	str[num-2] = '\n';
+	nio_fputc('\n',c);
+	return str;
 }
 
 char* nio_gets(char* str)
 {
-    return nio_fgets(str,1000,nio_default); // using 1000 as default here
+    nio_fgets(str,100,nio_default);
+	str[strlen(str)] = '\0';
 }
 
 void nio_free(nio_console* c)
