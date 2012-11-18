@@ -29,9 +29,9 @@
 #define NSPIREIO_H
 
 #ifdef BUILDLIB
-#include "platform.h"
+#include "nspireio-platform.h"
 #else
-#include <platform.h>
+#include <nspireio-platform.h>
 #endif
 
 /** Color defines */

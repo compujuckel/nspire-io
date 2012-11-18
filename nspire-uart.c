@@ -25,7 +25,7 @@
  * Alternative functions for serial communication, no clock on the screen.
  */
 
-#include "platform.h"
+#include "nspireio-platform.h"
 
 BOOL uart_ready(void)
 {

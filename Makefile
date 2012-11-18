@@ -33,12 +33,12 @@ $(LIB): $(OBJS)
 install:
 	cp -u nspireio2.h "$(DESTDIR)/include"
 	cp -u nspireio.h "$(DESTDIR)/include"
-	cp -u platform.h "$(DESTDIR)/include"
-	cp -u $(ARCH).h "$(DESTDIR)/include"
+	cp -u nspireio-platform.h "$(DESTDIR)/include"
+	cp -u nspireio-platform-$(ARCH).h "$(DESTDIR)/include"
 	cp -u $(LIB) "$(DESTDIR)/lib/"
 
 uninstall:
-	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/platform.h" "$(DESTDIR)/include/$(ARCH).h"
+	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/nspireio-platform.h" "$(DESTDIR)/include/nspireio-platform-$(ARCH).h"
 
 clean:
 	rm -rf *.o *.elf *.a

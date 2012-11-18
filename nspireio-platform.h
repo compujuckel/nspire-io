@@ -35,17 +35,17 @@
 
 #ifdef BUILDLIB
 	#ifdef _TINSPIRE
-		#include "nspire.h"
+		#include "nspireio-platform-nspire.h"
 	#endif
 	#ifdef PRIZM
-		#include "prizm.h"
+		#include "nspireio-platform-prizm.h"
 	#endif
 #else
 	#ifdef _TINSPIRE
-		#include <nspire.h>
+		#include <nspireio-platform-nspire.h>
 	#endif
 	#ifdef PRIZM
-		#include <prizm.h>
+		#include <nspireio-platform-prizm.h>
 	#endif
 #endif
 

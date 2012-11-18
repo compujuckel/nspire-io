@@ -25,7 +25,7 @@
  * Prizm-specific source.
  */
 
-#include "platform.h"
+#include "nspireio-platform.h"
 
 unsigned short getPaletteColor(unsigned int color)
 {

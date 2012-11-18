@@ -25,7 +25,7 @@
  * Functions for Nspire platform
  */
 
-#include "platform.h"
+#include "nspireio-platform.h"
 
 void* VRAM = NULL;
 
@@ -78,11 +78,14 @@ void nio_pixel_set(int x, int y, unsigned int color)
     }
 }
 
+// Disable VRAM support at the moment. There are issues with consoles that are not fullscreen and VRAM has not really any pros.
+#ifdef NIO_ENABLE_VRAM
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
 {
 	if(VRAM == NULL)
 	{
 		VRAM = malloc(SCREEN_BYTES_SIZE); // allocated but never freed... :'(
+		memcpy(VRAM,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
 	}
 	
 	unsigned short c = getPaletteColor(color);
@@ -110,6 +113,20 @@ void nio_vram_draw(void)
 {
 	memcpy(SCREEN_BASE_ADDRESS,VRAM,SCREEN_BYTES_SIZE);
 }
+
+#else
+
+void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
+{
+	nio_pixel_set(x,y,color);
+}
+
+void nio_vram_draw(void)
+{
+
+}
+
+#endif // NIO_ENABLE_VRAM
 
 unsigned int nio_cursor_clock(void) {
     return *(volatile unsigned*)0x90090000;
