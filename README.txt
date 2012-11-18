@@ -5,15 +5,17 @@
 
 Installation
 ------------
-Nspire: Just copy the "lib" and "include" directories over
+Nspire:
+Just copy the "lib" and "include" directories over
 to your .ndless directory located at the userpath, for example
 C:\Users\Name\.ndless or /home/name/.ndless
-Prizm: Make sure you set the FXCGSDK environment variable, for example
+Prizm:
+Make sure you set the FXCGSDK environment variable, for example
 export FXCGSDK=/home/name/PrizmSDK
 
 Building the code
 -----------------
-make lib             - Compiles Nspire I/O
+make all / make lib  - Compiles Nspire I/O
 make demo            - Compiles demos (Install first!)
 make install         - Install Nspire I/O
 make uninstall       - Uninstall Nspire I/O
@@ -27,14 +29,14 @@ Add "-lnspireio" to LDFLAGS in your Makefile and include
 
 Demos
 -----
-adv	            - Implements a small CLI where you can test
+adv	        - Implements a small CLI where you can test
                   several features of Nspire I/O.
 compatibility   - Hello World with Nspire I/O 2.0 Syntax
                   (interesting for developers).
 hello           - Hello World
 replace-stdio   - Hello World with stdio syntax (interesting for
                   developers).
-splitscreen	    - Old Nspire I/O demo. Enter text in 1st console
+splitscreen	- Old Nspire I/O demo. Enter text in 1st console
                   and it will be printed to 2nd console.
 tests           - Tests almost all functions of Nspire I/O.
 
@@ -59,6 +61,11 @@ The code of the demo application can be found in "src/demo".
 
 Contact
 -------
-Julian Mackeben (compu)
+Julian Mackeben (compu) (for Nspire-related things)
 E-Mail: compujuckel@googlemail.com
+
+Julien Savard (Juju) (for Prizm-related things)
+E-Mail: juju2143@gmail.com
+
 Discussion topic: http://www.omnimaga.org/index.php?topic=6871.0
+Homepage: http://nspforge.unsads.com/p/nspireio

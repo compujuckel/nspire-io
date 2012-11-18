@@ -1,7 +1,7 @@
 /**
  * @file prizm.c
  * @author Julien Savard aka Juju <juju2143@gmail.com>
- * @version 3.0
+ * @version 3.1
  *
  * @section LICENSE
  *

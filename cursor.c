@@ -2,7 +2,7 @@
  * @file cursor.c
  * @author Albert Huang aka alberthrocks <alberthrocks.public@gmail.com>
  * @author Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 3.0
+ * @version 3.1
  *
  * @section LICENSE
  *

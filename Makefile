@@ -35,7 +35,7 @@ install:
 	cp -u nspireio.h "$(DESTDIR)/include"
 	cp -u platform.h "$(DESTDIR)/include"
 	cp -u $(ARCH).h "$(DESTDIR)/include"
-	cp -u $(LIB) "$(DESTDIR)/lib"
+	cp -u $(LIB) "$(DESTDIR)/lib/"
 
 uninstall:
 	rm -f "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h" "$(DESTDIR)/include/nspireio.h" "$(DESTDIR)/include/platform.h" "$(DESTDIR)/include/$(ARCH).h"

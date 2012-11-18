@@ -2,7 +2,7 @@
  * @file ConsoleDemoAdv.c
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
  * @author Albert Huang aka alberthrocks <alberthrocks.public@gmail.com>
- * @version 3.0
+ * @version 3.1
  *
  * @section LICENSE
  *

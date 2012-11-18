@@ -1,7 +1,7 @@
 /**
  * @file nspireio.h
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 3.0
+ * @version 3.1
  *
  * @section LICENSE
  *
@@ -22,7 +22,7 @@
  *
  * @section DESCRIPTION
  *
- * Nspire I/O 3.0 header file
+ * Nspire I/O header file
  */
 
 #ifndef NSPIREIO_H
@@ -86,8 +86,6 @@ typedef struct
 #define NIO_CURSOR_ADAPTIVE 4
 
 /** Draws a char to the screen on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
 	@param x x position in columns
 	@param y y position in rows
 	@param ch Char
@@ -97,8 +95,6 @@ typedef struct
 void nio_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
 
 /** Draws a string to the screen on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
 	@param x x position in columns
 	@param y y position in rows
 	@param str String
@@ -130,8 +126,6 @@ void nio_grid_puts(const int offset_x, const int offset_y, const int x, const in
 void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor);
 
 /** Draws a char to the VRAM on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
 	@param x x position in columns
 	@param y y position in rows
 	@param ch Char
@@ -141,8 +135,6 @@ void nio_grid_putc(const int offset_x, const int offset_y, const int x, const in
 void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
 
 /** Draws a string to the VRAM on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
 	@param x x position in columns
 	@param y y position in rows
 	@param str String
@@ -179,7 +171,7 @@ void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, con
 */
 void nio_load(const char* path, nio_console* c);
 
-/** Saves a console to a file in flash storage.
+/** Saves a console to a file on flash storage.
 	@param path File path
 	@param c Console
 */
@@ -227,7 +219,7 @@ void nio_vram_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 */
 void nio_csl_savechar(nio_console* c, const char ch, const int pos_x, const int pos_y);
 
-/** Sets the background- and text color of a console. Possible values are 0-15.
+/** Sets the background- and text color of a console. You can use the predefined colors (NIO_COLOR_*)
 	@param c Console
 	@param background_color Background color
 	@param foreground_color Text color
@@ -242,12 +234,12 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing);
 
 /** Initializes a console.
 	@param c Console
-	@param size_x console width
-	@param size_y console height
+	@param size_x console width. Use NIO_MAX_COLS to get a full-width console.
+	@param size_y console height. Use NIO_MAX_ROWS to get a full-height console.
 	@param offset_x x position
 	@param offset_y y position
-	@param background_color Background color
-	@param foreground_color Text color
+	@param background_color Background color. Use predefined colors (NIO_COLOR_*)
+	@param foreground_color Text color. Use predefined colors (NIO_COLOR_*)
     @param drawing_enabled See nio_enable_drawing()
 */
 void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled);
@@ -266,7 +258,7 @@ void nio_use_stdio(void);
 void nio_free_stdio(void);
 
 /** See [fflush](http://www.cplusplus.com/reference/clibrary/cstdio/fflush/)
-	\note This is useful for consoles with enable_drawing set to false. Using this function will result in the console being drawn.
+	\note This is useful for consoles with enable_drawing set to false. Using this function draws the console to the screen.
 */
 int nio_fflush(nio_console* c);
 
@@ -295,7 +287,6 @@ int nio_fgetc(nio_console* c);
 int nio_getchar(void);
 
 /** See [fgets](http://www.cplusplus.com/reference/clibrary/cstdio/fgets/)
-    \todo Do not ignore num
 */
 char* nio_fgets(char* str, int num, nio_console* c);
 
@@ -323,7 +314,7 @@ void nio_perror(const char* str);
 // Macro of nio_fputc
 #define nio_putc nio_fputc
 
-/** See [_getch](http://msdn.microsoft.com/de-de/library/078sfkak(v=vs.80).aspx)
+/** See [_getch](http://msdn.microsoft.com/de-de/library/078sfkak\(v=vs.80\).aspx)
 	\note unlike _getch, this takes a console as an argument!
 */
 int nio_getch(nio_console* c);
@@ -332,12 +323,12 @@ int nio_getch(nio_console* c);
 */
 int nio__getch(void);
 
-/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429(v=vs.80).aspx)
+/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429\(v=vs.80\).aspx)
 	\note unlike _getche, this takes a console as an argument!
 */
 int nio_getche(nio_console* c);
 
-/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429(v=vs.80).aspx)
+/** See [_getche](http://msdn.microsoft.com/de-de/library/kswce429\(v=vs.80\).aspx)
 */
 int nio__getche(void);
 
@@ -361,12 +352,10 @@ void* reg_get(char* regpath);
 BOOL uart_ready(void);
 
 /** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
-	@return Char
 */
 char uart_getchar(void);
 
 /** See [gets](http://www.cplusplus.com/reference/clibrary/cstdio/gets/)
-	@return Destination
 */
 char* uart_gets(char* str);
 

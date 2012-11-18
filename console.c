@@ -1,7 +1,7 @@
 /**
  * @file console.c
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
- * @version 3.0
+ * @version 3.1
  *
  * @section LICENSE
  *
@@ -500,7 +500,7 @@ int nio_getchar(void)
     return nio_fgetc(nio_default);
 }
 
-char* nio_fgets(char* str, int num, nio_console* c) // TODO: Do not ignore num
+char* nio_fgets(char* str, int num, nio_console* c)
 {
 	char tmp;
 	int old_x = c->cursor_x;
