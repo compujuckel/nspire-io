@@ -27,7 +27,35 @@
 
 #include "nspireio-platform.h"
 
-void* VRAM = NULL;
+void* scrbuf = NULL;
+void* scrbuf_original = NULL;
+
+void nio_scrbuf_flip()
+{
+	void* temp = SCREEN_BASE_ADDRESS;
+	*(volatile unsigned**)0xC0000010 = scrbuf;
+	scrbuf = temp;
+}
+
+void nio_scrbuf_init()
+{
+	scrbuf_original = SCREEN_BASE_ADDRESS;
+	scrbuf = malloc(SCREEN_BYTES_SIZE);
+	memset(scrbuf,0xFF,SCREEN_BYTES_SIZE);
+}
+
+void nio_scrbuf_clear()
+{
+	memset(scrbuf,0xFF,SCREEN_BYTES_SIZE);
+}
+
+void nio_scrbuf_free()
+{
+	if(scrbuf == scrbuf_original)
+		nio_scrbuf_flip();
+	*(volatile unsigned**)0xC0000010 = scrbuf_original;
+	free(scrbuf);
+}
 
 unsigned short getPaletteColor(unsigned int color)
 {
@@ -59,32 +87,35 @@ void nio_pixel_set(int x, int y, unsigned int color)
 {
     unsigned short c = getPaletteColor(color);
 	
+	void* screen = scrbuf ? scrbuf : SCREEN_BASE_ADDRESS;
+	
 	if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
         return;
 
     // 4 bpp
     if (!has_colors || !lcd_isincolor())
     {
-        unsigned char* p = (unsigned char*)(SCREEN_BASE_ADDRESS + ((x >> 1) + (y << 7) + (y << 5)));
+        unsigned char* p = (unsigned char*)(screen + ((x >> 1) + (y << 7) + (y << 5)));
         *p = (x & 1) ? ((*p & 0xF0) | getBW(c)) : ((*p & 0x0F) | (getBW(c) << 4));
     }
     // 16 bpp
     else
     {
-        unsigned char *scr_base = SCREEN_BASE_ADDRESS;
-        unsigned char *ptr;
-        ptr = scr_base + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
+        unsigned char* ptr = screen + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
         *(unsigned short*)ptr = c;
     }
 }
 
 // Disable VRAM support at the moment. There are issues with consoles that are not fullscreen and VRAM has not really any pros.
 #ifdef NIO_ENABLE_VRAM
+
+void* VRAM = NULL;
+
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
 {
 	if(VRAM == NULL)
 	{
-		VRAM = malloc(SCREEN_BYTES_SIZE); // allocated but never freed... :'(
+		VRAM = malloc(SCREEN_BYTES_SIZE);
 		memcpy(VRAM,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
 	}
 	

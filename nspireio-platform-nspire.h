@@ -40,12 +40,30 @@
 
 #define getR(c) ((((c) & 0xF800) >> 11) * 8)
 #define getG(c) ((((c) & 0x7E0) >> 5) * 4)
-#define getB(c) (((c) & 0x1F) * 2)
+#define getB(c) (((c) & 0x1F) * 8)
 #define getBW(c) ((((getR(c)) / 16) + ((getG(c)) / 16) + ((getB(c)) / 16)) / 3)
 
 // Fullscreen definitions
 
 #define NIO_MAX_ROWS 30
 #define NIO_MAX_COLS 53
+
+// Double buffering is Nspire-only at the moment
+
+/** Initializes double buffering.
+*/
+void nio_scrbuf_init();
+
+/** Clears the screen buffer.
+*/
+void nio_scrbuf_clear();
+
+/** Flips screen and screenbuffer.
+*/
+void nio_scrbuf_flip();
+
+/** Frees the screenbuffer and restores the screen to its original state.
+*/
+void nio_scrbuf_free();
 
 #endif
