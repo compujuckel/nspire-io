@@ -32,14 +32,15 @@ void* scrbuf_original = NULL;
 
 void nio_scrbuf_flip()
 {
-	void* temp = SCREEN_BASE_ADDRESS;
+	/*void* temp = SCREEN_BASE_ADDRESS;
 	*(volatile unsigned**)0xC0000010 = scrbuf;
-	scrbuf = temp;
+	scrbuf = temp;*/
+	memcpy(SCREEN_BASE_ADDRESS,scrbuf,SCREEN_BYTES_SIZE);
 }
 
 void nio_scrbuf_init()
 {
-	scrbuf_original = SCREEN_BASE_ADDRESS;
+	//scrbuf_original = SCREEN_BASE_ADDRESS;
 	scrbuf = malloc(SCREEN_BYTES_SIZE);
 	memset(scrbuf,0xFF,SCREEN_BYTES_SIZE);
 }
@@ -51,9 +52,9 @@ void nio_scrbuf_clear()
 
 void nio_scrbuf_free()
 {
-	if(scrbuf == scrbuf_original)
+	/*if(scrbuf == scrbuf_original)
 		nio_scrbuf_flip();
-	*(volatile unsigned**)0xC0000010 = scrbuf_original;
+	*(volatile unsigned**)0xC0000010 = scrbuf_original;*/
 	free(scrbuf);
 }
 
