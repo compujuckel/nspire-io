@@ -4,20 +4,11 @@ extern "C"
 	#include <nspireio.h>
 }
 
-#ifndef NIOSTREAM_HPP
-#define NIOSTREAM_HPP
+#ifndef OSTREAM_HPP
+#define OSTREAM_HPP
 
 namespace nio
 {
-
-	class istream
-	{
-	public:
-		
-	private:
-		nio_console* c;
-	};
-
 	class ostream
 	{
 	public:
@@ -28,10 +19,12 @@ namespace nio
 		ostream& operator<<(const int val);
 		
 		nio::ostream& put(char c);
+		nio::ostream& write(const char* s, int n);
+		
+		nio::ostream& flush();
 	private:
 		nio_console* c;
 	};
-
 }
 
 #endif

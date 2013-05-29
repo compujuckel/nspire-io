@@ -1,4 +1,4 @@
-#include "niostream.hpp"
+#include "ostream.hpp"
 
 nio::ostream::ostream(nio_console* c)
 {
@@ -28,16 +28,16 @@ nio::ostream& nio::ostream::put(char c)
 	return *this;
 }
 
-int main(void)
+nio::ostream& nio::ostream::write(const char* s, int n)
 {
-	nio_console csl;
-	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,WHITE,BLACK,TRUE);
-	
-	nio::ostream cout(&csl);
-	cout << "Hello World!";
-	cout << 123;
-	cout.put('X');
-	
-	wait_key_pressed();
-	return 0;
+	int i;
+	for(i = 0; i < n; i++)
+		nio_fputc(s[i],c);
+	return *this;
+}
+
+nio::ostream& nio::ostream::flush()
+{
+	nio_fflush(c);
+	return *this;
 }
