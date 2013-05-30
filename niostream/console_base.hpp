@@ -1,7 +1,6 @@
 extern "C"
 {
 	#include <os.h>
-	#include <nspireio.h>
 }
 
 #ifndef CONSOLE_BASE_HPP
@@ -9,6 +8,38 @@ extern "C"
 
 namespace nio
 {
+	enum
+	{
+		COLOR_BLACK,
+		COLOR_RED,
+		COLOR_GREEN,
+		COLOR_YELLOW,
+		COLOR_BLUE,
+		COLOR_MAGENTA,
+		COLOR_CYAN,
+		COLOR_GRAY,
+		COLOR_LIGHTBLACK,
+		COLOR_LIGHTRED,
+		COLOR_LIGHTGREEN,
+		COLOR_LIGHTYELLOW,
+		COLOR_LIGHTBLUE,
+		COLOR_LIGHTMAGENTA,
+		COLOR_LIGHTCYAN,
+		COLOR_WHITE
+	};
+	
+	enum
+	{
+		CURSOR_BLOCK,
+		CURSOR_UNDERSCORE,
+		CURSOR_VERTICAL,
+		CURSOR_CUSTOM,
+		CURSOR_ADAPTIVE
+	};
+	
+	extern const int MAX_ROWS;
+	extern const int MAX_COLS;
+	
 	class console_base
 	{
 	public:
@@ -33,7 +64,7 @@ namespace nio
 		int _getch();
 		int _getche();
 		
-		/*void cursor_draw();
+		void cursor_draw();
 		void cursor_erase();
 		void cursor_blinking_draw();
 		void cursor_blinking_reset();
@@ -42,9 +73,11 @@ namespace nio
 		void cursor_blinking_duration(int duration);
 		void cursor_type(int cursor_type);
 		void cursor_width(int cursor_width);
-		void cursor_custom(unsigned char cursor_data[6]);*/
+		void cursor_custom(unsigned char cursor_data[6]);
 	private:
-		nio_console* c;
+		#ifdef BUILDLIB
+			nio_console* c;
+		#endif
 	};
 }
 

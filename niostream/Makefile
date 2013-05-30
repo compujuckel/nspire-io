@@ -1,22 +1,48 @@
 GCC = nspire-gcc
-GXX = nspire-g++
+GXX=nspire-g++
 LD = nspire-ld-bflt
-GCCFLAGS = -Os -Wall -W -marm
-LDFLAGS = 
-EXE = niostream.tns
-OBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
-DISTDIR = .
-vpath %.tns $(DISTDIR)
+GCCFLAGS = -Os -Wall -W -marm -DBUILDLIB
+LDFLAGS =
+CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+OBJS = $(patsubst %.c,%.o,$(wildcard *.c)) $(CPPOBJS)
+ifneq (${CPPOBJS},"")
+	LDFLAGS += --cpp
+endif
+OBJCOPY := "$(shell which arm-elf-objcopy 2>/dev/null)"
+ifeq (${OBJCOPY},"")
+	OBJCOPY := arm-none-eabi-objcopy
+endif
+USERPROFILE ?= $(HOME)
+DESTDIR = $(USERPROFILE)/.ndless
+LIB = libniostream.a
+vpath %.a $(DESTDIR)
 
-all: $(EXE)
-	
+.PHONY: all lib demo install uninstall clean
+
+all: lib
+
+lib: $(LIB)
+
+demo:
+	make -C demo/
+
+%.o: %.c
+	$(GCC) $(GCCFLAGS) -c $<
+
 %.o: %.cpp
 	$(GXX) $(GCCFLAGS) -c $<
+	
+$(LIB): $(OBJS)
+	$(AR) rcs "$(LIB)" $^
 
-$(EXE): $(OBJS)
-	mkdir -p $(DISTDIR)
-	$(LD) --cpp $^ -o $(DISTDIR)/$@ $(LDFLAGS)
+install:
+	mkdir -p "$(DESTDIR)/include/niostream"
+	cp -u console_base.hpp "$(DESTDIR)/include/niostream/"
+	cp -u $(LIB) "$(DESTDIR)/lib/"
 
+uninstall:
+	rm -rf "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/niostream"
+	
 clean:
-	rm -f *.o *.elf
-	rm -f $(DISTDIR)/$(EXE)
+	rm -f *.o *.elf *.a
+	make -C demo/ clean
