@@ -38,6 +38,7 @@ $(LIB): $(OBJS)
 install:
 	mkdir -p "$(DESTDIR)/include/niostream"
 	cp -u console_base.hpp "$(DESTDIR)/include/niostream/"
+	cp -u niostream.hpp "$(DESTDIR)/include/niostream/"
 	cp -u $(LIB) "$(DESTDIR)/lib/"
 
 uninstall:
