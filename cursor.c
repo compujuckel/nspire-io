@@ -30,66 +30,70 @@
 void nio_cursor_draw(nio_console* c)
 {
 	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
-	
+
 	unsigned char foreground_color = color;
+
+	// The starting position of where to draw the cursor
+	const unsigned short cursor_x_start = c->offset_x + c->cursor_x*NIO_CHAR_WIDTH;
+	const unsigned short cursor_y_start = c->offset_y + (c->cursor_y*NIO_CHAR_HEIGHT) + NIO_CHAR_HEIGHT;
 
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
 		if (!((c->cursor_type >= 0) && (c->cursor_type <= 4))) {
 			// Set the cursor type to a valid one
 			c->cursor_type = 0;
 		}
-		
+
 		int i, j;
-		
+
 		if (c->cursor_type == 0) {
 			// Draw a box for the cursor
 			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, foreground_color);
+					nio_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 1) {
 			// Draw a horizontal underline (underscore) for the cursor
-			
+
 			// Sanity check for cursor_line_width
 			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= NIO_CHAR_HEIGHT))) {
 				// Set the cursor width to 1 (regular cursor width)
 				c->cursor_line_width = 1;
 			}
-			
+
 			// Draw it!
 			for(i = 0; i < NIO_CHAR_WIDTH; i++)
 			{
 				//for(j = NIO_CHAR_HEIGHT; j > (NIO_CHAR_HEIGHT - c->cursor_line_width); j--)
 				for(j = 0; j < c->cursor_line_width; j++)
 				{
-					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j-1, foreground_color);
+					nio_pixel_set(cursor_x_start+i,cursor_y_start-j-1, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 2) {
 			// Draw a vertical bar for the cursor
-			
+
 			// Sanity check for cursor_line_width
 			if (!((c->cursor_line_width > 0) && (c->cursor_line_width <= NIO_CHAR_WIDTH))) {
 				// Set the cursor width to 1 (regular cursor width)
 				c->cursor_line_width = 1;
 			}
-			
+
 			// Draw it!
 			for(i = 0; i < c->cursor_line_width; i++) {
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, foreground_color);
+					nio_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 3 || c->cursor_type == 4) {
 			// Draw a custom cursor
 			// This uses pretty much the same code as the regular character drawing
-			
+
 			unsigned char background_color = color >> 8;
-			
+
 			// Sanity check to make sure the user defined something for the character
 			if (c->cursor_custom_data == NULL) {
 				// Set the cursor to a full cursor
@@ -97,7 +101,7 @@ void nio_cursor_draw(nio_console* c)
 				for(p = 0; p <= 5; p++)
 					c->cursor_custom_data[p] = 0xFF;
 			}
-			
+
 			// Draw it!
 			int pixelOn;
 			for(i = 0; i < NIO_CHAR_WIDTH; i++)
@@ -106,8 +110,8 @@ void nio_cursor_draw(nio_console* c)
 				{
 					pixelOn = c->cursor_custom_data[i] << j;
 					pixelOn = pixelOn & 0x80 ;
-					if (pixelOn) 		nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,foreground_color);
-					else if(!pixelOn) 	nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j,background_color);
+					if (pixelOn)   nio_pixel_set(cursor_x_start+i,cursor_y_start-j,foreground_color);
+					else if(!pixelOn)  nio_pixel_set(cursor_x_start+i,cursor_y_start-j,background_color);
 				}
 			}
 		}
@@ -117,9 +121,13 @@ void nio_cursor_draw(nio_console* c)
 void nio_cursor_erase(nio_console* c)
 {
 	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
-	
+
 	char background_color = color >> 8;
-	
+
+	// The starting position of where to draw the cursor
+	const unsigned short cursor_x_start = c->offset_x + c->cursor_x*NIO_CHAR_WIDTH;
+	const unsigned short cursor_y_start = c->offset_y + (c->cursor_y*NIO_CHAR_HEIGHT) + NIO_CHAR_HEIGHT;
+
 	// Draw a box for the cursor
 	if((c->drawing_enabled) && (c->cursor_enabled)) {
 		int i, j;
@@ -127,7 +135,7 @@ void nio_cursor_erase(nio_console* c)
 		{
 			for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 			{
-				nio_pixel_set((c->cursor_x*NIO_CHAR_WIDTH)+i,(c->cursor_y*NIO_CHAR_HEIGHT)+NIO_CHAR_HEIGHT-j, background_color);
+				nio_pixel_set(cursor_x_start+i,cursor_y_start-j, background_color);
 			}
 		}
 		nio_csl_drawchar(c,c->cursor_x,c->cursor_y);

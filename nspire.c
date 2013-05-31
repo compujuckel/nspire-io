@@ -28,21 +28,19 @@
 #include "nspireio-platform.h"
 
 void* scrbuf = NULL;
-void* scrbuf_original = NULL;
 
 void nio_scrbuf_flip()
 {
-	/*void* temp = SCREEN_BASE_ADDRESS;
-	*(volatile unsigned**)0xC0000010 = scrbuf;
-	scrbuf = temp;*/
 	memcpy(SCREEN_BASE_ADDRESS,scrbuf,SCREEN_BYTES_SIZE);
 }
 
 void nio_scrbuf_init()
 {
-	//scrbuf_original = SCREEN_BASE_ADDRESS;
-	scrbuf = malloc(SCREEN_BYTES_SIZE);
-	memset(scrbuf,0xFF,SCREEN_BYTES_SIZE);
+	if(scrbuf == NULL)
+	{
+		scrbuf = malloc(SCREEN_BYTES_SIZE);
+		memcpy(scrbuf,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
+	}
 }
 
 void nio_scrbuf_clear()
@@ -52,10 +50,8 @@ void nio_scrbuf_clear()
 
 void nio_scrbuf_free()
 {
-	/*if(scrbuf == scrbuf_original)
-		nio_scrbuf_flip();
-	*(volatile unsigned**)0xC0000010 = scrbuf_original;*/
 	free(scrbuf);
+	scrbuf = NULL;
 }
 
 unsigned short getPaletteColor(unsigned int color)
@@ -88,7 +84,9 @@ void nio_pixel_set(int x, int y, unsigned int color)
 {
     unsigned short c = getPaletteColor(color);
 	
-	void* screen = scrbuf ? scrbuf : SCREEN_BASE_ADDRESS;
+	void* screen = SCREEN_BASE_ADDRESS;
+	if(scrbuf != NULL)
+		screen = scrbuf;
 	
 	if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
         return;
@@ -109,7 +107,6 @@ void nio_pixel_set(int x, int y, unsigned int color)
 
 // Disable VRAM support at the moment. There are issues with consoles that are not fullscreen and VRAM has not really any pros.
 #ifdef NIO_ENABLE_VRAM
-
 void* VRAM = NULL;
 
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
