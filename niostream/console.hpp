@@ -1,10 +1,13 @@
 extern "C"
 {
 	#include <os.h>
+	#ifdef BUILDLIB
+		#include <nspireio.h>
+	#endif
 }
 
-#ifndef CONSOLE_BASE_HPP
-#define CONSOLE_BASE_HPP
+#ifndef CONSOLE_HPP
+#define CONSOLE_HPP
 
 namespace nio
 {
@@ -40,7 +43,7 @@ namespace nio
 	extern const int MAX_ROWS;
 	extern const int MAX_COLS;
 	
-	class console_base
+	class console
 	{
 	public:
 		void clear();
@@ -51,8 +54,8 @@ namespace nio
 		void color(const unsigned char background_color, const unsigned char foreground_color);
 		void drawing_enabled(const bool enable_drawing);
 		
-		console_base(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
-		~console_base();
+		console(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
+		~console();
 		
 		int flush();
 		int putchar(int character);
