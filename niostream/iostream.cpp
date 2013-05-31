@@ -5,11 +5,54 @@ nio::iostream::iostream(const int size_x, const int size_y, const int offset_x, 
 {
 	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::right | nio::iostream::fixed);
 	w = 0;
+	p = 5;
 }
 
 nio::iostream& nio::iostream::operator<<(const char* val)
 {
 	nio::console::puts(val);
+	return *this;
+}
+
+nio::iostream& nio::iostream::operator<<(const double val)
+{
+	char buf[50] = { '\0' };
+	char fmtstring[20] = { '\0' };
+	
+	strcat(fmtstring,"%");
+	
+	// sprintf flags
+	if(f & nio::iostream::left)
+		strcat(fmtstring,"-");
+	if(f & nio::iostream::showpos)
+		strcat(fmtstring,"+");
+	
+	// sprintf width
+	if(w)
+		strcat(fmtstring,"*");
+	
+	// sprintf precision
+	if(p)
+		strcat(fmtstring,".*");
+	
+	// sprintf specifiers
+	if(f & nio::iostream::fixed)
+		strcat(fmtstring,"f");
+	else if(f & nio::iostream::scientific)
+		strcat(fmtstring,"e");
+	else
+		strcat(fmtstring,"f");
+		
+	if(w && !p)
+		sprintf(buf,fmtstring,w,val);
+	else if(!w && p)
+		sprintf(buf,fmtstring,p,val);
+	else if(w && p)
+		sprintf(buf,fmtstring,w,p,val);
+	else
+		sprintf(buf,fmtstring,val);
+
+	nio::console::puts(buf);
 	return *this;
 }
 
@@ -237,6 +280,30 @@ nio::iostream& nio::right(nio::iostream& ios)
 {
 	ios.setf(nio::iostream::right, nio::iostream::adjustfield);
 	return ios;
+}
+
+nio::iostream& nio::fixed(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::fixed, nio::iostream::floatfield);
+	return ios;
+}
+
+nio::iostream& nio::scientific(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::scientific, nio::iostream::floatfield);
+	return ios;
+}
+
+nio::streamsize nio::iostream::precision() const
+{
+	return p;
+}
+
+nio::streamsize nio::iostream::precision(streamsize prec)
+{
+	streamsize tmp = p;
+	p = prec;
+	return tmp;
 }
 
 nio::streamsize nio::iostream::width() const

@@ -44,6 +44,7 @@ namespace nio
 		iostream(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
 	
 		iostream& operator<<(const char* val);
+		iostream& operator<<(const double val);
 		iostream& operator<<(const int val);
 		iostream& operator<<(const bool val);
 		iostream& operator<<(iostream& (*pf)(iostream&));
@@ -58,11 +59,15 @@ namespace nio
 		fmtflags setf(fmtflags fmtl, fmtflags mask);
 		void unsetf(fmtflags mask);
 		
+		streamsize precision() const;
+		streamsize precision(streamsize prec);
+		
 		streamsize width() const;
 		streamsize width(streamsize wide);
 	private:
 		fmtflags f;
 		streamsize w;
+		streamsize p;
 	};
 	
 	iostream& endl(iostream& ios);
@@ -85,6 +90,9 @@ namespace nio
 	iostream& internal(iostream& ios);
 	iostream& left(iostream& ios);
 	iostream& right(iostream& ios);
+	
+	iostream& fixed(iostream& ios);
+	iostream& scientific(iostream& ios);
 }
 
 #endif
