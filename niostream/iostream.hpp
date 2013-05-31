@@ -82,6 +82,8 @@ namespace nio
 	iostream& noshowpoint(iostream& ios);
 	iostream& showpos(iostream& ios);
 	iostream& noshowpos(iostream& ios);
+	iostream& uppercase(iostream& ios);
+	iostream& nouppercase(iostream& ios);
 	
 	iostream& dec(iostream& ios);
 	iostream& hex(iostream& ios);

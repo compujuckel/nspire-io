@@ -37,11 +37,11 @@ nio::iostream& nio::iostream::operator<<(const double val)
 	
 	// sprintf specifiers
 	if(f & nio::iostream::fixed)
-		strcat(fmtstring,"f");
+		strcat(fmtstring,(f & nio::iostream::uppercase) ? "F" : "f");
 	else if(f & nio::iostream::scientific)
-		strcat(fmtstring,"e");
+		strcat(fmtstring,(f & nio::iostream::uppercase) ? "E" : "e");
 	else
-		strcat(fmtstring,"f");
+		strcat(fmtstring,(f & nio::iostream::uppercase) ? "F" : "f");
 		
 	if(w && !p)
 		sprintf(buf,fmtstring,w,val);
@@ -90,7 +90,7 @@ nio::iostream& nio::iostream::operator<<(const int val)
 	if(f & nio::iostream::dec)
 		strcat(fmtstring,"d");
 	else if(f & nio::iostream::hex)
-		strcat(fmtstring,"x");
+		strcat(fmtstring,(f & nio::iostream::uppercase) ? "X" : "x");
 	else if(f & nio::iostream::oct)
 		strcat(fmtstring,"o");
 	else
@@ -261,6 +261,18 @@ nio::iostream& nio::showpos(nio::iostream& ios)
 nio::iostream& nio::noshowpos(nio::iostream& ios)
 {
 	ios.unsetf(nio::iostream::showpos);
+	return ios;
+}
+
+nio::iostream& nio::uppercase(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::uppercase);
+	return ios;
+}
+
+nio::iostream& nio::nouppercase(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::uppercase);
 	return ios;
 }
 
