@@ -13,6 +13,8 @@ extern "C"
 
 namespace nio
 {
+	typedef int streamsize;
+	
 	class iostream : private console
 	{
 	public:
@@ -34,7 +36,7 @@ namespace nio
 			left		= (1u << 13),
 			right		= (1u << 14),
 			
-			adjustfield	= left | right | internal,
+			adjustfield	= internal | left | right,
 			basefield	= dec | hex | oct,
 			floatfield	= fixed | scientific
 		};
@@ -43,10 +45,11 @@ namespace nio
 	
 		iostream& operator<<(const char* val);
 		iostream& operator<<(const int val);
+		iostream& operator<<(const bool val);
 		iostream& operator<<(iostream& (*pf)(iostream&));
 		
 		iostream& put(char c);
-		iostream& write(const char* s, int n);
+		iostream& write(const char* s, streamsize n);
 		iostream& flush();
 		
 		fmtflags flags();
@@ -54,16 +57,34 @@ namespace nio
 		fmtflags setf(fmtflags fmtl);
 		fmtflags setf(fmtflags fmtl, fmtflags mask);
 		void unsetf(fmtflags mask);
+		
+		streamsize width() const;
+		streamsize width(streamsize wide);
 	private:
 		fmtflags f;
+		streamsize w;
 	};
 	
-	iostream& endl(iostream& s);
-	iostream& ends(iostream& s);
-	iostream& flush(iostream& s);
-	iostream& dec(iostream& s);
-	iostream& hex(iostream& s);
-	iostream& oct(iostream& s);
+	iostream& endl(iostream& ios);
+	iostream& ends(iostream& ios);
+	iostream& flush(iostream& ios);
+	
+	iostream& boolalpha(iostream& ios);
+	iostream& noboolalpha(iostream& ios);
+	iostream& showbase(iostream& ios);
+	iostream& noshowbase(iostream& ios);
+	iostream& showpoint(iostream& ios);
+	iostream& noshowpoint(iostream& ios);
+	iostream& showpos(iostream& ios);
+	iostream& noshowpos(iostream& ios);
+	
+	iostream& dec(iostream& ios);
+	iostream& hex(iostream& ios);
+	iostream& oct(iostream& ios);
+	
+	iostream& internal(iostream& ios);
+	iostream& left(iostream& ios);
+	iostream& right(iostream& ios);
 }
 
 #endif

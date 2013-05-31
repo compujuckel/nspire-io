@@ -3,7 +3,8 @@
 nio::iostream::iostream(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled)
 	: nio::console(size_x, size_y, offset_x, offset_y, background_color, foreground_color, drawing_enabled)
 {
-	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::left | nio::iostream::fixed);
+	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::right | nio::iostream::fixed);
+	w = 0;
 }
 
 nio::iostream& nio::iostream::operator<<(const char* val)
@@ -14,7 +15,7 @@ nio::iostream& nio::iostream::operator<<(const char* val)
 
 nio::iostream& nio::iostream::operator<<(const int val)
 {
-	char buf[20] = { '\0' };
+	char buf[50] = { '\0' };
 	char fmtstring[20] = { '\0' };
 	
 	// Inserted before value
@@ -33,8 +34,14 @@ nio::iostream& nio::iostream::operator<<(const int val)
 	strcat(fmtstring,"%");
 	
 	// sprintf flags
+	if(f & nio::iostream::left)
+		strcat(fmtstring,"-");
 	if(f & nio::iostream::showpos)
 		strcat(fmtstring,"+");
+	
+	// sprintf width
+	if(w)
+		strcat(fmtstring,"*");
 	
 	// sprintf specifier
 	if(f & nio::iostream::dec)
@@ -46,8 +53,31 @@ nio::iostream& nio::iostream::operator<<(const int val)
 	else
 		strcat(fmtstring,"d");
 	
-	sprintf(buf,fmtstring,val);
+	if(w)
+		sprintf(buf,fmtstring,w,val);
+	else
+		sprintf(buf,fmtstring,val);
+	
 	nio::console::puts(buf);
+	return *this;
+}
+
+nio::iostream& nio::iostream::operator<<(const bool val)
+{
+	if(f & nio::iostream::boolalpha)
+	{
+		if(val)
+			nio::console::puts("true");
+		else
+			nio::console::puts("false");
+	}
+	else
+	{
+		if(val)
+			nio::console::putchar('1');
+		else
+			nio::console::putchar('0');
+	}
 	return *this;
 }
 
@@ -62,7 +92,7 @@ nio::iostream& nio::iostream::put(char c)
 	return *this;
 }
 
-nio::iostream& nio::iostream::write(const char* s, int n)
+nio::iostream& nio::iostream::write(const char* s, streamsize n)
 {
 	int i;
 	for(i = 0; i < n; i++)
@@ -141,4 +171,82 @@ nio::iostream& nio::oct(nio::iostream& ios)
 {
 	ios.setf(nio::iostream::oct, nio::iostream::basefield);
 	return ios;
+}
+
+nio::iostream& nio::boolalpha(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::boolalpha);
+	return ios;
+}
+
+nio::iostream& nio::noboolalpha(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::boolalpha);
+	return ios;
+}
+
+nio::iostream& nio::showbase(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::showbase);
+	return ios;
+}
+
+nio::iostream& nio::noshowbase(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::showbase);
+	return ios;
+}
+
+nio::iostream& nio::showpoint(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::showpoint);
+	return ios;
+}
+
+nio::iostream& nio::noshowpoint(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::showpoint);
+	return ios;
+}
+
+nio::iostream& nio::showpos(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::showpos);
+	return ios;
+}
+
+nio::iostream& nio::noshowpos(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::showpos);
+	return ios;
+}
+
+nio::iostream& nio::internal(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::internal, nio::iostream::adjustfield);
+	return ios;
+}
+
+nio::iostream& nio::left(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::left, nio::iostream::adjustfield);
+	return ios;
+}
+
+nio::iostream& nio::right(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::right, nio::iostream::adjustfield);
+	return ios;
+}
+
+nio::streamsize nio::iostream::width() const
+{
+	return w;
+}
+
+nio::streamsize nio::iostream::width(streamsize wide)
+{
+	streamsize tmp = w;
+	w = wide;
+	return tmp;
 }
