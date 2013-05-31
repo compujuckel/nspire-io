@@ -4,6 +4,7 @@ nio::iostream::iostream(const int size_x, const int size_y, const int offset_x, 
 	: nio::console(size_x, size_y, offset_x, offset_y, background_color, foreground_color, drawing_enabled)
 {
 	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::right | nio::iostream::fixed);
+	s = nio::iostream::goodbit;
 	w = 0;
 	p = 5;
 }
@@ -127,6 +128,61 @@ nio::iostream& nio::iostream::operator<<(const bool val)
 nio::iostream& nio::iostream::operator<<(nio::iostream& (*pf)(nio::iostream&))
 {
 	return pf(*this);
+}
+
+nio::iostream& nio::iostream::operator>>(char*& val)
+{
+	nio::console::gets(val);
+	return *this;
+}
+
+nio::iostream& nio::iostream::operator>>(double& val)
+{
+	char buf[50] = { '\0' };
+	nio::console::gets(buf);
+	
+	//int ret = __builtin__sscanf
+	
+	return *this;
+}
+
+nio::iostream& nio::iostream::operator>>(int& val)
+{
+	char buf[50] = { '\0' };
+	char fmtstring[20] = { '\0' };
+	
+	nio::console::gets(buf);
+	if(buf[0] == 0)
+	{
+		clear(eofbit);
+		return *this;
+	}
+	
+	strcat(fmtstring,"%");
+	
+	// sscanf specifier
+	if(f & nio::iostream::dec)
+		strcat(fmtstring,"d");
+	else if(f & nio::iostream::hex)
+		strcat(fmtstring,"x");
+	else if(f & nio::iostream::oct)
+		strcat(fmtstring,"o");
+	else
+		strcat(fmtstring,"d");
+	
+	int ret = __builtin_sscanf(buf,fmtstring,&val);
+	if(ret == -1)
+	{
+		clear(eofbit);
+		return *this;
+	}
+	else if(ret == 0)
+	{
+		clear(failbit);
+		return *this;
+	}
+	
+	return *this;
 }
 
 nio::iostream& nio::iostream::put(char c)
@@ -328,4 +384,44 @@ nio::streamsize nio::iostream::width(streamsize wide)
 	streamsize tmp = w;
 	w = wide;
 	return tmp;
+}
+
+nio::iostream::iostate nio::iostream::rdstate() const
+{
+	return s;
+}
+
+void nio::iostream::setstate(nio::iostream::iostate state)
+{
+	s = (nio::iostream::iostate)(s | state);
+}
+
+void nio::iostream::clear(nio::iostream::iostate state)
+{
+	s = state;
+}
+
+bool nio::iostream::good() const
+{
+	return s == nio::iostream::goodbit;
+}
+
+bool nio::iostream::eof() const
+{
+	return s == nio::iostream::eofbit;
+}
+
+bool nio::iostream::fail() const
+{
+	return s == nio::iostream::failbit || s == nio::iostream::badbit;
+}
+
+bool nio::iostream::bad() const
+{
+	return s == nio::iostream::badbit;
+}
+
+bool nio::iostream::operator!() const
+{
+	return fail();
 }

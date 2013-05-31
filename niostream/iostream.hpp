@@ -41,6 +41,14 @@ namespace nio
 			floatfield	= fixed | scientific
 		};
 		
+		enum iostate
+		{
+			eofbit		= (1u << 0),
+			failbit		= (1u << 1),
+			badbit		= (1u << 2),
+			goodbit		= (1u << 3)
+		};
+		
 		iostream(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
 	
 		iostream& operator<<(const char* val);
@@ -53,6 +61,12 @@ namespace nio
 		iostream& write(const char* s, streamsize n);
 		iostream& flush();
 		
+		iostream& operator>>(char*& val);
+		iostream& operator>>(double& val);
+		iostream& operator>>(int& val);
+		iostream& operator>>(bool& val);
+		iostream& operator>>(iostream& (*pf)(iostream&));
+		
 		fmtflags flags();
 		fmtflags flags(fmtflags fmtfl);
 		fmtflags setf(fmtflags fmtl);
@@ -64,8 +78,19 @@ namespace nio
 		
 		streamsize width() const;
 		streamsize width(streamsize wide);
+		
+		iostate rdstate() const;
+		void setstate(iostate state);
+		void clear(iostate state);
+		bool good() const;
+		bool eof() const;
+		bool fail() const;
+		bool bad() const;
+		bool operator!() const;
+		
 	private:
 		fmtflags f;
+		iostate s;
 		streamsize w;
 		streamsize p;
 	};
