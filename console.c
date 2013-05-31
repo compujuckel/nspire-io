@@ -397,25 +397,13 @@ int nio_fputc(int character, nio_console* c)
 	else if(character == '\t')
 	{
 		// tabs are 8 character long
-		c->cursor_x += (9-1) - c->cursor_x % 8;
+		c->cursor_x += 8 - c->cursor_x % 8;
 		character = ' ';
 	}
 	// Must be a normal character...
 	else
 	{
-		// Check if the cursor is valid
-		if(c->cursor_x >= c->max_x)
-		{
-			c->cursor_x = 0;
-			c->cursor_y++;
-		}
-		if(c->cursor_y >= c->max_y)
-		{
-			nio_scroll(c);
-			if(c->drawing_enabled)
-				nio_fflush(c);
-		}
-		// Then store it.
+		// Store char.
 		nio_csl_savechar(c,character,c->cursor_x,c->cursor_y);
 		
 		// Draw it when BOOL draw is true
@@ -423,6 +411,19 @@ int nio_fputc(int character, nio_console* c)
 		
 		// Increment X cursor. It will be checked for validity next time.
 		c->cursor_x++;
+	}
+	
+	// Check if cursor is valid
+	if(c->cursor_x >= c->max_x)
+	{
+		c->cursor_x = 0;
+		c->cursor_y++;
+	}
+	if(c->cursor_y >= c->max_y)
+	{
+		nio_scroll(c);
+		if(c->drawing_enabled)
+			nio_fflush(c);
 	}
     return character;
 }
