@@ -508,7 +508,7 @@ char* nio_fgets(char* str, int num, nio_console* c)
 	int old_y = c->cursor_y;
 	
 	int i = 0;
-	while(i < num-2)
+	while(i < num-1)
 	{
 		nio_cursor_draw(c);
 		c->cursor_blink_status = TRUE;
@@ -517,7 +517,8 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		tmp = nio_getch(c);
 		if(tmp == '\n')
 		{
-			str[i] = '\0';
+			str[i] = '\n';
+			str[i+1] = '\0';
 			nio_fputc('\n', c);
 			return i > 0 ? str : NULL;
 		}
@@ -548,8 +549,6 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		}
 	}
 	str[num-1] = '\0';
-	str[num-2] = '\n';
-	nio_fputc('\n',c);
 	return str;
 }
 
