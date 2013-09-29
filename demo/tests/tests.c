@@ -66,8 +66,10 @@ int main(void)
 	nio_printf("Your text was:\n%s\n",input);
 	nio_puts("Enter a number: ");
 	int num;
-	int ret = nio_scanf("%d",&num);
-	nio_printf("Your number was: %d, (scanf returned %d)\n",num,ret);
+	if(nio_scanf("%d",&num) == 1)
+		nio_printf("Your number was: %d\n",num);
+	else
+		nio_puts("You did not enter a number!\n");
 	errno = 1;
 	nio_perror("Error test: ");
 	nio_putchar('\n');
