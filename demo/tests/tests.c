@@ -29,6 +29,7 @@
 
 int main(void)
 {
+	assert_ndless_rev(874);
 	clrscr();
 	
 	nio_console csl;
@@ -63,6 +64,10 @@ int main(void)
 	char input[100];
 	nio_gets(input);
 	nio_printf("Your text was:\n%s\n",input);
+	nio_puts("Enter a number: ");
+	int num;
+	int ret = nio_scanf("%d",&num);
+	nio_printf("Your number was: %d, (scanf returned %d)\n",num,ret);
 	errno = 1;
 	nio_perror("Error test: ");
 	nio_putchar('\n');

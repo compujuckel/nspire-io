@@ -294,6 +294,22 @@ char* nio_fgets(char* str, int num, nio_console* c);
 */
 char* nio_gets(char* str);
 
+/** See [fscanf](http://www.cplusplus.com/reference/cstdio/fscanf/)
+*/
+#define nio_fscanf(c, format, ...) \
+({ \
+	char tmp[100]; \
+	nio_fgets(tmp,100,c); \
+	sscanf(tmp,format, ##__VA_ARGS__); \
+})
+
+/** See [scanf](http://www.cplusplus.com/reference/cstdio/scanf/)
+*/
+#define nio_scanf(format, ...) \
+({ \
+	nio_fscanf(nio_get_default(),format, ##__VA_ARGS__); \
+})
+
 //int nio_vfprintf(nio_console* c, const char* format, va_list* arglist);
 
 /** See [fprintf](http://www.cplusplus.com/reference/clibrary/cstdio/fprintf/)
