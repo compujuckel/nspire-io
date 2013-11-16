@@ -71,9 +71,14 @@ int nio::console::getchar()
 	return nio_fgetc(c);
 }
 
+char* nio::console::getsn(char* str, int size)
+{
+	return nio_fgets(str,size,c);
+}
+
 char* nio::console::gets(char* str)
 {
-	return nio_fgets(str,1000,c);
+	return getsn(str,100);
 }
 
 int nio::console::_getch()

@@ -61,8 +61,8 @@ namespace nio
 		iostream& write(const char* s, streamsize n);
 		iostream& flush();
 		
-		iostream& operator>>(char*& val);
-		iostream& operator>>(double& val);
+		iostream& operator>>(char* val);
+		//iostream& operator>>(double& val);
 		iostream& operator>>(int& val);
 		iostream& operator>>(bool& val);
 		iostream& operator>>(iostream& (*pf)(iostream&));
@@ -107,6 +107,10 @@ namespace nio
 	iostream& noshowpoint(iostream& ios);
 	iostream& showpos(iostream& ios);
 	iostream& noshowpos(iostream& ios);
+	iostream& unitbuf(iostream& ios);
+	iostream& nounitbuf(iostream& ios);
+	iostream& skipws(iostream& ios);
+	iostream& noskipws(iostream& ios);
 	iostream& uppercase(iostream& ios);
 	iostream& nouppercase(iostream& ios);
 	

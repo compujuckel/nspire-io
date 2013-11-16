@@ -3,7 +3,7 @@
 nio::iostream::iostream(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled)
 	: nio::console(size_x, size_y, offset_x, offset_y, background_color, foreground_color, drawing_enabled)
 {
-	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::right | nio::iostream::fixed);
+	f = (nio::iostream::fmtflags)(nio::iostream::dec | nio::iostream::right | nio::iostream::fixed | nio::iostream::skipws | nio::iostream::unitbuf);
 	s = nio::iostream::goodbit;
 	w = 0;
 	p = 5;
@@ -15,7 +15,8 @@ nio::iostream& nio::iostream::operator<<(const char* val)
 	return *this;
 }
 
-nio::iostream& nio::iostream::operator<<(const double val)
+// Not working, either prints -0.00000 or crashes emu.
+/*nio::iostream& nio::iostream::operator<<(const double val)
 {
 	char buf[50] = { '\0' };
 	char fmtstring[20] = { '\0' };
@@ -25,8 +26,8 @@ nio::iostream& nio::iostream::operator<<(const double val)
 	// sprintf flags
 	if(f & nio::iostream::left)
 		strcat(fmtstring,"-");
-	if(f & nio::iostream::showpos)
-		strcat(fmtstring,"+");
+	//if(f & nio::iostream::showpos)
+	//	strcat(fmtstring,"+");
 	
 	// sprintf width
 	if(w)
@@ -55,7 +56,7 @@ nio::iostream& nio::iostream::operator<<(const double val)
 
 	nio::console::puts(buf);
 	return *this;
-}
+}*/
 
 nio::iostream& nio::iostream::operator<<(const int val)
 {
@@ -63,25 +64,23 @@ nio::iostream& nio::iostream::operator<<(const int val)
 	char fmtstring[20] = { '\0' };
 	
 	// Inserted before value
-	if(f & nio::iostream::showbase)
+	if(f & nio::iostream::showbase && !(f & nio::iostream::dec))
 	{
-		strcat(fmtstring,"0");
-		if(f & nio::iostream::dec)
-			strcat(fmtstring,"d");
-		else if(f & nio::iostream::hex)
-			strcat(fmtstring,"x");
-		else if(f & nio::iostream::oct)
-			strcat(fmtstring,"o");
+		if(f & nio::iostream::hex)
+			strcat(fmtstring,"0x");
 		else
-			strcat(fmtstring,"d");
+			strcat(fmtstring,"0");
 	}
 	strcat(fmtstring,"%");
 	
 	// sprintf flags
 	if(f & nio::iostream::left)
 		strcat(fmtstring,"-");
-	if(f & nio::iostream::showpos)
-		strcat(fmtstring,"+");
+	// the "+" / "#" flags are not supported by the Nspire's vsprintf :/
+	//if(f & nio::iostream::showpos)
+	//	strcat(fmtstring,"+");
+	//if(f & nio::iostream::showbase)
+	//	strcat(fmtstring,"#");
 	
 	// sprintf width
 	if(w)
@@ -130,33 +129,64 @@ nio::iostream& nio::iostream::operator<<(nio::iostream& (*pf)(nio::iostream&))
 	return pf(*this);
 }
 
-nio::iostream& nio::iostream::operator>>(char*& val)
+nio::iostream& nio::iostream::operator>>(nio::iostream& (*pf)(nio::iostream&))
+{
+	return pf(*this);
+}
+
+nio::iostream& nio::iostream::operator>>(char* val)
 {
 	nio::console::gets(val);
 	return *this;
 }
 
-nio::iostream& nio::iostream::operator>>(double& val)
+// Not working, crashes emu. Looks like sscanf has problems with doubles/floats.
+/*nio::iostream& nio::iostream::operator>>(double& val)
 {
 	char buf[50] = { '\0' };
-	nio::console::gets(buf);
+	char fmtstring[20] = { '\0' };
 	
-	//int ret = __builtin__sscanf
+	nio::console::getsn(buf,50);
+	if(buf[0] == 0)
+	{
+		clear(eofbit);
+		return *this;
+	}
+	
+	if(f & nio::iostream::skipws)
+		strcat(fmtstring," ");
+	
+	strcat(fmtstring,"%lf");
+	
+	int ret = sscanf(buf,fmtstring,&val);
+	if(ret == -1)
+	{
+		clear(eofbit);
+		return *this;
+	}
+	else if(ret == 0)
+	{
+		clear(failbit);
+		return *this;
+	}
 	
 	return *this;
-}
+}*/
 
 nio::iostream& nio::iostream::operator>>(int& val)
 {
 	char buf[50] = { '\0' };
 	char fmtstring[20] = { '\0' };
 	
-	nio::console::gets(buf);
+	nio::console::getsn(buf,50);
 	if(buf[0] == 0)
 	{
 		clear(eofbit);
 		return *this;
 	}
+	
+	if(f & nio::iostream::skipws)
+		strcat(fmtstring," ");
 	
 	strcat(fmtstring,"%");
 	
@@ -168,9 +198,9 @@ nio::iostream& nio::iostream::operator>>(int& val)
 	else if(f & nio::iostream::oct)
 		strcat(fmtstring,"o");
 	else
-		strcat(fmtstring,"d");
+		strcat(fmtstring,"i");
 	
-	int ret = __builtin_sscanf(buf,fmtstring,&val);
+	int ret = sscanf(buf,fmtstring,&val);
 	if(ret == -1)
 	{
 		clear(eofbit);
@@ -214,6 +244,7 @@ nio::iostream::fmtflags nio::iostream::flags(fmtflags fmtfl)
 {
 	fmtflags tmp = f;
 	f = fmtfl;
+	drawing_enabled(f & nio::iostream::unitbuf);
 	return tmp;
 }
 
@@ -221,6 +252,7 @@ nio::iostream::fmtflags nio::iostream::setf(fmtflags fmtfl)
 {
 	fmtflags tmp = f;
 	f = (nio::iostream::fmtflags)(f | fmtfl);
+	drawing_enabled(f & nio::iostream::unitbuf);
 	return tmp;
 }
 
@@ -228,12 +260,14 @@ nio::iostream::fmtflags nio::iostream::setf(fmtflags fmtfl, fmtflags mask)
 {
 	fmtflags tmp = f;
 	f = (nio::iostream::fmtflags)( ( fmtfl & mask ) | ( f & ~mask ) );
+	drawing_enabled(f & nio::iostream::unitbuf);
 	return tmp;
 }
 
 void nio::iostream::unsetf(fmtflags mask)
 {
 	f = (nio::iostream::fmtflags)( f & ~mask );
+	drawing_enabled(f & nio::iostream::unitbuf);
 }
 
 nio::iostream& nio::endl(nio::iostream& ios)
@@ -317,6 +351,30 @@ nio::iostream& nio::showpos(nio::iostream& ios)
 nio::iostream& nio::noshowpos(nio::iostream& ios)
 {
 	ios.unsetf(nio::iostream::showpos);
+	return ios;
+}
+
+nio::iostream& nio::unitbuf(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::unitbuf);
+	return ios;
+}
+
+nio::iostream& nio::nounitbuf(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::unitbuf);
+	return ios;
+}
+
+nio::iostream& nio::skipws(nio::iostream& ios)
+{
+	ios.setf(nio::iostream::skipws);
+	return ios;
+}
+
+nio::iostream& nio::noskipws(nio::iostream& ios)
+{
+	ios.unsetf(nio::iostream::skipws);
 	return ios;
 }
 

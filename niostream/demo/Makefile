@@ -1,16 +1,20 @@
+DEBUG = FALSE
 GCC = nspire-gcc
+AS = nspire-as
 GXX=nspire-g++
-LD = nspire-ld
-GCCFLAGS = -Os -Wall -W -marm
+LD = nspire-ld-bflt
+GCCFLAGS = -Wall -W -marm
 LDFLAGS = -lniostream
-CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
-OBJS = $(patsubst %.c,%.o,$(wildcard *.c)) $(CPPOBJS)
-ifneq (${CPPOBJS},"")
-	LDFLAGS += --cpp
+ifeq ($(DEBUG),FALSE)
+	GCCFLAGS += -Os
+else
+	GCCFLAGS += -O0 -g
+	LDFLAGS += --debug
 endif
-OBJCOPY := "$(shell which arm-elf-objcopy 2>/dev/null)"
-ifeq (${OBJCOPY},"")
-	OBJCOPY := arm-none-eabi-objcopy
+CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+OBJS = $(patsubst %.c,%.o,$(wildcard *.c)) $(patsubst %.S,%.o,$(wildcard *.S)) $(CPPOBJS)
+ifneq ($(strip $(CPPOBJS)),)
+	LDFLAGS += --cpp
 endif
 EXE = demo.tns
 DISTDIR = .
@@ -24,10 +28,15 @@ all: $(EXE)
 %.o: %.cpp
 	$(GXX) $(GCCFLAGS) -c $<
 	
+%.o: %.S
+	$(AS) -c $<
+
 $(EXE): $(OBJS)
-	$(LD) $^ -o $(@:.tns=.elf) $(LDFLAGS)
 	mkdir -p $(DISTDIR)
-	$(OBJCOPY) -O binary $(@:.tns=.elf) $(DISTDIR)/$@
+	$(LD) $^ -o $(DISTDIR)/$@ $(LDFLAGS)
+ifeq ($(DEBUG),FALSE)
+	@rm -f $(DISTDIR)/*.gdb
+endif
 
 clean:
-	rm -f *.o *.elf
+	rm -f *.o *.elf $(DISTDIR)/*.gdb $(DISTDIR)/$(EXE)

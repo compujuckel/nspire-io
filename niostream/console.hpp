@@ -11,7 +11,7 @@ extern "C"
 
 namespace nio
 {
-	enum
+	enum color
 	{
 		COLOR_BLACK,
 		COLOR_RED,
@@ -31,7 +31,7 @@ namespace nio
 		COLOR_WHITE
 	};
 	
-	enum
+	enum cursor
 	{
 		CURSOR_BLOCK,
 		CURSOR_UNDERSCORE,
@@ -61,7 +61,8 @@ namespace nio
 		int putchar(int character);
 		int puts(const char* str);
 		int getchar();
-		char* gets(char* str);
+		char* getsn(char* str, int size);
+		char* gets(char* str) __attribute__((deprecated));
 		//int printf(const char* format, ...);
 		//void perror(const char* str);
 		int _getch();
