@@ -39,6 +39,7 @@ install:
 	mkdir -p "$(DESTDIR)/include/niostream"
 	cp -u console.hpp "$(DESTDIR)/include/niostream/"
 	cp -u iostream.hpp "$(DESTDIR)/include/niostream/"
+	cp -u nio_base.hpp "$(DESTDIR)/include/niostream/"
 	cp -u $(LIB) "$(DESTDIR)/lib/"
 
 uninstall:

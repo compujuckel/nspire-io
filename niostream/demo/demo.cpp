@@ -2,7 +2,7 @@
 
 int main(void)
 {
-	clrscr();
+	clrscr();	
 	nio::iostream csl(nio::MAX_COLS,nio::MAX_ROWS,0,0,nio::COLOR_WHITE,nio::COLOR_BLACK,true);
 	
 	csl << "niostream tests (built " << __DATE__ << " " << __TIME__ << ")" << nio::endl;
@@ -16,8 +16,8 @@ int main(void)
 	csl << "int (showbase/uppercase/hex): " << nio::uppercase << 123 << nio::nouppercase << nio::endl;
 	csl << "int (showbase/oct): " << nio::oct << 123 << nio::endl;
 	
-	csl.unsetf(nio::iostream::showbase);
-	csl.setf(nio::iostream::dec, nio::iostream::basefield);
+	//csl.unsetf(nio::iostream::showbase);
+	//csl.setf(nio::iostream::dec, nio::iostream::basefield);
 	
 	csl.width(10);
 	csl << "width: " << 123 << "." << nio::endl;
