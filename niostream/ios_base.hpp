@@ -72,15 +72,28 @@ namespace nio
 		virtual void write(const char* s, streamsize n) = 0;
 		virtual void flush() = 0;
 		
+		virtual streamsize gcount() const = 0;
+		virtual char get() = 0;
+		virtual void get(char& c) = 0;
+		virtual void get(char* s, streamsize n) = 0;
+		virtual void getline(char* s, streamsize b) = 0;
+		
 		T& operator<<(const char* val);
 		T& operator<<(const int val);
+		T& operator<<(const bool val);
 		T& operator<<(ios_base& (*pf)(ios_base&));
+		
+		T& operator>>(char* val);
+		T& operator>>(int& val);
+		T& operator>>(bool& val);
+		T& operator>>(ios_base& (*pf)(ios_base&));
 		
 	protected:
 		iostate s;
 		fmtflags f;
 		streamsize p;
 		streamsize w;
+		streamsize count;
 	};
 	
 	template<class T>

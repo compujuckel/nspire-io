@@ -15,6 +15,7 @@ console::console(const int size_x, const int size_y, const int offset_x, const i
 	s = goodbit;
 	w = 0;
 	p = 5;
+	count = 0;
 }
 
 console::~console()
@@ -73,4 +74,33 @@ void console::write(const char* s, streamsize n)
 void console::flush()
 {
 	nio_fflush(c);
+}
+
+streamsize console::gcount() const
+{
+	return count;
+}
+
+char console::get()
+{
+	char tmp = nio_fgetc(c);
+	count = tmp != 0 ? 1 : 0;
+	return tmp;
+}
+
+void console::get(char& ch)
+{
+	ch = nio_fgetc(c);
+	count = c != 0 ? 1 : 0;
+}
+
+void console::get(char* s, streamsize n)
+{
+	nio_fgets(s,n,c);
+	count = strlen(s);
+}
+
+void console::getline(char* s, streamsize n)
+{
+	get(s,n);
 }

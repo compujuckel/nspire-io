@@ -160,7 +160,71 @@ T& ios_base<T>::operator<<(const int val)
 }
 
 template<class T>
+T& ios_base<T>::operator<<(const bool val)
+{
+	if(f & boolalpha)
+	{
+		if(val)
+			write("true",4);
+		else
+			write("false",5);
+	}
+	else
+	{
+		if(val)
+			write("1",1);
+		else
+			write("0",1);
+	}
+	return static_cast<T&>(*this);
+}
+
+template<class T>
 T& ios_base<T>::operator<<(ios_base& (*pf)(ios_base&))
+{
+	return static_cast<T&>(pf(*this));
+}
+
+template<class T>
+T& ios_base<T>::operator>>(char* val)
+{
+	getline(val,50);
+	return static_cast<T&>(*this);
+}
+
+template<class T>
+T& ios_base<T>::operator>>(int& val)
+{
+	char buf[50] = {0};
+	
+	getline(buf,50);
+	if(buf[0] == 0)
+	{
+		clear(eofbit);
+		return static_cast<T&>(*this);
+	}
+
+	val = strtol(buf,NULL,0);
+	
+	return static_cast<T&>(*this);
+}
+
+template<class T>
+T& ios_base<T>::operator>>(bool& val)
+{
+	char buf[50] = {0};
+	
+	getline(buf,50);
+	if(strcmp(buf,"1") == 0 || strcmp(buf,"true") == 0 || strcmp(buf,"yes") == 0)
+		val = true;
+	else
+		val = false;
+	
+	return static_cast<T&>(*this);
+}
+
+template<class T>
+T& ios_base<T>::operator>>(ios_base& (*pf)(ios_base&))
 {
 	return static_cast<T&>(pf(*this));
 }

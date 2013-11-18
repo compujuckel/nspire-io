@@ -61,6 +61,12 @@ namespace nio
 		virtual void put(char ch);
 		virtual void write(const char* s, streamsize n);
 		virtual void flush();
+		
+		virtual int gcount() const;
+		virtual char get();
+		virtual void get(char& c);
+		virtual void get(char* s, streamsize n);
+		virtual void getline(char* s, streamsize n);
 	private:
 		#ifdef BUILDLIB
 		nio_console* c;
