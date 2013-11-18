@@ -265,30 +265,14 @@ void nio_clear(nio_console* c)
 
 void nio_scroll(nio_console* c)
 {
-	char* temp;
-	unsigned short* temp2;
-	temp = malloc(c->max_x*c->max_y);
-	temp2 = malloc(c->max_x*c->max_y*2);
-	
-	memset(temp,0,c->max_x*c->max_y);
-	memcpy(temp,c->data+c->max_x,c->max_x*(c->max_y-1));
-	memcpy(c->data,temp,c->max_x*c->max_y);
-	
-	unsigned short color = (c->default_background_color << 8) | c->default_foreground_color;
-	int i;
-	for(i = 0; i < c->max_x*c->max_y; i++)
-	{
-		temp2[i] = color;
-	}
-	memcpy(temp2,c->color+c->max_x,c->max_x*(c->max_y-1)*2);
-	memcpy(c->color,temp2,c->max_x*c->max_y*2);
+	memmove(c->data,c->data+c->max_x,c->max_x*(c->max_y-1));
+	memmove(c->color,c->color+c->max_x,c->max_x*(c->max_y-1)*2);
+	memset(c->data+(c->max_x*(c->max_y-1)),0,c->max_x);
+	memset(c->color+(c->max_x*(c->max_y-1)*2),0,c->max_x*2);
 	
 	if(c->cursor_y > 0)
 		c->cursor_y--;
 	c->cursor_x = 0;
-	
-	free(temp);
-	free(temp2);
 }
 
 void nio_csl_drawchar(nio_console* c, const int pos_x, const int pos_y)
@@ -487,6 +471,8 @@ void nio_color(nio_console* c, const unsigned char background_color, const unsig
 void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 {
 	c->drawing_enabled = enable_drawing;
+	if(enable_drawing)
+		nio_fflush(c);
 }
 
 int nio_fgetc(nio_console* c)

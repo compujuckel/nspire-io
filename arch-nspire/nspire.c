@@ -79,30 +79,37 @@ unsigned short getPaletteColor(unsigned int color)
 	return 0;
 }
 
+static void nio_pixel_set_4bpp(void* screen, int x, int y, unsigned short c)
+{
+	unsigned char* p = (unsigned char*)(screen + ((x >> 1) + (y << 7) + (y << 5)));
+	*p = (x & 1) ? ((*p & 0xF0) | getBW(c)) : ((*p & 0x0F) | (getBW(c) << 4));
+}
+
+static void nio_pixel_set_16bpp(void* screen, int x, int y, unsigned short c)
+{
+	unsigned char* ptr = screen + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
+	*(unsigned short*)ptr = c;
+}
+
 // by totorigolo
 void nio_pixel_set(int x, int y, unsigned int color)
 {
     unsigned short c = getPaletteColor(color);
 	
-	void* screen = SCREEN_BASE_ADDRESS;
+	static void* screen = NULL;
+	static void (*fp)(void*, int, int, unsigned short) = NULL;
+	
+	if(screen == NULL)
+		screen = SCREEN_BASE_ADDRESS;
 	if(scrbuf != NULL)
 		screen = scrbuf;
+	if(fp == NULL)
+		fp = lcd_isincolor() ? nio_pixel_set_16bpp : nio_pixel_set_4bpp;
 	
 	if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
         return;
 
-    // 4 bpp
-    if (!has_colors || !lcd_isincolor())
-    {
-        unsigned char* p = (unsigned char*)(screen + ((x >> 1) + (y << 7) + (y << 5)));
-        *p = (x & 1) ? ((*p & 0xF0) | getBW(c)) : ((*p & 0x0F) | (getBW(c) << 4));
-    }
-    // 16 bpp
-    else
-    {
-        unsigned char* ptr = screen + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
-        *(unsigned short*)ptr = c;
-    }
+    fp(screen,x,y,c);
 }
 
 // Disable VRAM support at the moment. There are issues with consoles that are not fullscreen and VRAM has not really any pros.

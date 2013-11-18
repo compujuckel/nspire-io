@@ -53,6 +53,7 @@ int main(void)
 		
 		// Check for interesting text
 		if (!strcmp(text, "help")) {
+			nio_drawing_enabled(&c1,FALSE);
 			nio_printf("ConsoleDemo+ Help\n");
 			nio_printf("  setcursor cursor\n");
 			nio_printf("    Set the cursor type.\n");
@@ -73,6 +74,7 @@ int main(void)
 			nio_printf("    Clear the console.\n");
 			nio_printf("  exit\n");
 			nio_printf("    Exit this console.\n");
+			nio_drawing_enabled(&c1,TRUE);
 		}
 		
 		if (!strcmp(text, "setcursor 0")) {
@@ -127,9 +129,6 @@ int main(void)
 	}
 	
 	nio_free(&c1);
-	
-	//if(has_colors)
-	//	lcd_incolor();
 		
 	return 0;
 }
