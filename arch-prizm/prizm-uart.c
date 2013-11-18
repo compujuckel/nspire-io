@@ -39,19 +39,26 @@ char uart_getchar(void)
 	return out;
 }
 
-char* uart_gets(char* str)
+char* uart_getsn(char* str, int num)
 {
-	int i = 0;
-	while(1)
+	int i;
+	while(i = 0; i < num-1; i++)
 	{
 		char c = uart_getchar();
-		str[i++] = c;
+		str[i] = c;
 		if(c == '\n')
 		{
 			str[i] = 0;
 			return str;
 		}
 	}
+	str[num] = 0;
+	return str;
+}
+
+char* uart_gets(char* str)
+{
+	return uart_getsn(str,50);
 }
 
 char uart_putchar(char character)

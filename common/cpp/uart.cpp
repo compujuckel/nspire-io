@@ -75,7 +75,7 @@ void uart::get(char& ch)
 
 void uart::get(char* s, streamsize n)
 {
-	uart_gets(s);
+	uart_getsn(s,n);
 	count = strlen(s);
 }
 
