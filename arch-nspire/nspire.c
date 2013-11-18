@@ -25,7 +25,7 @@
  * Functions for Nspire platform
  */
 
-#include "nspireio-platform.h"
+#include <nspireio/platform.h>
 
 void* scrbuf = NULL;
 

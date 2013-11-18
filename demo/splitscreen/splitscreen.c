@@ -24,7 +24,7 @@
  *
  * Splitscreen demo
  */
-#include <nspireio.h>
+#include <nspireio/nspireio.h>
 
 int main(void)
 {

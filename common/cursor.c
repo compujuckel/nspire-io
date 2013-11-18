@@ -25,7 +25,7 @@
  *
  * Cursor functions
  */
-#include "nspireio.h"
+#include <nspireio/nspireio.h>
 
 void nio_cursor_draw(nio_console* c)
 {

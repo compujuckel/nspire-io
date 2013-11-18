@@ -24,7 +24,7 @@
  *
  * Hello World
  */
-#include <nspireio.h>
+#include <nspireio/nspireio.h>
 
 int main(void)
 {

@@ -25,7 +25,7 @@
  * stdio demo
  */
 #define NIO_REPLACE_STDIO
-#include <nspireio.h>
+#include <nspireio/nspireio.h>
 
 int main(void)
 {
