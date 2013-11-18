@@ -27,6 +27,10 @@
 
 #include <nspireio/nspireio.h>
 
+#ifndef NIO_TEST_UART
+#define NIO_TEST_UART 0
+#endif
+
 int main(void)
 {
 	assert_ndless_rev(874);
@@ -87,9 +91,15 @@ int main(void)
 	int* reg_test2 = reg_get("/documents/nio_tests.tns");
 	nio_printf("%d is %d\n",reg_test,*reg_test2);
 	
+	#if NIO_TEST_UART == 1
 	nio_puts("Testing UART...\n");
 	uart_puts("Nspire I/O testing tool\n");
 	uart_printf("Compiled %s %s\n",__DATE__,__TIME__);
+	
+	uart_puts("Enter text: ");
+	uart_getsn(input,100);
+	uart_printf("Your text was: %s\n",input);
+	#endif
 	
 	nio_puts("Tests finished.");
 	nio_free(&csl);

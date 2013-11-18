@@ -41,7 +41,10 @@ char uart_getchar(void)
 		while(!(*line_status_reg & 0b1));
 	else
 		while(*line_status_reg &0b10);
-	return *recv_buffer_reg;
+	
+	char tmp = *recv_buffer_reg;
+	uart_putchar(tmp);
+	return tmp;
 }
 
 char* uart_getsn(char* str, int num)
@@ -51,9 +54,10 @@ char* uart_getsn(char* str, int num)
 	{
 		char c = uart_getchar();
 		str[i] = c;
-		if(c == '\n')
+		if(c == '\r')
 		{
 			str[i] = 0;
+			uart_putchar('\n');
 			return str;
 		}
 	}
