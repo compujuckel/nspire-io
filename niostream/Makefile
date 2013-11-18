@@ -1,7 +1,7 @@
 GCC = nspire-gcc
 GXX=nspire-g++
 LD = nspire-ld-bflt
-GCCFLAGS = -Os -Wall -W -marm -DBUILDLIB
+GCCFLAGS = -Os -Wall -W -marm -DBUILDLIB -I.
 LDFLAGS = -lnspireio
 CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 OBJS = $(patsubst %.c,%.o,$(wildcard *.c)) $(CPPOBJS)
@@ -38,8 +38,7 @@ $(LIB): $(OBJS)
 install:
 	mkdir -p "$(DESTDIR)/include/niostream"
 	cp -u console.hpp "$(DESTDIR)/include/niostream/"
-	cp -u iostream.hpp "$(DESTDIR)/include/niostream/"
-	cp -u nio_base.hpp "$(DESTDIR)/include/niostream/"
+	cp -u ios_base.hpp "$(DESTDIR)/include/niostream/"
 	cp -u $(LIB) "$(DESTDIR)/lib/"
 
 uninstall:

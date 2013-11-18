@@ -3,8 +3,8 @@ GCC = nspire-gcc
 AS = nspire-as
 GXX=nspire-g++
 LD = nspire-ld-bflt
-GCCFLAGS = -Wall -W -marm
-LDFLAGS = -lniostream
+GCCFLAGS = -Wall -W -marm -I..
+LDFLAGS = -lniostream -L..
 ifeq ($(DEBUG),FALSE)
 	GCCFLAGS += -Os
 else

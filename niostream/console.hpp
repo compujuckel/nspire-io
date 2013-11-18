@@ -1,10 +1,11 @@
-extern "C"
-{
+extern "C" {
 	#include <os.h>
 	#ifdef BUILDLIB
 		#include <nspireio.h>
 	#endif
 }
+
+#include <ios_base.ipp>
 
 #ifndef CONSOLE_HPP
 #define CONSOLE_HPP
@@ -43,44 +44,26 @@ namespace nio
 	extern const int MAX_ROWS;
 	extern const int MAX_COLS;
 	
-	class console
+	class console : public ios_base<console>
 	{
 	public:
-		void clear();
+		console(const int size_x = MAX_COLS, const int size_y = MAX_ROWS, const int offset_x = 0, const int offset_y = 0, enum color background_color = COLOR_WHITE, enum color foreground_color = COLOR_BLACK, const bool drawing_enabled = true);
+		~console();
+		
+		void csl_clear();
 		void scroll();
 		void csl_drawchar(const int pos_x, const int pos_y);
 		void vram_csl_drawchar(const int pos_x, const int pos_y);
 		void csl_savechar(const char ch, const int pos_x, const int pos_y);
-		void color(const unsigned char background_color, const unsigned char foreground_color);
+		void color(enum color background_color, enum color foreground_color);
 		void drawing_enabled(const bool enable_drawing);
 		
-		console(const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
-		~console();
-		
-		int flush();
-		int putchar(int character);
-		int puts(const char* str);
-		int getchar();
-		char* getsn(char* str, int size);
-		char* gets(char* str) __attribute__((deprecated));
-		//int printf(const char* format, ...);
-		//void perror(const char* str);
-		int _getch();
-		int _getche();
-		
-		void cursor_draw();
-		void cursor_erase();
-		void cursor_blinking_draw();
-		void cursor_blinking_reset();
-		void cursor_enable(bool enable_cursor);
-		void cursor_blinking_enable(bool enable_cursor_blink);
-		void cursor_blinking_duration(int duration);
-		void cursor_type(int cursor_type);
-		void cursor_width(int cursor_width);
-		void cursor_custom(unsigned char cursor_data[6]);
+		virtual void put(char ch);
+		virtual void write(const char* s, streamsize n);
+		virtual void flush();
 	private:
 		#ifdef BUILDLIB
-			nio_console* c;
+		nio_console* c;
 		#endif
 	};
 }
