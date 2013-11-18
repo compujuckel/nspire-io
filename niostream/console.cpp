@@ -61,6 +61,7 @@ void console::drawing_enabled(const bool enable_drawing)
 
 void console::put(char ch)
 {
+	nio_drawing_enabled(c,(f & unitbuf) ? TRUE : FALSE);
 	nio_fputc(ch,c);
 }
 
@@ -68,7 +69,7 @@ void console::write(const char* s, streamsize n)
 {
 	int i;
 	for(i = 0; i < n; i++)
-		console::put(s[i]);
+		put(s[i]);
 }
 
 void console::flush()
@@ -91,7 +92,7 @@ char console::get()
 void console::get(char& ch)
 {
 	ch = nio_fgetc(c);
-	count = c != 0 ? 1 : 0;
+	count = ch != 0 ? 1 : 0;
 }
 
 void console::get(char* s, streamsize n)

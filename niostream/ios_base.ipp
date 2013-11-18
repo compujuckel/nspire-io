@@ -1,5 +1,8 @@
 #include "ios_base.hpp"
 
+#ifndef IOS_BASE_IPP
+#define IOS_BASE_IPP
+
 using namespace nio;
 
 template<class T>
@@ -228,3 +231,5 @@ T& ios_base<T>::operator>>(ios_base& (*pf)(ios_base&))
 {
 	return static_cast<T&>(pf(*this));
 }
+
+#endif
