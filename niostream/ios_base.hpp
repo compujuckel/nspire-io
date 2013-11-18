@@ -74,6 +74,7 @@ namespace nio
 		
 		T& operator<<(const char* val);
 		T& operator<<(const int val);
+		T& operator<<(ios_base& (*pf)(ios_base&));
 		
 	protected:
 		iostate s;
@@ -81,6 +82,181 @@ namespace nio
 		streamsize p;
 		streamsize w;
 	};
+	
+	template<class T>
+	ios_base<T>& dec(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::dec, ios_base<T>::basefield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& hex(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::hex, ios_base<T>::basefield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& oct(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::oct, ios_base<T>::basefield);
+		return ios;
+	}
+	
+	template<class T>
+	ios_base<T>& boolalpha(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::boolalpha);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& noboolalpha(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::boolalpha);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& showbase(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::showbase);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& noshowbase(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::showbase);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& showpoint(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::showpoint);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& noshowpoint(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::showpoint);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& showpos(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::showpos);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& noshowpos(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::showpos);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& unitbuf(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::unitbuf);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& nounitbuf(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::unitbuf);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& skipws(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::skipws);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& noskipws(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::skipws);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& uppercase(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::uppercase);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& nouppercase(ios_base<T>& ios)
+	{
+		ios.unsetf(ios_base<T>::uppercase);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& internal(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::internal, ios_base<T>::adjustfield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& left(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::left, ios_base<T>::adjustfield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& right(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::right, ios_base<T>::adjustfield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& fixed(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::fixed, ios_base<T>::floatfield);
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& scientific(ios_base<T>& ios)
+	{
+		ios.setf(ios_base<T>::scientific, ios_base<T>::floatfield);
+		return ios;
+	}
+	
+	template<class T>
+	ios_base<T>& endl(ios_base<T>& ios)
+	{
+		ios.put('\n');
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& ends(ios_base<T>& ios)
+	{
+		ios.put('\0');
+		return ios;
+	}
+
+	template<class T>
+	ios_base<T>& flush(ios_base<T>& ios)
+	{
+		ios.flush();
+		return ios;
+	}
 }
 
 #endif

@@ -4,9 +4,7 @@ int main(void)
 {
 	nio::console c;
 	
-	c.width(10);
-	c << ":" << 123 << ":";
-	
+	c << "hello" << nio::endl << 123;
 	
 	wait_key_pressed();
 	return 0;

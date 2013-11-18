@@ -158,3 +158,9 @@ T& ios_base<T>::operator<<(const int val)
 	write(buf,num);
 	return static_cast<T&>(*this);
 }
+
+template<class T>
+T& ios_base<T>::operator<<(ios_base& (*pf)(ios_base&))
+{
+	return static_cast<T&>(pf(*this));
+}
