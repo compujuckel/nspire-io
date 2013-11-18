@@ -48,7 +48,7 @@ int main(void)
 		char text[100];
 		nio_printf("> ");
 		// If no text was entered, exit
-		if(!nio_gets(text))
+		if(!nio_getsn(text,100))
 			continue;
 		
 		// Check for interesting text
@@ -97,7 +97,7 @@ int main(void)
 		if (!strcmp(text, "setcursorwidth")) {
 			nio_printf("Specify cursor width: ");
 			char num[10];
-			nio_gets(num);
+			nio_getsn(num,10);
 			nio_cursor_width(&c1, atoi(num));
 		}
 		

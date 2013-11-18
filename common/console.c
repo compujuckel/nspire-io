@@ -555,7 +555,12 @@ char* nio_fgets(char* str, int num, nio_console* c)
 
 char* nio_gets(char* str)
 {
-    nio_fgets(str,100,nio_default);
+    return nio_getsn(str,50);
+}
+
+char* nio_getsn(char* str, int num)
+{
+	nio_fgets(str,num,nio_default);
 	str[strlen(str)] = '\0';
 	return str;
 }

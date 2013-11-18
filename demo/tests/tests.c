@@ -62,7 +62,7 @@ int main(void)
 	nio_drawing_enabled(&csl,TRUE);
 	nio_puts("Enter text:\n");
 	char input[100];
-	nio_gets(input);
+	nio_getsn(input,100);
 	nio_printf("Your text was:\n%s\n",input);
 	nio_puts("Enter a number: ");
 	int num;
