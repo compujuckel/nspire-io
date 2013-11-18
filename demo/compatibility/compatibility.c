@@ -29,7 +29,7 @@
 // Alternatively, you could use:
 // #define NIO_KEEP_COMPATIBILITY
 // #include <nspireio.h>
-#include <nspireio2.h>
+#include <nspireio/nspireio2.h>
 
 int main(void)
 {

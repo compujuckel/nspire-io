@@ -25,7 +25,7 @@
  *
  * A more complex demo program showing the cursor functions of NspireIO.
  */
-#include <nspireio.h>
+#include <nspireio/nspireio.h>
 
 int main(void)
 {

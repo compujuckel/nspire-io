@@ -1,0 +1,9 @@
+AR := "$(shell (which arm-elf-ar arm-none-eabi-ar arm-linux-gnueabi-ar | head -1) 2>/dev/null)"
+GCC = nspire-gcc
+AS = nspire-as
+GXX = nspire-g++
+GCCFLAGS = -Wall -W -marm
+LD = nspire-ld-bflt
+LDFLAGS =
+USERPROFILE ?= $(HOME)
+DESTDIR = $(USERPROFILE)/.ndless

@@ -1,10 +1,10 @@
 DEBUG = FALSE
 GCC = nspire-gcc
 AS = nspire-as
-GXX=nspire-g++
+GXX= nspire-g++
 LD = nspire-ld-bflt
-GCCFLAGS = -Wall -W -marm -I..
-LDFLAGS = -lniostream -L..
+GCCFLAGS = -Wall -W -marm -I../../include
+LDFLAGS = -B../../lib -lnspireio
 ifeq ($(DEBUG),FALSE)
 	GCCFLAGS += -Os
 else
@@ -16,8 +16,8 @@ OBJS = $(patsubst %.c,%.o,$(wildcard *.c)) $(patsubst %.S,%.o,$(wildcard *.S)) $
 ifneq ($(strip $(CPPOBJS)),)
 	LDFLAGS += --cpp
 endif
-EXE = demo.tns
-DISTDIR = .
+EXE = cplusplus.tns
+DISTDIR = ../../bin
 vpath %.tns $(DISTDIR)
 
 all: $(EXE)

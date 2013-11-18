@@ -25,7 +25,7 @@
  * Tests a lot of nspireio functions
  */
 
-#include <nspireio.h>
+#include <nspireio/nspireio.h>
 
 int main(void)
 {
@@ -82,7 +82,7 @@ int main(void)
 	
 	nio_puts("Testing UART...\n");
 	uart_puts("Nspire I/O testing tool\n");
-	uart_printf("Compiled %s %s",__DATE__,__TIME__);
+	uart_printf("Compiled %s %s\n",__DATE__,__TIME__);
 	
 	nio_puts("Tests finished.");
 	nio_free(&csl);
