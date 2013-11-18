@@ -45,14 +45,30 @@ console::console(const int size_x, const int size_y, const int offset_x, const i
 	count = 0;
 }
 
+console::console(const char* path)
+{
+	nio_load(path,c);
+	
+	f = (fmtflags)(dec | right | fixed | skipws | (c->drawing_enabled == TRUE ? unitbuf : 0) );
+	s = goodbit;
+	w = 0;
+	p = 5;
+	count = 0;
+}
+
 console::~console()
 {
 	delete c;
 }
 
-void console::csl_clear()
+void console::cls()
 {
 	nio_clear(c);
+}
+
+void console::save(const char* path)
+{
+	nio_save(path,c);
 }
 
 void console::scroll()
@@ -80,10 +96,31 @@ void console::color(enum color background_color, enum color foreground_color)
 	nio_color(c,background_color,foreground_color);
 }
 
-void console::drawing_enabled(const bool enable_drawing)
+void console::drawing_enable(const bool enable_drawing)
 {
 	BOOL enable_drawing_b = enable_drawing ? TRUE : FALSE;
 	nio_drawing_enabled(c,enable_drawing_b);
+}
+
+void console::cursor_enable(const bool enable_cursor)
+{
+	BOOL enable_cursor_b = enable_cursor ? TRUE : FALSE;
+	nio_cursor_enable(c,enable_cursor_b);
+}
+
+void console::cursor_type(enum cursor crsr)
+{
+	nio_cursor_type(c,crsr);
+}
+
+void console::cursor_width(int width)
+{
+	nio_cursor_width(c,width);
+}
+
+void console::cursor_custom(unsigned char cursor_data[6])
+{
+	nio_cursor_custom(c,cursor_data);
 }
 
 void console::put(char ch)

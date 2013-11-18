@@ -460,7 +460,7 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 	custom cursor type (3), the custom cursor will be set to
 	{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF} (a block cursor).
 */
-void nio_cursor_custom(nio_console* c, char cursor_data[6]);
+void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
 
 #ifdef NIO_KEEP_COMPATIBILITY
 #define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,TRUE)

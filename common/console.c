@@ -557,6 +557,7 @@ char* nio_gets(char* str)
 {
     nio_fgets(str,100,nio_default);
 	str[strlen(str)] = '\0';
+	return str;
 }
 
 void nio_free(nio_console* c)

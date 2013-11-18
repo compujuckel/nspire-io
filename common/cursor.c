@@ -198,7 +198,7 @@ void nio_cursor_width(nio_console* c, int cursor_width)
 	c->cursor_line_width = cursor_width;
 }
 
-void nio_cursor_custom(nio_console* c, char cursor_data[6])
+void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6])
 {
 	int i;
 	for(i = 0; i <= 5; i++) {

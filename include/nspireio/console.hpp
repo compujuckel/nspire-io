@@ -75,15 +75,19 @@ namespace nio
 	{
 	public:
 		console(const int size_x = MAX_COLS, const int size_y = MAX_ROWS, const int offset_x = 0, const int offset_y = 0, enum color background_color = COLOR_WHITE, enum color foreground_color = COLOR_BLACK, const bool drawing_enabled = true);
+		console(const char* path);
 		~console();
 		
-		void csl_clear();
-		void scroll();
-		void csl_drawchar(const int pos_x, const int pos_y);
-		void vram_csl_drawchar(const int pos_x, const int pos_y);
-		void csl_savechar(const char ch, const int pos_x, const int pos_y);
+		void cls();
 		void color(enum color background_color, enum color foreground_color);
-		void drawing_enabled(const bool enable_drawing);
+		void drawing_enable(const bool enable_drawing);
+		
+		void cursor_enable(const bool enable_cursor);
+		void cursor_type(enum cursor crsr);
+		void cursor_width(int width);
+		void cursor_custom(unsigned char cursor_data[6]);
+		
+		void save(const char* path);
 		
 		virtual void put(char ch);
 		virtual void write(const char* s, streamsize n);
@@ -94,6 +98,13 @@ namespace nio
 		virtual void get(char& c);
 		virtual void get(char* s, streamsize n);
 		virtual void getline(char* s, streamsize n);
+		
+	protected:
+		void csl_drawchar(const int pos_x, const int pos_y);
+		void vram_csl_drawchar(const int pos_x, const int pos_y);
+		void csl_savechar(const char ch, const int pos_x, const int pos_y);
+		void scroll();
+		
 	private:
 		#ifdef BUILDLIB
 		nio_console* c;
