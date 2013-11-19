@@ -80,6 +80,10 @@ namespace nio
 		
 		void cls();
 		void color(enum color background_color, enum color foreground_color);
+		enum color foreground_color() const;
+		void foreground_color(enum color clr);
+		enum color background_color() const;
+		void background_color(enum color clr);
 		void drawing_enable(const bool enable_drawing);
 		
 		void cursor_enable(const bool enable_cursor);

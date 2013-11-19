@@ -42,7 +42,9 @@ int main(void)
 	
 	int num = 123;
 	
+	c.foreground_color(nio::COLOR_LIGHTRED);
 	c << "Nspire I/O C++ test" << nio::endl;
+	c.foreground_color(nio::COLOR_BLACK);
 	c << "dec: " << num << " hex: " << nio::hex << num << " oct: " << nio::oct << num << nio::endl;
 	c << "showbase" << nio::endl;
 	

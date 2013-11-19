@@ -96,6 +96,26 @@ void console::color(enum color background_color, enum color foreground_color)
 	nio_color(c,background_color,foreground_color);
 }
 
+color console::foreground_color() const
+{
+	return (enum color)c->default_foreground_color;
+}
+
+void console::foreground_color(enum color clr)
+{
+	c->default_foreground_color = clr;
+}
+
+enum color console::background_color() const
+{
+	return (enum color)c->default_background_color;
+}
+
+void console::background_color(enum color clr)
+{
+	c->default_background_color = clr;
+}
+
 void console::drawing_enable(const bool enable_drawing)
 {
 	BOOL enable_drawing_b = enable_drawing ? TRUE : FALSE;
