@@ -10,16 +10,17 @@ Make sure you set the FXCGSDK environment variable, for example `export FXCGSDK=
 
 Building the code
 -----------------
-* `make all` / `make lib` - compiles Nspire I/O
-* `make demo` - compiles demos (Install first!)
+* `make all` - compiles Nspire I/O with demos
+* `make lib` - compiles Nspire I/O
+* `make demo` - compiles demos
 * `make install` - install Nspire I/O
 * `make uninstall` - uninstall Nspire I/O
 * `make clean` - deletes binaries
-* `make ARCH=prizm lib` - compiles Nspire I/O for Prizm
+* `make ARCH=prizm lib` - compiles Nspire I/O for Prizm (probably broken or unstable)
 
 Usage
 -----
-Add `-lnspireio` to LDFLAGS in your Makefile and `#include <nspireio.h>` in your code.
+Add `-lnspireio` to LDFLAGS in your Makefile and include `nspireio/nspireio.h` (for C programs) or `nspireio/console.hpp`/`nspireio/uart.hpp` (for C++ programs) in your code.
 
 Demos
 -----
@@ -29,6 +30,7 @@ Demos
 * replace-stdio - Hello World with stdio syntax.
 * splitscreen - Old Nspire I/O demo. Enter text in 1st console and it will be printed to 2nd console.
 * tests - Tests almost all functions of Nspire I/O.
+* cplusplus - Perform several tests in C++.
 
 Migrate from 2.0 to 3.x
 -----------------------
@@ -36,7 +38,7 @@ For the lazy people:
 Change `-lnspireio2` in you Makefile to `-lnspireio`.  
 Programs that include nspireio2.h will compile in compatibility mode (old syntax).
 
-To use the new syntax, include `nspireio.h` instead of `nspireio2.h` and replace the function calls with their new names.
+To use the new syntax, include `nspireio/nspireio.h` instead of `nspireio2.h` and replace the function calls with their new names.
 
 Nspire I/O is not compatible to versions < 2.0.
 
@@ -53,5 +55,5 @@ E-Mail: <compujuckel@googlemail.com>
 Julien Savard (Juju) (for Prizm-related things)  
 E-Mail: <juju2143@gmail.com>
 
-Discussion topic: [Omnimaga](http://www.omnimaga.org/index.php?topic=6871.0)  
+Discussion board: [Omnimaga](http://www.omnimaga.org/index.php?board=209.0)  
 Homepage: [nspforge](http://nspforge.unsads.com/p/nspireio)
