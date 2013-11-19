@@ -50,7 +50,12 @@ char* uart_getsn(char* str, int num)
 	{
 		char c = uart_getchar();
 		str[i] = c;
-		if(c == '\r')
+		if(c == '\b')
+		{
+			uart_puts(" \b");
+			i -= 2;
+		}
+		else if(c == '\r')
 		{
 			str[i] = 0;
 			uart_putchar('\n');

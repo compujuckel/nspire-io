@@ -28,10 +28,16 @@
 #include <nspireio/console.hpp>
 #include <nspireio/uart.hpp>
 
+#ifndef NIO_TEST_UART
+#define NIO_TEST_UART 0
+#endif
+
 int main(void)
 {
 	clrscr();
+	#if NIO_TEST_UART == 1
 	nio::uart u;
+	#endif
 	nio::console c;
 	
 	int num = 123;
@@ -86,12 +92,14 @@ int main(void)
 	c >> b;
 	c << "You entered " << b << nio::endl;
 	
+	#if NIO_TEST_UART == 1
 	u << "Enter string: ";
 	u >> input;
 	if(u.gcount() == 0)
 		u << "You did not enter anything!" << nio::endl;
 	else
 		u << "You entered (" << u.gcount() << " chars): " << input << nio::endl;
+	#endif
 	
 	wait_key_pressed();
 	return 0;
