@@ -228,12 +228,6 @@ T& ios_base<T>::operator>>(int& val)
 	char buf[50] = {0};
 	
 	getline(buf,50);
-	if(buf[0] == 0)
-	{
-		clear(eofbit);
-		return static_cast<T&>(*this);
-	}
-
 	val = strtol(buf,NULL,0);
 	
 	return static_cast<T&>(*this);

@@ -26,12 +26,72 @@
  */
 
 #include <nspireio/console.hpp>
+#include <nspireio/uart.hpp>
 
 int main(void)
 {
+	clrscr();
+	nio::uart u;
 	nio::console c;
 	
-	c << "hello" << nio::endl << 123;
+	int num = 123;
+	
+	c << "Nspire I/O C++ test" << nio::endl;
+	c << "dec: " << num << " hex: " << nio::hex << num << " oct: " << nio::oct << num << nio::endl;
+	c << "showbase" << nio::endl;
+	
+	c.setf(console::showbase);
+	c.setf(console::dec, console::basefield);
+	
+	c << "dec: " << num << " hex: " << nio::hex << num << " oct: " << nio::oct << num << nio::endl;
+	c << "uppercase: " << nio::hex << nio::uppercase << num << nio::endl;
+	
+	c.unsetf(console::uppercase);
+	c.setf(console::dec, console::basefield);
+	
+	c << "bool: " << true << ", " << false << nio::endl;
+	c << "boolalpha" << nio::boolalpha << nio::endl;
+	c << "bool: " << true << ", " << false << nio::endl;
+	
+	c.width(10);
+	
+	c << "width" << nio::endl;
+	c << "\"" << num << "\"" << nio::endl;
+	c << "left" << nio::left << nio::endl;
+	c << "\"" << num << "\"" << nio::endl;
+	
+	c.width(0);
+	
+	c << "unitbuf test. Press any key" << nio::endl;
+	c.unsetf(console::unitbuf);
+	c << "This should be visible AFTER you pressed a key." << nio::endl;
+	wait_key_pressed();
+	c.flush();
+	c.setf(console::unitbuf);
+	
+	char input[50];
+	c << "Enter string: ";
+	c >> input;
+	if(c.gcount() == 0)
+		c << "You did not enter anything!" << nio::endl;
+	else
+		c << "You entered (" << c.gcount() << " chars): " << input << nio::endl;
+	
+	c << "Enter number: ";
+	c >> num;
+	c << "You entered " << num << nio::endl;
+	
+	bool b;
+	c << "Enter bool (1/true/yes): ";
+	c >> b;
+	c << "You entered " << b << nio::endl;
+	
+	u << "Enter string: ";
+	u >> input;
+	if(u.gcount() == 0)
+		u << "You did not enter anything!" << nio::endl;
+	else
+		u << "You entered (" << u.gcount() << " chars): " << input << nio::endl;
 	
 	wait_key_pressed();
 	return 0;

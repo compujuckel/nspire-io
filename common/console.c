@@ -471,8 +471,6 @@ void nio_color(nio_console* c, const unsigned char background_color, const unsig
 void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 {
 	c->drawing_enabled = enable_drawing;
-	if(enable_drawing)
-		nio_fflush(c);
 }
 
 int nio_fgetc(nio_console* c)

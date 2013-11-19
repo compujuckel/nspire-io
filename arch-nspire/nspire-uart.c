@@ -35,13 +35,9 @@ BOOL uart_ready(void)
 
 char uart_getchar(void)
 {
-	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
 	volatile unsigned *recv_buffer_reg = (unsigned*)0x90020000;
-	if(is_classic)
-		while(!(*line_status_reg & 0b1));
-	else
-		while(*line_status_reg &0b10);
-	
+	while(!uart_ready())
+		idle();
 	char tmp = *recv_buffer_reg;
 	uart_putchar(tmp);
 	return tmp;
@@ -75,9 +71,15 @@ char uart_putchar(char character)
 	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
 	volatile unsigned *xmit_holding_reg = (unsigned*)0x90020000;
 	if(is_classic)
-		while(!(*line_status_reg & 0b100000)); // wait for empty xmit holding reg
+	{
+		while(!(*line_status_reg & 0b100000)) // wait for empty xmit holding reg
+			idle();
+	}
 	else
-		while(!(*line_status_reg & 0b10000000)); // According to PL011 docs bit 7 is set when transmit reg is empty... I didn't notice this for over a half year o_O
+	{
+		while(!(*line_status_reg & 0b10000000))
+			idle();
+	}
 	*xmit_holding_reg = character;
     return character;
 }
