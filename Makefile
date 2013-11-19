@@ -52,11 +52,12 @@ demo:
 	
 install:
 	mkdir -p "$(DESTDIR)/include/nspireio"
+	cp include/nspireio2.h "$(DESTDIR)/include/nspireio2.h"
 	cp include/nspireio/* "$(DESTDIR)/include/nspireio"
 	cp lib/$(LIB) "$(DESTDIR)/lib"
 	
 uninstall:
-	rm -rf "$(DESTDIR)/include/nspireio" "$(DESTDIR)/lib/$(LIB)"
+	rm -rf "$(DESTDIR)/include/nspireio" "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h"
 
 clean:
 	rm -f $(wildcard */*.o) $(wildcard common/cpp/*.o) *.elf *.gdb lib/$(LIB)
