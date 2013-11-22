@@ -166,14 +166,14 @@ streamsize console::gcount() const
 	return count;
 }
 
-char console::get()
+int console::get()
 {
-	char tmp = nio_fgetc(c);
+	int tmp = nio_fgetc(c);
 	count = tmp != 0 ? 1 : 0;
 	return tmp;
 }
 
-void console::get(char& ch)
+void console::get(int& ch)
 {
 	ch = nio_fgetc(c);
 	count = ch != 0 ? 1 : 0;

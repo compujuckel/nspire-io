@@ -1,5 +1,5 @@
 /**
- * @file console.c
+ * @file ios_base.hpp
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
  * @version 3.1
  *
@@ -100,8 +100,8 @@ namespace nio
 		virtual void flush() = 0;
 		
 		virtual streamsize gcount() const = 0;
-		virtual char get() = 0;
-		virtual void get(char& c) = 0;
+		virtual int get() = 0;
+		virtual void get(int& c) = 0;
 		virtual void get(char* s, streamsize n) = 0;
 		virtual void getline(char* s, streamsize b) = 0;
 		

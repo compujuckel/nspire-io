@@ -1,5 +1,5 @@
 /**
- * @file uart.hpp
+ * @file file.hpp
  * @author  Julian Mackeben aka compu <compujuckel@googlemail.com>
  * @version 3.1
  *
@@ -22,28 +22,34 @@
  *
  * @section DESCRIPTION
  *
- * C++ specific UART header
+ * C++ specific file header
  */
 
-extern "C" {
-	#include <os.h>
-	#ifdef BUILDLIB
-		#include <nspireio/nspireio.h>
-	#endif
-}
-
+#include <os.h>
 #include <nspireio/ios_base.ipp>
 
-#ifndef UART_HPP
-#define UART_HPP
+#ifndef FILE_HPP
+#define FILE_HPP
 
 namespace nio
 {
-	class uart : public ios_base<uart>
+	class file : public ios_base<file>
 	{
 	public:
-		uart();
-		bool ready();
+		enum seekdir
+		{
+			beg = SEEK_SET,
+			cur = SEEK_CUR,
+			end = SEEK_END
+		};
+		
+		file();
+		file(const char* filename, const char* mode);
+		~file();
+		
+		void open(const char* filename, const char* mode);
+		bool is_open();
+		void close();
 		
 		virtual void put(char ch);
 		virtual void write(const char* s, streamsize n);
@@ -54,6 +60,13 @@ namespace nio
 		virtual void get(int& c);
 		virtual void get(char* s, streamsize n);
 		virtual void getline(char* s, streamsize n);
+		
+		int tellp();
+		void seekp(int pos);
+		void seekp(int off, seekdir way);
+		
+	private:
+		FILE* fd;
 	};
 }
 

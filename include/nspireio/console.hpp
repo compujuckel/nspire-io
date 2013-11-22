@@ -98,8 +98,8 @@ namespace nio
 		virtual void flush();
 		
 		virtual int gcount() const;
-		virtual char get();
-		virtual void get(char& c);
+		virtual int get();
+		virtual void get(int& c);
 		virtual void get(char* s, streamsize n);
 		virtual void getline(char* s, streamsize n);
 		

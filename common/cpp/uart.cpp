@@ -60,14 +60,14 @@ streamsize uart::gcount() const
 	return count;
 }
 
-char uart::get()
+int uart::get()
 {
-	char tmp = uart_getchar();
+	int tmp = uart_getchar();
 	count = tmp != 0 ? 1 : 0;
 	return tmp;
 }
 
-void uart::get(char& ch)
+void uart::get(int& ch)
 {
 	ch = uart_getchar();
 	count = ch != 0 ? 1 : 0;
