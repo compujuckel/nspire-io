@@ -27,9 +27,7 @@
 
 extern "C" {
 	#include <os.h>
-	#ifdef BUILDLIB
-		#include <nspireio/nspireio.h>
-	#endif
+	#include <nspireio/nspireio.h>
 }
 
 #include <nspireio/ios_base.ipp>
@@ -110,9 +108,7 @@ namespace nio
 		void scroll();
 		
 	private:
-		#ifdef BUILDLIB
 		nio_console* c;
-		#endif
 	};
 }
 

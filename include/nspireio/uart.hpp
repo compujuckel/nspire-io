@@ -27,9 +27,7 @@
 
 extern "C" {
 	#include <os.h>
-	#ifdef BUILDLIB
-		#include <nspireio/nspireio.h>
-	#endif
+	#include <nspireio/nspireio.h>
 }
 
 #include <nspireio/ios_base.ipp>
