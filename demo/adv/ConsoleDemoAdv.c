@@ -75,6 +75,7 @@ int main(void)
 			nio_printf("  exit\n");
 			nio_printf("    Exit this console.\n");
 			nio_drawing_enabled(&c1,TRUE);
+			nio_fflush(&c1);
 		}
 		
 		if (!strcmp(text, "setcursor 0")) {
