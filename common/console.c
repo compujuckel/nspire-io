@@ -163,6 +163,9 @@ void nio_load(const char* path, nio_console* c)
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y*2);
 	
+	c->input_buf = malloc(sizeof(queue));
+	queue_init(c->input_buf);
+	
 	fread(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fread(c->color,sizeof(short),c->max_x*c->max_y,f);
 	
@@ -170,6 +173,8 @@ void nio_load(const char* path, nio_console* c)
         nio_fflush(c);
     
 	fclose(f);
+	
+	
 }
 
 void nio_save(const char* path, const nio_console* c)
