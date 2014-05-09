@@ -29,6 +29,7 @@
 #define NSPIREIO_H
 
 #include <nspireio/platform.h>
+#include <nspireio/queue.h>
 
 /** Color defines */
 enum
@@ -56,6 +57,7 @@ typedef struct
 {
 	char* data;
 	unsigned short* color;
+	queue* input_buf;
 	int cursor_x;
 	int cursor_y;
 	int max_x;

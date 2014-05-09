@@ -223,6 +223,8 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	c->default_foreground_color = foreground_color;
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y*2);
+	c->input_buf = malloc(sizeof(queue));
+	queue_init(c->input_buf);
     c->cursor_enabled = TRUE;
 	c->cursor_blink_enabled = TRUE;
 	c->cursor_blink_duration = 1;
@@ -475,9 +477,9 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing)
 
 int nio_fgetc(nio_console* c)
 {
-	char str[100];
-	nio_fgets(&str[0],100,c);
-	return str[0];
+	char tmp[2];
+	nio_fgets(tmp,2,c);
+	return tmp[0];
 }
 
 int nio_getchar(void)
@@ -491,8 +493,20 @@ char* nio_fgets(char* str, int num, nio_console* c)
 	int old_x = c->cursor_x;
 	int old_y = c->cursor_y;
 	
+	int str_pos = 0;
+	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
+	{
+		str[str_pos] = queue_get(c->input_buf);
+	}
+	
+	if(str_pos >= num - 1)
+	{
+		str[str_pos] = 0;
+		return str;
+	}
+	
 	int i = 0;
-	while(i < num-2)
+	while(TRUE)
 	{
 		nio_cursor_draw(c);
 		c->cursor_blink_status = TRUE;
@@ -501,9 +515,8 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		tmp = nio_getch(c);
 		if(tmp == '\n')
 		{
-			str[i] = '\0';
 			nio_fputc('\n', c);
-			return i > 0 ? str : NULL;
+			break;
 		}
 		else if(tmp == '\b')
 		{
@@ -515,25 +528,32 @@ char* nio_fgets(char* str, int num, nio_console* c)
 			if((c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y )) && i > 0)
 			{
 				nio_fputs("\b \b", c);
+				queue_get_top(c->input_buf);
 				i--;
 			}
 		}
 		else if(tmp == '\0')
 		{
-			str[0] = '\0';
 			nio_fputc('\n',c);
-			return NULL;
+			break;
 		}
 		else
 		{
-			str[i] = tmp;
+			queue_put(c->input_buf, tmp);
 			nio_fputc(tmp, c);
 			i++;
 		}
 	}
-	str[num-1] = '\0';
-	str[num-2] = '\n';
-	nio_fputc('\n',c);
+	
+	if(i == 0)
+		return NULL;
+	
+	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
+	{
+		str[str_pos] = queue_get(c->input_buf);
+	}
+	
+	str[str_pos] = 0;
 	return str;
 }
 
@@ -553,4 +573,5 @@ void nio_free(nio_console* c)
 {
 	free(c->data);
 	free(c->color);
+	free(c->input_buf);
 }
