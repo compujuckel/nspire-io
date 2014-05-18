@@ -215,26 +215,42 @@ void nio_set_default(nio_console* c)
     nio_default = c;
 }
 
+void nio_set_idle_callback(nio_console* c, int (*callback)(void*), void* data)
+{
+	c->idle_callback = callback;
+	c->idle_callback_data = data;
+}
+
 void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled)
 {
 	c->max_x = size_x;
 	c->max_y = size_y;
+	
 	c->offset_x = offset_x;
 	c->offset_y = offset_y;
+	
 	c->cursor_x = 0;
 	c->cursor_y = 0;
+	
 	c->drawing_enabled = drawing_enabled;
 	c->default_background_color = background_color;
 	c->default_foreground_color = foreground_color;
+	
 	c->data = malloc(c->max_x*c->max_y);
 	c->color = malloc(c->max_x*c->max_y*2);
+	
 	c->input_buf = malloc(sizeof(queue));
 	queue_init(c->input_buf);
-    c->cursor_enabled = TRUE;
+    
+	c->cursor_enabled = TRUE;
 	c->cursor_blink_enabled = TRUE;
 	c->cursor_blink_duration = 1;
 	c->cursor_type = 4; // Defaults to "adaptive" cursor
 	c->cursor_line_width = 1;
+	
+	c->idle_callback = NULL;
+	c->idle_callback_data = NULL;
+	
 	int p;
 	for(p = 0; p <= 5; p++)
 		c->cursor_custom_data[p] = 0xFF;
@@ -322,8 +338,18 @@ int nio_getch(nio_console* c)
 	while(1)
 	{
 		while (!any_key_pressed())
+		{
             nio_cursor_blinking_draw(c);
-			idle();
+			if(c->idle_callback)
+			{
+				if(c->idle_callback(c->idle_callback_data) != 0)
+					return 0;
+			}
+			else
+			{
+				idle();
+			}
+		}
 		
         nio_cursor_erase(c);
 		int adaptive_cursor_state = 0;

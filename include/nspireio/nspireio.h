@@ -75,6 +75,8 @@ typedef struct
 	BOOL cursor_blink_status;
 	unsigned cursor_blink_timestamp;
 	unsigned cursor_blink_duration;
+	int (*idle_callback)(void*);
+	void* idle_callback_data;
 } nio_console;
 
 #define NIO_CURSOR_BLOCK 0
@@ -179,6 +181,15 @@ void nio_save(const char* path, const nio_console* c);
 	@param c Console
 */
 void nio_set_default(nio_console* c);
+
+/** Give control to a function when waiting for input (i.e. the cursor is flashing).
+	Useful for performing background tasks.
+	The callback function should return 0 on success or a non-zero value to abort input.
+	@param c console
+	@param cb Callback function
+	@param data Data passed to the callback function
+*/
+void nio_set_idle_callback(nio_console* c, int (*callback)(void*), void* data);
 
 /** Gets the default console.
 	@return default console

@@ -55,6 +55,7 @@ void queue_put(queue* q, char val);
 /** Get value from the end of the queue.
 	@param q Queue
 	@return the value
+*/
 char queue_get_top(queue* q);
 
 /** Get value from the beginning of the queue.
