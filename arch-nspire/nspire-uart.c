@@ -25,6 +25,7 @@
  * Alternative functions for serial communication, no clock on the screen.
  */
 
+#include <stdarg.h>
 #include <nspireio/platform.h>
 
 BOOL uart_ready(void)
@@ -101,9 +102,9 @@ void uart_printf(char *format, ...)
 {
 	char buf[256];
 	memset(buf,'\0',256);
-	__builtin_va_list arglist;
-	__builtin_va_start(arglist,format);
-	vsprintf(buf,format,*(char **)&arglist);
+	va_list arglist;
+	va_start(arglist,format);
+	vsprintf(buf,format,arglist);
 	uart_puts(buf);
-	__builtin_va_end(arglist);
+	va_end(arglist);
 }
