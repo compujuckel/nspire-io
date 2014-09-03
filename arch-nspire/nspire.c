@@ -162,6 +162,23 @@ void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
 	nio_pixel_set(x,y,color);
 }
 
+void nio_vram_fill(unsigned int color)
+{
+	color = getPaletteColor(color);
+	if(!lcd_isincolor())
+	{
+		color = getBW(color);
+		memset(SCREEN_BASE_ADDRESS, color | (color << 4), SCREEN_BYTES_SIZE);
+	}
+	else
+	{
+		color = color | (color << 16);
+		unsigned int *start = SCREEN_BASE_ADDRESS, *end = start + (SCREEN_BYTES_SIZE / sizeof(*start));
+		while(start < end)
+			*start++ = color;
+	}
+}
+
 void nio_vram_draw(void)
 {
 
@@ -314,14 +331,11 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_ENTER))		return shiftKey('\n','~');
 	
 	// Special chars
-	#ifdef KEY_NSPIRE_CLEAR // Keep better Ndless 2 compatibility (clickpad)
-	if(isKeyPressed(KEY_NSPIRE_DEL)
-	 ||isKeyPressed(KEY_NSPIRE_CLEAR))		return '\b';
-	#else
 	if(isKeyPressed(KEY_NSPIRE_DEL))		return '\b';
-	#endif
 	if(isKeyPressed(KEY_NSPIRE_RET))		return '\n';
 	if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
+	if(isKeyPressed(KEY_NSPIRE_UP))			return NIO_KEY_UP;
+	if(isKeyPressed(KEY_NSPIRE_DOWN))		return NIO_KEY_DOWN;
 	
 	return 0;
 }

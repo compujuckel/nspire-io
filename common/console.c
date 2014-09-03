@@ -281,9 +281,14 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	c->idle_callback = NULL;
 	c->idle_callback_data = NULL;
 	
-	int p;
+	unsigned int p;
 	for(p = 0; p <= 5; p++)
 		c->cursor_custom_data[p] = 0xFF;
+
+	c->history_line = -1;
+	for(p = 0; p < HISTORY_LINES; ++p)
+		c->history[p] = NULL;
+
 	nio_clear(c);
 }
 
@@ -313,7 +318,12 @@ void nio_clear(nio_console* c)
 	c->cursor_x = 0;
 	c->cursor_y = 0;
 	if(c->drawing_enabled)
+	{
+		if(c->max_x == NIO_MAX_COLS && c->max_y == NIO_MAX_ROWS && c->offset_x == 0 && c->offset_y == 0)
+			nio_vram_fill(c->default_background_color);
+		
 		nio_fflush(c);
+	}
 }
 
 void nio_scroll(nio_console* c)
@@ -576,6 +586,7 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		nio_cursor_blinking_reset(c);
         wait_no_key_pressed();
 		tmp = nio_getch(c);
+
 		if(tmp == '\n')
 		{
 			nio_fputc('\n', c);
@@ -600,6 +611,38 @@ char* nio_fgets(char* str, int num, nio_console* c)
 			nio_fputc('\n',c);
 			break;
 		}
+		else if(tmp == NIO_KEY_UP || tmp == NIO_KEY_DOWN)
+		{
+			if(tmp == NIO_KEY_UP && (++c->history_line == HISTORY_LINES || c->history[c->history_line] == NULL))
+				--c->history_line;
+			else if(tmp == NIO_KEY_DOWN && (--c->history_line <= -1 || c->history[c->history_line] == NULL))
+				++c->history_line;
+			else
+			{
+				while(i--)
+				{
+		                        if(c->cursor_x == 0 && c->cursor_y > old_y)
+		                        {
+		                                c->cursor_y--;
+		                                c->cursor_x = c->max_x;
+		                        }
+		                        if(c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y))
+		                        {
+		                                nio_fputs("\b \b", c);
+		                                queue_get_top(c->input_buf);
+		                        }
+				}
+				++i;
+
+				const char *line = c->history[c->history_line];
+				while(*line && *line != '\n')
+				{
+					queue_put(c->input_buf, *line);
+					nio_fputc(*line++, c);
+					++i;
+				}
+			}
+		}
 		else
 		{
 			queue_put(c->input_buf, tmp);
@@ -612,11 +655,18 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		return NULL;
 	
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
-	{
 		str[str_pos] = queue_get(c->input_buf);
-	}
 	
 	str[str_pos] = 0;
+
+	free(c->history[HISTORY_LINES - 1]);	
+	unsigned int j;
+	for(j = HISTORY_LINES - 1; j > 0; --j)
+		c->history[j] = c->history[j - 1];
+
+	c->history[0] = strdup(str);
+	c->history_line = -1;
+	
 	return str;
 }
 
@@ -637,4 +687,7 @@ void nio_free(nio_console* c)
 	free(c->data);
 	free(c->color);
 	free(c->input_buf);
+	unsigned int i;
+	for(i = 0; i < HISTORY_LINES; ++i)
+		free(c->history[i]);
 }

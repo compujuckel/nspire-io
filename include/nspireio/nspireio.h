@@ -31,6 +31,8 @@
 #include "platform.h"
 #include "queue.h"
 
+#define HISTORY_LINES 6
+
 /** Color defines */
 enum
 {
@@ -77,7 +79,12 @@ typedef struct
 	unsigned cursor_blink_duration;
 	int (*idle_callback)(void*);
 	void* idle_callback_data;
+	int history_line;
+	char *history[HISTORY_LINES];
 } nio_console;
+
+#define NIO_KEY_UP 0x80
+#define NIO_KEY_DOWN 0x81
 
 #define NIO_CURSOR_BLOCK 0
 #define NIO_CURSOR_UNDERSCORE 1
