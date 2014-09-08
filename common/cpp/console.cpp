@@ -181,8 +181,8 @@ void console::get(int& ch)
 
 void console::get(char* s, streamsize n)
 {
-	nio_fgets(s,n,c);
-	count = strlen(s);
+	char* tmp = nio_fgets(s,n,c);
+	count = tmp == NULL ? 0 : strlen(s);
 }
 
 void console::getline(char* s, streamsize n)
