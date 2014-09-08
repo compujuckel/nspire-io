@@ -24,6 +24,8 @@
  *
  * Console functions
  */
+
+#include <stdarg.h>
 #include <nspireio/nspireio.h>
 #include "charmap.h"
 
@@ -470,11 +472,11 @@ int nio_fprintf(nio_console* c, const char *format, ...)
 {
     char buf[1000];
     memset(buf,'\0',sizeof(buf));
-    __builtin_va_list arglist;
-    __builtin_va_start(arglist,format);
-    vsprintf(buf,format,*(char **)&arglist);
+    va_list arglist;
+    va_start(arglist,format);
+    vsprintf(buf,format,arglist);
     nio_fputs(buf,c);
-    __builtin_va_end(arglist);
+    va_end(arglist);
     return strlen(buf);
 }
 
@@ -482,11 +484,11 @@ int nio_printf(const char *format, ...)
 {
     char buf[1000];
     memset(buf,'\0',sizeof(buf));
-    __builtin_va_list arglist;
-    __builtin_va_start(arglist,format);
-    vsprintf(buf,format,*(char **)&arglist);
+    va_list arglist;
+    va_start(arglist,format);
+    vsprintf(buf,format,arglist);
     nio_puts(buf);
-    __builtin_va_end(arglist);
+    va_end(arglist);
     return strlen(buf);
 }
 

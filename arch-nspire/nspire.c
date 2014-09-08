@@ -293,10 +293,10 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_SPACE))		return shiftKey(' ','_');
 	if(isKeyPressed(KEY_NSPIRE_DIVIDE))		return shiftKey('/','\\');
 	if(isKeyPressed(KEY_NSPIRE_MULTIPLY))	return shiftKey('*','\"');
-	if(isKeyPressed(KEY_NSPIRE_MINUS))		return shiftKey('-','_');
+	if(isKeyPressed(KEY_NSPIRE_MINUS))		return shiftOrCtrlKey('-','<', '_');
 	if(isKeyPressed(KEY_NSPIRE_NEGATIVE))	return shiftKey('-','_');
-	if(isKeyPressed(KEY_NSPIRE_PLUS))		return '+';
-	if(isKeyPressed(KEY_NSPIRE_EQU))		return '=';
+	if(isKeyPressed(KEY_NSPIRE_PLUS))		return shiftKey('+', '>');
+	if(isKeyPressed(KEY_NSPIRE_EQU))		return shiftKey('=', '|');
 	if(isKeyPressed(KEY_NSPIRE_LTHAN))		return '<';
 	if(isKeyPressed(KEY_NSPIRE_GTHAN))		return '>';
 	if(isKeyPressed(KEY_NSPIRE_QUOTE))		return '\"';
@@ -305,8 +305,8 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_QUESEXCL))	return shiftKey('?','!');
 	if(isKeyPressed(KEY_NSPIRE_BAR))		return '|';
 	if(isKeyPressed(KEY_NSPIRE_EXP))		return '^';
+	if(isKeyPressed(KEY_NSPIRE_EE))		return shiftKey('&','%');
 	if(isKeyPressed(KEY_NSPIRE_ENTER))		return shiftKey('\n','~');
-	if(isKeyPressed(KEY_NSPIRE_SQU))		return '²';
 	
 	// Special chars
 	#ifdef KEY_NSPIRE_CLEAR // Keep better Ndless 2 compatibility (clickpad)
