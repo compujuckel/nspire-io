@@ -7,7 +7,7 @@ LD  = nspire-ld
 GENZEHN = genzehn
 
 GCCFLAGS = -Wall -W -marm -I../../include
-LDFLAGS = -B../../lib -lnspireio
+LDFLAGS = ../../lib/libnspireio.a
 ZEHNFLAGS = --name "compatibility"
 
 ifeq ($(DEBUG),FALSE)

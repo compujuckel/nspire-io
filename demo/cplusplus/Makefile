@@ -7,7 +7,7 @@ LD  = nspire-ld
 GENZEHN = genzehn
 
 GCCFLAGS = -Wall -W -marm -I../../include
-LDFLAGS = -B../../lib -lnspireio
+LDFLAGS = ../../lib/libnspireio.a
 ZEHNFLAGS = --name "cplusplus"
 
 ifeq ($(DEBUG),FALSE)
@@ -19,7 +19,7 @@ endif
 OBJS = $(patsubst %.c, %.o, $(shell find . -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find . -name \*.cpp))
 OBJS += $(patsubst %.S, %.o, $(shell find . -name \*.S))
-EXE = compatibility
+EXE = cplusplus
 DISTDIR = .
 vpath %.tns $(DISTDIR)
 vpath %.elf $(DISTDIR)
