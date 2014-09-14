@@ -6,4 +6,4 @@ GCCFLAGS = -Wall -W -marm
 LD = nspire-ld
 LDFLAGS =
 USERPROFILE ?= $(HOME)
-DESTDIR = $(USERPROFILE)/.ndless
+DESTDIR ?= $(USERPROFILE)/.ndless
