@@ -25,7 +25,7 @@
  * C++ UART wrapper
  */
 
-#include <nspireio/uart.hpp>
+#include "../../include/nspireio/uart.hpp"
 
 using namespace nio;
 

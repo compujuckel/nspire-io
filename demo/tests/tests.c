@@ -82,14 +82,8 @@ int main(void)
 	wait_key_pressed();
 	clrscr();
 	nio_free(&csl);
-	nio_load("/documents/nio_tests.tns",&csl);
+	nio_load("/documents/nio_tessts.tns",&csl);
 	nio_puts("If the text above is the same, everything is OK\n");
-	
-	int reg_test = 12345;
-	nio_fprintf(&csl,"Storing %d in file\n",reg_test);
-	reg_store(&reg_test,sizeof(int),"/documents/nio_tests.tns");
-	int* reg_test2 = reg_get("/documents/nio_tests.tns");
-	nio_printf("%d is %d\n",reg_test,*reg_test2);
 	
 	#if NIO_TEST_UART == 1
 	nio_puts("Testing UART...\n");

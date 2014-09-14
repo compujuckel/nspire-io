@@ -26,7 +26,7 @@
  */
 
 #include <stdarg.h>
-#include <nspireio/platform.h>
+#include "../include/nspireio/platform.h"
 
 BOOL uart_ready(void)
 {

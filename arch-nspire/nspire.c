@@ -25,7 +25,8 @@
  * Functions for Nspire platform
  */
 
-#include <nspireio/platform.h>
+#include "../include/nspireio/platform.h"
+#include "../common/util.h"
 
 void* scrbuf = NULL;
 
@@ -39,6 +40,8 @@ void nio_scrbuf_init()
 	if(scrbuf == NULL)
 	{
 		scrbuf = malloc(SCREEN_BYTES_SIZE);
+		if(scrbuf == NULL)
+			exit_with_error(__FUNCTION__,"malloc failed");
 		memcpy(scrbuf,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
 	}
 }
@@ -121,6 +124,8 @@ void nio_vram_pixel_set(const int x, const int y, const unsigned int color)
 	if(VRAM == NULL)
 	{
 		VRAM = malloc(SCREEN_BYTES_SIZE);
+		if(VRAM == NULL)
+			exit_with_error(__FUNCTION__,"malloc failed");
 		memcpy(VRAM,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
 	}
 	

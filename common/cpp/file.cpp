@@ -25,7 +25,7 @@
  * C++ file wrapper
  */
 
-#include <nspireio/file.hpp>
+#include "../../include/nspireio/file.hpp"
 
 using namespace nio;
 

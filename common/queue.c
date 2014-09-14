@@ -25,7 +25,7 @@
  * Simple queue implementation
  */
 
-#include <nspireio/queue.h>
+#include "../include/nspireio/queue.h"
 
 void queue_init(queue* q)
 {

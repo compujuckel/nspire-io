@@ -26,8 +26,9 @@
  */
 
 #include <stdarg.h>
-#include <nspireio/nspireio.h>
+#include "../include/nspireio/nspireio.h"
 #include "charmap.h"
+#include "util.h"
 
 nio_console* nio_default = NULL;
 
@@ -127,6 +128,8 @@ void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, con
 void nio_use_stdio(void)
 {
     nio_default = malloc(sizeof(nio_console));
+	if(nio_default == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
     nio_init(nio_default,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
 }
 
@@ -138,6 +141,8 @@ void nio_free_stdio(void)
 void nio_load(const char* path, nio_console* c)
 {
 	FILE* f = fopen(path,"rb");
+	if (f == NULL)
+		exit_with_error(__FUNCTION__,"fopen failed");
 	
 	fread(&c->cursor_x,sizeof(int),1,f);
 	fread(&c->cursor_y,sizeof(int),1,f);
@@ -162,26 +167,39 @@ void nio_load(const char* path, nio_console* c)
     fread(&c->cursor_blink_timestamp,sizeof(BOOL),1,f);
     fread(&c->cursor_blink_duration,sizeof(BOOL),1,f);
 	
+	if(feof(f) || ferror(f))
+		exit_with_error(__FUNCTION__,"fread failed or reached end of file");
+	
 	c->data = malloc(c->max_x*c->max_y);
+	if(c->data == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	c->color = malloc(c->max_x*c->max_y*2);
+	if(c->color == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	
 	c->input_buf = malloc(sizeof(queue));
+	if(c->input_buf == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	queue_init(c->input_buf);
 	
 	fread(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fread(c->color,sizeof(short),c->max_x*c->max_y,f);
 	
+	if(feof(f) || ferror(f))
+		exit_with_error(__FUNCTION__,"fread failed or reached end of file");
+	
     if(c->drawing_enabled)
         nio_fflush(c);
     
-	fclose(f);
-	
-	
+	if(fclose(f) == EOF)
+		exit_with_error(__FUNCTION__,"fclose failed");
 }
 
 void nio_save(const char* path, const nio_console* c)
 {
 	FILE* f = fopen(path,"wb");
+	if(f == NULL)
+		exit_with_error(__FUNCTION__,"fopen failed");
 	
 	fwrite(&c->cursor_x,sizeof(int),1,f);
 	fwrite(&c->cursor_y,sizeof(int),1,f);
@@ -209,7 +227,11 @@ void nio_save(const char* path, const nio_console* c)
 	fwrite(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fwrite(c->color,sizeof(short),c->max_x*c->max_y,f);
 	
-	fclose(f);
+	if(ferror(f))
+		exit_with_error(__FUNCTION__,"fwrite failed");
+	
+	if(fclose(f) == EOF)
+		exit_with_error(__FUNCTION__,"fclose failed");
 }
 
 void nio_set_default(nio_console* c)
@@ -239,9 +261,15 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	c->default_foreground_color = foreground_color;
 	
 	c->data = malloc(c->max_x*c->max_y);
+	if(c->data == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	c->color = malloc(c->max_x*c->max_y*2);
+	if(c->color == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	
 	c->input_buf = malloc(sizeof(queue));
+	if(c->input_buf == NULL)
+		exit_with_error(__FUNCTION__,"malloc failed");
 	queue_init(c->input_buf);
     
 	c->cursor_enabled = TRUE;
@@ -474,7 +502,8 @@ int nio_fprintf(nio_console* c, const char *format, ...)
     memset(buf,'\0',sizeof(buf));
     va_list arglist;
     va_start(arglist,format);
-    vsprintf(buf,format,arglist);
+    if(vsprintf(buf,format,arglist) < 0)
+		exit_with_error(__FUNCTION__,"vsprintf failed");
     nio_fputs(buf,c);
     va_end(arglist);
     return strlen(buf);
@@ -486,7 +515,8 @@ int nio_printf(const char *format, ...)
     memset(buf,'\0',sizeof(buf));
     va_list arglist;
     va_start(arglist,format);
-    vsprintf(buf,format,arglist);
+    if(vsprintf(buf,format,arglist) < 0)
+		exit_with_error(__FUNCTION__,"vsprintf failed");
     nio_puts(buf);
     va_end(arglist);
     return strlen(buf);

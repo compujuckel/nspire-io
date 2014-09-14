@@ -5,13 +5,13 @@ include arch-$(ARCH)/$(ARCH).mk
 
 DEBUG = FALSE
 ifeq ($(DEBUG),FALSE)
-	GCCFLAGS += -Os
+	GCCFLAGS += -O3
 else
 	GCCFLAGS += -O0 -g
 	LDFLAGS += --debug
 endif
 
-GCCFLAGS += -Iinclude -DBUILDLIB
+GCCFLAGS +=
 
 CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard common/cpp/*.cpp))
 OBJS = $(patsubst %.c,%.o,$(wildcard common/*.c)) $(patsubst %.c,%.o,$(wildcard arch-$(ARCH)/*.c)) $(CPPOBJS)

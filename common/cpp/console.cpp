@@ -25,7 +25,7 @@
  * C++ console wrapper
  */
 
-#include <nspireio/console.hpp>
+#include "../../include/nspireio/console.hpp"
 
 const int nio::MAX_ROWS = NIO_MAX_ROWS;
 const int nio::MAX_COLS = NIO_MAX_COLS;
