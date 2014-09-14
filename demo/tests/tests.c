@@ -82,7 +82,7 @@ int main(void)
 	wait_key_pressed();
 	clrscr();
 	nio_free(&csl);
-	nio_load("/documents/nio_tessts.tns",&csl);
+	nio_load("/documents/nio_tests.tns",&csl);
 	nio_puts("If the text above is the same, everything is OK\n");
 	
 	#if NIO_TEST_UART == 1
