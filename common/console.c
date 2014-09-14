@@ -617,7 +617,7 @@ char* nio_fgets(char* str, int num, nio_console* c)
 				--c->history_line;
 			else if(tmp == NIO_KEY_DOWN && (--c->history_line <= -1 || c->history[c->history_line] == NULL))
 				++c->history_line;
-			else
+			else if(c->history[c->history_line] != NULL)
 			{
 				while(i--)
 				{

@@ -26,6 +26,7 @@
  */
 
 #include "../include/nspireio/platform.h"
+#include "../include/nspireio/nspireio.h"
 #include "../common/util.h"
 
 void* scrbuf = NULL;
