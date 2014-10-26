@@ -85,6 +85,7 @@ typedef struct
 
 #define NIO_KEY_UP 0x80
 #define NIO_KEY_DOWN 0x81
+#define NIO_KEY_ESC 0x82
 
 #define NIO_CURSOR_BLOCK 0
 #define NIO_CURSOR_UNDERSCORE 1

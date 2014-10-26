@@ -182,81 +182,31 @@ unsigned int nio_cursor_clock(void) {
     return *(volatile unsigned*)0x90090000;
 }
 
-BOOL shift = FALSE;
-BOOL caps = FALSE;
-BOOL ctrl = FALSE;
+static BOOL shift = FALSE;
+static BOOL ctrl = FALSE;
 static char shiftKey(const char normalc, const char shiftc)
 {
-	if(shift || caps) 
-	{
-		shift = FALSE;
+	if(isKeyPressed(KEY_NSPIRE_SHIFT)) 
 		return shiftc;
-	}
 	else return normalc;
 }
 static char shiftOrCtrlKey(const char normalc, const char shiftc, const char ctrlc)
 {
-	if(shift || caps)
-	{
-		shift = FALSE;
-		return shiftc;
-	}
-	else if(ctrl)
-	{
-		ctrl = FALSE;
+	if(isKeyPressed(KEY_NSPIRE_CTRL))
 		return ctrlc;
-	}
+	else if(isKeyPressed(KEY_NSPIRE_SHIFT))
+		return shiftc;
 	else return normalc;
 }
 
 char nio_ascii_get(int* adaptive_cursor_state)
 {
-	// Ctrl, Shift, Caps first
-	if(isKeyPressed(KEY_NSPIRE_CTRL))
-	{
-		if(ctrl)
-		{
-			ctrl = FALSE;
-			*adaptive_cursor_state = 0;
-		}
-		else
-		{
-			ctrl = TRUE;
-			*adaptive_cursor_state = 4;
-		}
-		return 1; // Indicates that no key has been pressed - the cursor will continue flashing.
-	}
-	if(isKeyPressed(KEY_NSPIRE_SHIFT))
-	{
-		if(ctrl)
-		{
-			ctrl = FALSE;
-			shift = FALSE;
-			caps = TRUE;
-			*adaptive_cursor_state = 2;
-		}
-		else if(caps)
-		{
-			caps = FALSE;
-			*adaptive_cursor_state = 0;
-		}
-		else if(shift)
-		{
-			shift = FALSE;
-			*adaptive_cursor_state = 0;
-		}
-		else
-		{
-			shift = TRUE;
-			*adaptive_cursor_state = 1;
-		}
-		return 1;
-	}
+	ctrl = isKeyPressed(KEY_NSPIRE_CTRL);
+	shift = isKeyPressed(KEY_NSPIRE_SHIFT);
+
+	*adaptive_cursor_state = ctrl ? 4 : shift ? 1 : 0;
 	
-	if(caps)
-		*adaptive_cursor_state = 2;
-	
-	if(isKeyPressed(KEY_NSPIRE_ESC)) return 0;
+	if(isKeyPressed(KEY_NSPIRE_ESC)) return NIO_KEY_ESC;
 	
 	// Characters
 	if(isKeyPressed(KEY_NSPIRE_A)) return shiftKey('a','A');
@@ -303,7 +253,7 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_PERIOD)) 	return shiftKey('.',':');
 	if(isKeyPressed(KEY_NSPIRE_COLON))		return ':';
 	if(isKeyPressed(KEY_NSPIRE_LP))			return shiftOrCtrlKey('(','[',']');
-	if(isKeyPressed(KEY_NSPIRE_RP))			return shiftOrCtrlKey(')','{','}');
+	if(isKeyPressed(KEY_NSPIRE_RP))			return +shiftOrCtrlKey(')','{','}');
 	if(isKeyPressed(KEY_NSPIRE_SPACE))		return shiftKey(' ','_');
 	if(isKeyPressed(KEY_NSPIRE_DIVIDE))		return shiftKey('/','\\');
 	if(isKeyPressed(KEY_NSPIRE_MULTIPLY))	return shiftKey('*','\"');

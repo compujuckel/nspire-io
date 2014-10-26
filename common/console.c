@@ -375,11 +375,12 @@ nio_console* nio_get_default(void)
 
 int nio_getch(nio_console* c)
 {
-	while(1)
+	char tmp = 0;
+	while(tmp == 0)
 	{
-		while (!any_key_pressed())
+		while(!any_key_pressed())
 		{
-            nio_cursor_blinking_draw(c);
+		        nio_cursor_blinking_draw(c);
 			if(c->idle_callback)
 			{
 				if(c->idle_callback(c->idle_callback_data) != 0)
@@ -391,21 +392,15 @@ int nio_getch(nio_console* c)
 			}
 		}
 		
-        nio_cursor_erase(c);
+		nio_cursor_erase(c);
 		int adaptive_cursor_state = 0;
-        char tmp = nio_ascii_get(&adaptive_cursor_state);
+		tmp = nio_ascii_get(&adaptive_cursor_state);
 		
 		if(c->cursor_type == 4)
-		{
 			nio_cursor_custom(c,&adaptive_cursor[adaptive_cursor_state][0]);
-		}
-		if(tmp == 1 || tmp == 0) // To be compatible with the ANSI C++ _getch, pressing ESC does not abort this function (if 0 is returned from nio_ascii_get)
-		{						// 1 is just a special case for modifier keys
-			wait_no_key_pressed();
-			continue;
-		}
-		else return tmp;
 	}
+
+	return tmp;
 }
 
 int nio__getch(void)
@@ -562,15 +557,12 @@ int nio_getchar(void)
 
 char* nio_fgets(char* str, int num, nio_console* c)
 {
-	char tmp;
 	int old_x = c->cursor_x;
 	int old_y = c->cursor_y;
 	
 	int str_pos = 0;
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
-	{
 		str[str_pos] = queue_get(c->input_buf);
-	}
 	
 	if(str_pos >= num - 1)
 	{
@@ -578,15 +570,28 @@ char* nio_fgets(char* str, int num, nio_console* c)
 		return str;
 	}
 	
-	int i = 0;
-	while(TRUE)
+	int i = 0, cursor;
+	static char char_repeat = 0, tmp = 0;
+	while(1)
 	{
 		nio_cursor_draw(c);
 		c->cursor_blink_status = TRUE;
 		nio_cursor_blinking_reset(c);
-        wait_no_key_pressed();
-		tmp = nio_getch(c);
 
+		do {
+			nio_cursor_blinking_draw(c);
+			char_repeat = tmp;
+			tmp = nio_ascii_get(&cursor);
+			nio_cursor_custom(c, &adaptive_cursor[cursor][0]);
+		} while(tmp == char_repeat || tmp == 0);
+		char_repeat = tmp;
+		nio_cursor_erase(c);
+
+		if(tmp == NIO_KEY_ESC)
+		{
+			nio_fputc('\n', c);
+			return NULL;
+		}
 		if(tmp == '\n')
 		{
 			nio_fputc('\n', c);
@@ -605,11 +610,6 @@ char* nio_fgets(char* str, int num, nio_console* c)
 				queue_get_top(c->input_buf);
 				i--;
 			}
-		}
-		else if(tmp == '\0')
-		{
-			nio_fputc('\n',c);
-			break;
 		}
 		else if(tmp == NIO_KEY_UP || tmp == NIO_KEY_DOWN)
 		{
