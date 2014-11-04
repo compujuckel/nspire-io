@@ -643,6 +643,17 @@ char* nio_fgets(char* str, int num, nio_console* c)
 				}
 			}
 		}
+		else if(tmp == '\t')
+		{
+			const unsigned int tab_width = 4;
+			unsigned int j;
+			for(j = 0; j < tab_width; ++j)
+			{
+				queue_put(c->input_buf, ' ');
+				nio_fputc(' ', c);
+			}
+			i += tab_width;
+		}
 		else
 		{
 			queue_put(c->input_buf, tmp);
@@ -650,9 +661,6 @@ char* nio_fgets(char* str, int num, nio_console* c)
 			i++;
 		}
 	}
-	
-	if(i == 0)
-		return NULL;
 	
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
