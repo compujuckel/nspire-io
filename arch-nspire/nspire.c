@@ -269,7 +269,7 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_QUESEXCL))	return shiftKey('?','!');
 	if(isKeyPressed(KEY_NSPIRE_BAR))		return '|';
 	if(isKeyPressed(KEY_NSPIRE_EXP))		return '^';
-	if(isKeyPressed(KEY_NSPIRE_EE))		return shiftKey('&','%');
+	if(isKeyPressed(KEY_NSPIRE_EE))		return shiftOrCtrlKey('&','%', '@');
 	if(isKeyPressed(KEY_NSPIRE_ENTER))		return shiftKey('\n','~');
 	
 	// Special chars

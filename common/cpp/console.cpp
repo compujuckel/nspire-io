@@ -49,7 +49,7 @@ console::console(const char* path)
 {
 	nio_load(path,c);
 	
-	f = (fmtflags)(dec | right | fixed | skipws | (c->drawing_enabled == TRUE ? unitbuf : 0) );
+	f = (fmtflags)(dec | right | fixed | skipws | ((*c)->drawing_enabled == TRUE ? unitbuf : 0) );
 	s = goodbit;
 	w = 0;
 	p = 5;
@@ -98,22 +98,22 @@ void console::color(enum color background_color, enum color foreground_color)
 
 color console::foreground_color() const
 {
-	return (enum color)c->default_foreground_color;
+	return (enum color)(*c)->default_foreground_color;
 }
 
 void console::foreground_color(enum color clr)
 {
-	c->default_foreground_color = clr;
+	(*c)->default_foreground_color = clr;
 }
 
 enum color console::background_color() const
 {
-	return (enum color)c->default_background_color;
+	return (enum color)(*c)->default_background_color;
 }
 
 void console::background_color(enum color clr)
 {
-	c->default_background_color = clr;
+	(*c)->default_background_color = clr;
 }
 
 void console::drawing_enable(const bool enable_drawing)

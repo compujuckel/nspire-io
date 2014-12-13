@@ -54,6 +54,8 @@ enum
 	NIO_COLOR_WHITE
 };
 
+#ifdef NSPIREIO_BUILD
+
 /** console structure */
 typedef struct
 {
@@ -81,7 +83,14 @@ typedef struct
 	void* idle_callback_data;
 	int history_line;
 	char *history[HISTORY_LINES];
-} nio_console;
+} nio_console_private;
+
+typedef nio_console_private *nio_console;
+
+#else
+// Opaque pointer for binary compatibility
+typedef void *nio_console;
+#endif
 
 #define NIO_KEY_UP 0x80
 #define NIO_KEY_DOWN 0x81
@@ -265,14 +274,6 @@ void nio_init(nio_console* c, const int size_x, const int size_y, const int offs
 	@param c Console
 */
 void nio_free(nio_console* c);
-
-/** For use with NIO_REPLACE_STDIO. Use at the beginning of your program.
-*/
-void nio_use_stdio(void);
-
-/** For use with NIO_REPLACE_STDIO. Use at the end of your program.
-*/
-void nio_free_stdio(void);
 
 /** See [fflush](http://www.cplusplus.com/reference/clibrary/cstdio/fflush/)
 	\note This is useful for consoles with enable_drawing set to false. Using this function draws the console to the screen.
@@ -524,29 +525,6 @@ void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
 #define nio_SetCursorType				nio_cursor_type
 #define nio_SetCursorWidth				nio_cursor_width
 #define nio_SetCursorCustom				nio_cursor_custom
-#endif
-
-#ifdef NIO_REPLACE_STDIO
-#define putchar                         nio_putchar
-#define puts                            nio_puts
-#define getchar                         nio_getchar
-#define gets                            nio_gets
-#define printf                          nio_printf
-#define perror                          nio_perror
-#define _getch							nio__getch
-#define _getche							nio__getche
-#undef stdin
-#undef stdout
-#define stdin							nio_get_default() // experimental
-#define stdout							nio_get_default() // experimental
-#endif
-
-#ifdef UART_REPLACE_STDIO
-#define putchar                         uart_putchar
-#define puts                            uart_puts
-#define getchar                         uart_getchar
-#define gets                            uart_gets
-#define printf                          uart_printf
 #endif
 
 #endif

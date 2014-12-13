@@ -27,8 +27,9 @@
  */
 #include "../include/nspireio/nspireio.h"
 
-void nio_cursor_draw(nio_console* c)
+void nio_cursor_draw(nio_console* csl)
 {
+	nio_console_private *c = *csl;
 	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 
 	unsigned char foreground_color = color;
@@ -118,8 +119,9 @@ void nio_cursor_draw(nio_console* c)
 	}
 }
 
-void nio_cursor_erase(nio_console* c)
+void nio_cursor_erase(nio_console* csl)
 {
+	nio_console_private *c = *csl;
 	unsigned short color = c->color[c->cursor_y*c->max_x+c->cursor_x];
 
 	char background_color = color >> 8;
@@ -138,54 +140,60 @@ void nio_cursor_erase(nio_console* c)
 				nio_pixel_set(cursor_x_start+i,cursor_y_start-j, background_color);
 			}
 		}
-		nio_csl_drawchar(c,c->cursor_x,c->cursor_y);
+		nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 	}
 }
 
-void nio_cursor_blinking_draw(nio_console* c)
+void nio_cursor_blinking_draw(nio_console* csl)
 {
+	nio_console_private *c = *csl;
 	if (!c->cursor_blink_enabled) return;
 	if (c->cursor_blink_timestamp == 0) c->cursor_blink_timestamp = nio_cursor_clock();
 	if (c->cursor_blink_duration == 0) c->cursor_blink_duration = 1;
 	
 	if ((nio_cursor_clock() - c->cursor_blink_timestamp) >= c->cursor_blink_duration) {
 		if (c->cursor_blink_status)
-			nio_cursor_draw(c);
+			nio_cursor_draw(csl);
 		else
-			nio_cursor_erase(c);
+			nio_cursor_erase(csl);
 		c->cursor_blink_status = !c->cursor_blink_status;
 		c->cursor_blink_timestamp = nio_cursor_clock();
 	}
 }
 
-void nio_cursor_blinking_reset(nio_console* c)
+void nio_cursor_blinking_reset(nio_console* csl)
 {
+	nio_console_private *c = *csl;
 	if (!c->cursor_blink_enabled) return;
 	c->cursor_blink_timestamp = nio_cursor_clock();
 }
 
-void nio_cursor_enable(nio_console* c, BOOL enable_cursor)
+void nio_cursor_enable(nio_console* csl, BOOL enable_cursor)
 {
+	nio_console_private *c = *csl;
 	c->cursor_enabled = enable_cursor;
 	if (!enable_cursor)
-		nio_cursor_erase(c);
+		nio_cursor_erase(csl);
 	else
-		nio_cursor_draw(c);
+		nio_cursor_draw(csl);
 }
 
-void nio_cursor_blinking_enable(nio_console* c, BOOL enable_cursor_blink)
+void nio_cursor_blinking_enable(nio_console* csl, BOOL enable_cursor_blink)
 {
+	nio_console_private *c = *csl;
 	c->cursor_blink_enabled = enable_cursor_blink;
-	if (!enable_cursor_blink) nio_cursor_draw(c);
+	if (!enable_cursor_blink) nio_cursor_draw(csl);
 }
 
-void nio_cursor_blinking_duration(nio_console* c, int duration)
+void nio_cursor_blinking_duration(nio_console* csl, int duration)
 {
+	nio_console_private *c = *csl;
 	c->cursor_blink_duration = (unsigned) duration;
 }
 
-void nio_cursor_type(nio_console* c, int cursor_type)
+void nio_cursor_type(nio_console* csl, int cursor_type)
 {
+	nio_console_private *c = *csl;
 	if (!((c->cursor_type >= 0) && (c->cursor_type <= 4))) {
 		// Set the cursor type to a valid one
 		cursor_type = 0;
@@ -193,13 +201,15 @@ void nio_cursor_type(nio_console* c, int cursor_type)
 	c->cursor_type = cursor_type;
 }
 
-void nio_cursor_width(nio_console* c, int cursor_width)
+void nio_cursor_width(nio_console* csl, int cursor_width)
 {
+	nio_console_private *c = *csl;
 	c->cursor_line_width = cursor_width;
 }
 
-void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6])
+void nio_cursor_custom(nio_console* csl, unsigned char cursor_data[6])
 {
+	nio_console_private *c = *csl;
 	int i;
 	for(i = 0; i <= 5; i++) {
 		c->cursor_custom_data[i] = cursor_data[i];
