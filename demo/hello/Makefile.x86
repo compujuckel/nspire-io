@@ -1,0 +1,40 @@
+DEBUG = TRUE
+
+GCC = gcc
+AS  = as
+GXX = g++
+LD  = gcc
+
+GCCFLAGS = -Wall -W -I../../include
+LDFLAGS = ../../lib/libnspireio.a -lSDL2
+
+ifeq ($(DEBUG),FALSE)
+	GCCFLAGS += -Os
+else
+	GCCFLAGS += -O0 -g
+endif
+
+OBJS = $(patsubst %.c, %.o, $(shell find . -name \*.c))
+OBJS += $(patsubst %.cpp, %.o, $(shell find . -name \*.cpp))
+OBJS += $(patsubst %.S, %.o, $(shell find . -name \*.S))
+EXE = hello
+DISTDIR = ../../bin
+vpath %.elf $(DISTDIR)
+
+all: $(EXE)
+
+%.o: %.c
+	$(GCC) $(GCCFLAGS) -c $<
+
+%.o: %.cpp
+	$(GXX) $(GCCFLAGS) -c $<
+	
+%.o: %.S
+	$(AS) -c $<
+
+$(EXE): $(OBJS)
+	mkdir -p $(DISTDIR)
+	$(LD) $^ -o $(DISTDIR)/$@ $(LDFLAGS)
+
+clean:
+	rm -f *.o $(DISTDIR)/$(EXE).tns $(DISTDIR)/$(EXE).elf $(DISTDIR)/$(EXE).prg.tns

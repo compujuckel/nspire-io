@@ -33,8 +33,8 @@
 
 int main(void)
 {
-	assert_ndless_rev(874);
-	clrscr();
+//	assert_ndless_rev(874);
+//	clrscr();
 	
 	nio_console csl;
 	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
@@ -44,7 +44,7 @@ int main(void)
 	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
 	nio_printf("Compiled %s %s\n",__DATE__,__TIME__);
 	nio_puts("Press any key to flush console...\n");
-	nio_drawing_enabled(&csl,FALSE);
+//	nio_drawing_enabled(&csl,FALSE);
 	nio_putchar('A');
 	nio_fputc('a',&csl);
 	nio_putchar('\n');
@@ -63,7 +63,7 @@ int main(void)
 	nio_puts("This line is too long for the Nspire's screen so we have to continue it on the next line...\n");
 	wait_key_pressed();
 	nio_fflush(&csl);
-	nio_drawing_enabled(&csl,TRUE);
+//	nio_drawing_enabled(&csl,TRUE);
 	nio_puts("Enter text:\n");
 	char input[100] = {0};
 	nio_getsn(input,100);
@@ -78,11 +78,11 @@ int main(void)
 	nio_perror("Error test: ");
 	nio_putchar('\n');
 	nio_puts("Saving console. Press any key...\n");
-	nio_save("/documents/nio_tests.tns",&csl);
+//	nio_save("/documents/nio_tests.tns",&csl);
 	wait_key_pressed();
-	clrscr();
-	nio_free(&csl);
-	nio_load("/documents/nio_tests.tns",&csl);
+//	clrscr();
+//	nio_free(&csl);
+//	nio_load("/documents/nio_tests.tns",&csl);
 	nio_puts("If the text above is the same, everything is OK\n");
 	
 	#if NIO_TEST_UART == 1

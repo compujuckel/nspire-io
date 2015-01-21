@@ -40,10 +40,14 @@
 #ifdef PRIZM
 	#include "platform-prizm.h"
 #endif
+#ifdef __linux__
+	#include "platform-x86.h"
+#endif
 
 
 // These functions are the same on all platforms...
 
+void nio_platform_init(void);
 void nio_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color);
 void nio_vram_draw(void);

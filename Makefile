@@ -1,5 +1,5 @@
 ifeq ($(strip $(ARCH)),)
-ARCH = nspire
+ARCH = x86
 endif
 include arch-$(ARCH)/$(ARCH).mk
 
