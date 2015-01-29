@@ -31,7 +31,6 @@
 #include "util.h"
 
 static nio_console* nio_default = NULL;
-static BOOL platform_initialized = FALSE;
 
 unsigned char adaptive_cursor[5][6] =
 {
@@ -141,10 +140,6 @@ void nio_free_stdio(void)
 
 void nio_load(const char* path, nio_console* c)
 {
-	if(platform_initialized == FALSE) {
-		nio_platform_init();
-		platform_initialized = TRUE;
-	}
 	FILE* f = fopen(path,"rb");
 	if (f == NULL)
 		exit_with_error(__FUNCTION__,"fopen failed");
@@ -252,13 +247,6 @@ void nio_set_idle_callback(nio_console* c, int (*callback)(void*), void* data)
 
 void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled)
 {
-	printf("in nio_init\n");
-	if(platform_initialized == FALSE) {
-		printf("want to init\n");
-		nio_platform_init();
-		platform_initialized = TRUE;
-	}
-
 	c->max_x = size_x;
 	c->max_y = size_y;
 	

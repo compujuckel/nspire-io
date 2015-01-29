@@ -65,8 +65,9 @@ static int nio_sdl_main(void* data) {
 	if(screen_px == NULL)
 		exit_with_error(__FUNCTION__,"screen_px is null");
 	
-	memset(screen_px,0,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
 	SDL_UnlockMutex(screen_px_lock);
+
+	clrscr();
 
 	SDL_AddTimer(20, &nio_sdl_callback, NULL);
 
@@ -97,13 +98,19 @@ void nio_platform_init(void) {
 	t = SDL_CreateThread(nio_sdl_main, "SDLMain", NULL);
 	if(t == NULL)
 		exit_with_error(__FUNCTION__,"Could not create thread");
-	
+
 	while(!initialized)
 		SDL_Delay(10);
 }
 
 void idle(void) {
 	SDL_Delay(10);
+}
+
+void clrscr(void) {
+	SDL_LockMutex(screen_px_lock);
+	memset(screen_px,0,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
+	SDL_UnlockMutex(screen_px_lock);
 }
 
 void wait_key_pressed(void) {

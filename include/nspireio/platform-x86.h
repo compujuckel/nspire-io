@@ -89,6 +89,7 @@ typedef int BOOL;
 #define KEY_NSPIRE_8 SDL_SCANCODE_8
 #define KEY_NSPIRE_9 SDL_SCANCODE_9
 
+void clrscr(void);
 void idle(void);
 void wait_key_pressed(void); // blocks until a key is pressed
 void wait_no_key_pressed(void); // blocks until all keys are released
