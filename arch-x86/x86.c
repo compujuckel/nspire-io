@@ -34,48 +34,75 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* screen = NULL;
+static SDL_mutex* screen_px_lock = NULL;
 static unsigned short* screen_px = NULL;
 static char* keystates = NULL;
 static int kcount = 0;
+static BOOL initialized = FALSE;
 
 unsigned int nio_sdl_callback(unsigned int interval, void* param);
 void nio_sdl_update(void);
 
-void nio_platform_init(void) {
+static int nio_sdl_main(void* data) {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	printf("init platform\n");
 
 	window = SDL_CreateWindow("Nspire I/O", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if(window == NULL)
 		exit_with_error(__FUNCTION__,"window is null");
+	
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if(renderer == NULL)
 		exit_with_error(__FUNCTION__,"renderer is null");
+	
 	screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if(screen == NULL)
 		exit_with_error(__FUNCTION__,"screen is null");
+	
+	screen_px_lock = SDL_CreateMutex();
+	
+	SDL_LockMutex(screen_px_lock);
 	screen_px = malloc(SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
 	if(screen_px == NULL)
 		exit_with_error(__FUNCTION__,"screen_px is null");
+	
 	memset(screen_px,0,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
+	SDL_UnlockMutex(screen_px_lock);
+
 	SDL_AddTimer(20, &nio_sdl_callback, NULL);
 
 	keystates = SDL_GetKeyboardState(&kcount);
+
+	initialized = TRUE;
+
+	// Event loop
+	while(1) {
+		SDL_Event ev;
+		while(SDL_WaitEvent(&ev)) {
+			if(ev.type == SDL_QUIT) {
+				exit(0);
+			} else if(ev.type == SDL_USEREVENT) {
+				nio_sdl_update();
+			} else if(ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
+				printf("Physical %s -> %s\n",SDL_GetScancodeName(ev.key.keysym.scancode),SDL_GetKeyName(ev.key.keysym.sym));
+				break;
+			}
+		}
+	}
+
+	return 0;
+}
+
+void nio_platform_init(void) {
+	SDL_Thread* t;
+	t = SDL_CreateThread(nio_sdl_main, "SDLMain", NULL);
+	if(t == NULL)
+		exit_with_error(__FUNCTION__,"Could not create thread");
+	
+	while(!initialized)
+		SDL_Delay(10);
 }
 
 void idle(void) {
-	SDL_Event ev;
-	while(SDL_PollEvent(&ev)) {
-		if(ev.type == SDL_QUIT) {
-			exit(0);
-		} else if(ev.type == SDL_USEREVENT) {
-			nio_sdl_update();
-		} else if(ev.type == SDL_KEYDOWN) {
-			break;
-		} else if(ev.type == SDL_KEYUP) {
-			break;
-		}
-	}
 	SDL_Delay(10);
 }
 
@@ -159,7 +186,9 @@ void nio_pixel_set(int x, int y, unsigned int color)
 	if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT)
 		return;
 
+	SDL_LockMutex(screen_px_lock);
 	screen_px[SCREEN_WIDTH * y + x] = c;
+	SDL_UnlockMutex(screen_px_lock);
 }
 
 void nio_vram_pixel_set(const int x, const int y, const unsigned int color)

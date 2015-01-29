@@ -54,17 +54,11 @@ char* uart_getsn(char* str, int num)
 	{
 		char c = uart_getchar();
 		str[i] = c;
-		/*if(c == '\b')
-		{
-			uart_puts(" \b");
-			i -= 2;
-		}
-		else if(c == '\r')
+		if(c == '\r' || c == '\n')
 		{
 			str[i] = 0;
-			uart_putchar('\n');
 			return str;
-		}*/
+		}
 	}
 	str[num] = 0;
 	return str;
