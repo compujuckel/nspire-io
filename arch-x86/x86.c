@@ -27,44 +27,55 @@
 
 #include "../include/nspireio/platform.h"
 #include "../common/util.h"
+#include "../../Ndless/ndless-sdk/include/keys.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <time.h>
 
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* screen = NULL;
 static SDL_mutex* screen_px_lock = NULL;
+static TTF_Font* font = NULL;
 static unsigned short* screen_px = NULL;
 static char* keystates = NULL;
+static unsigned short keymap[8];
 static int kcount = 0;
 static BOOL initialized = FALSE;
 
-unsigned int nio_sdl_callback(unsigned int interval, void* param);
-void nio_sdl_update(void);
+static unsigned int nio_sdl_callback(unsigned int interval, void* param);
+static void nio_sdl_update(void);
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int fill);
+static void nio_sdl_print(int x, int y, char* text, int fill);
 
 static int nio_sdl_main(void* data) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Nspire I/O", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+	window = SDL_CreateWindow("Nspire I/O", 100, 100, 500, SCREEN_HEIGHT + 160, 0);
 	if(window == NULL)
 		exit_with_error(__FUNCTION__,"window is null");
-	
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if(renderer == NULL)
 		exit_with_error(__FUNCTION__,"renderer is null");
-	
+
+	TTF_Init();
+	font = TTF_OpenFont("OpenSans-Regular.ttf",12);
+	if(font == NULL)
+		exit_with_error(__FUNCTION__,"could not open font");
+
 	screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if(screen == NULL)
 		exit_with_error(__FUNCTION__,"screen is null");
-	
+
 	screen_px_lock = SDL_CreateMutex();
-	
+
 	SDL_LockMutex(screen_px_lock);
 	screen_px = malloc(SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
 	if(screen_px == NULL)
 		exit_with_error(__FUNCTION__,"screen_px is null");
-	
+
 	SDL_UnlockMutex(screen_px_lock);
 
 	clrscr();
@@ -73,6 +84,7 @@ static int nio_sdl_main(void* data) {
 
 	keystates = SDL_GetKeyboardState(&kcount);
 
+	memset(keymap, 0xFFFF, sizeof(short) * 8);
 	initialized = TRUE;
 
 	// Event loop
@@ -86,6 +98,18 @@ static int nio_sdl_main(void* data) {
 			} else if(ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 				printf("Physical %s -> %s\n",SDL_GetScancodeName(ev.key.keysym.scancode),SDL_GetKeyName(ev.key.keysym.sym));
 				break;
+			}
+			else if(ev.type == SDL_MOUSEBUTTONDOWN || ev.type == SDL_MOUSEBUTTONUP) {
+				if(ev.button.button == SDL_BUTTON_LEFT && ev.button.y - SCREEN_HEIGHT >= 0) {
+					int row, col;
+					row = (ev.button.y - SCREEN_HEIGHT) / 20;
+					col = ev.button.x / 50;
+					printf("Row %d col %d\n",row,col);
+					if(ev.button.state == SDL_RELEASED)
+						keymap[row] |= 1 << col;
+					else
+						keymap[row] &= ~(1 << col);
+				}
 			}
 		}
 	}
@@ -126,40 +150,80 @@ void wait_no_key_pressed(void) {
 
 BOOL any_key_pressed(void) {
 	int i;
-	for(i = 0; i < kcount; i++) {
-		if(keystates[i])
+	for(i = 0; i < 8; i++) {
+		if(keymap[i] != 0xFFFF)
 			return TRUE;
 	}
 	return FALSE;
 }
 
-BOOL isKeyPressed(int key) {
-	return keystates[key];
+#undef isKeyPressed
+BOOL isKeyPressed(const t_key* key) {
+//	return keystates[key];
+	return ~(*(keymap + (key->row / 2) - 0x8)) & key->col;
 }
+#define isKeyPressed(x) isKeyPressed(&x)
 
 unsigned short getPaletteColor(unsigned int color)
 {
 	unsigned short palette[16] = {0x0000, 0xa800, 0x0540, 0xaaa0, 0x0015, 0xa815, 0x0555, 0xad55,
-					0x5aab, 0xfaab, 0x5feb, 0xffeb, 0x5abf, 0xfabf, 0x5fff, 0xffff};
+		0x5aab, 0xfaab, 0x5feb, 0xffeb, 0x5abf, 0xfabf, 0x5fff, 0xffff};
 	int rbtable[6] = {0,6,12,18,24,31};
 	int gtable[6] = {0,12,25,37,50,63};
-        unsigned int c = color;
-        unsigned int d;
-        if(c < 16)
-        {
-                return palette[c];
-        }
-        else if(c < 232)
-        {
-                d = c-16;
-                return (rbtable[d/36]<<11)+(gtable[(d/6)%6]<<5)+rbtable[d%6];
-        }
-        else if(c < 256)
-        {
-                d = c-232;
-                return ((d+1)<<11)+((d*2+2)<<5)+(d+1);
-        }
+	unsigned int c = color;
+	unsigned int d;
+	if(c < 16)
+	{
+		return palette[c];
+	}
+	else if(c < 232)
+	{
+		d = c-16;
+		return (rbtable[d/36]<<11)+(gtable[(d/6)%6]<<5)+rbtable[d%6];
+	}
+	else if(c < 256)
+	{
+		d = c-232;
+		return ((d+1)<<11)+((d*2+2)<<5)+(d+1);
+	}
 	return 0;
+}
+
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int fill) {
+	SDL_Rect dst;
+	dst.x = x;
+	dst.y = y;
+	SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+	if(fill){
+		SDL_SetRenderDrawColor(renderer, 127, 127, 127, 255);
+		SDL_RenderFillRect(renderer, &dst);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	}
+	if(fill == 2){
+		SDL_SetRenderDrawColor(renderer, 127, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &dst);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	}
+	SDL_RenderCopy(renderer, tex, NULL, &dst);
+}
+
+static void nio_sdl_print(int x, int y, char* text, int fill)  {
+	SDL_Color white = {255, 255, 255};
+	SDL_Surface* f = TTF_RenderText_Blended(font, text, white);
+	SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, f);
+
+	SDL_FreeSurface(f);
+	nio_sdl_renderTexture(t, x, y, fill);
+	SDL_DestroyTexture(t);
+}
+
+static void nio_sdl_printf(int x, int y, int fill, const char* format, ...) {
+	char buffer[200];
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer, 200, format, args);
+	nio_sdl_print(x, y, buffer, fill);
+	va_end(args);
 }
 
 unsigned int nio_sdl_callback(unsigned int interval, void* param) {
@@ -178,10 +242,32 @@ unsigned int nio_sdl_callback(unsigned int interval, void* param) {
 	return interval;
 }
 
+static void nio_sdl_drawKeymap(void) {
+	int i, j;
+	for(j = 0; j < 8; j++) {
+		for(i = 0; i < 10; i++) {
+			SDL_Rect r;
+			r.x = i * 50;
+			r.y = SCREEN_HEIGHT + j * 20;
+			r.w = 50;
+			r.h = 20;
+			SDL_SetRenderDrawColor(renderer, (255/8) * j, (255/10) * i, 0, 255);
+			SDL_RenderFillRect(renderer, &r);
+			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, 1, "%d", i);
+		}
+	}
+}
+
 void nio_sdl_update(void) {
 	SDL_UpdateTexture(screen, NULL, screen_px, SCREEN_WIDTH * sizeof(short));
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, screen, NULL, NULL);
+	SDL_Rect r;
+	r.x = 0;
+	r.y = 0;
+	r.w = SCREEN_WIDTH;
+	r.h = SCREEN_HEIGHT;
+	SDL_RenderCopy(renderer, screen, NULL, &r);
+	nio_sdl_drawKeymap();
 	SDL_RenderPresent(renderer);
 }
 
@@ -209,7 +295,7 @@ void nio_vram_draw(void)
 }
 
 unsigned int nio_cursor_clock(void) {
-    return time(NULL);
+	return time(NULL);
 }
 
 BOOL shift = FALSE;
@@ -286,7 +372,7 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(caps)
 		*adaptive_cursor_state = 2;
 
-//	if(isKeyPressed(KEY_NSPIRE_ESC)) return 0;
+	if(isKeyPressed(KEY_NSPIRE_ESC)) return 0;
 
 	// Characters
 	if(isKeyPressed(KEY_NSPIRE_A)) return shiftKey('a','A');
@@ -327,7 +413,7 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_7)) return '7';
 	if(isKeyPressed(KEY_NSPIRE_8)) return '8';
 	if(isKeyPressed(KEY_NSPIRE_9)) return '9';
-/*
+
 	// Symbols
 	if(isKeyPressed(KEY_NSPIRE_COMMA))		return shiftKey(',',';');
 	if(isKeyPressed(KEY_NSPIRE_PERIOD)) 	return shiftKey('.',':');
@@ -349,13 +435,13 @@ char nio_ascii_get(int* adaptive_cursor_state)
 	if(isKeyPressed(KEY_NSPIRE_QUESEXCL))	return shiftKey('?','!');
 	if(isKeyPressed(KEY_NSPIRE_BAR))		return '|';
 	if(isKeyPressed(KEY_NSPIRE_EXP))		return '^';
-	if(isKeyPressed(KEY_NSPIRE_EE))		return shiftKey('&','%');*/
+	if(isKeyPressed(KEY_NSPIRE_EE))		return shiftKey('&','%');
 	if(isKeyPressed(KEY_NSPIRE_ENTER))		return shiftKey('\n','~');
 
 	// Special chars
 	if(isKeyPressed(KEY_NSPIRE_DEL))		return '\b';
 	if(isKeyPressed(KEY_NSPIRE_RET))		return '\n';
-//	if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
+	if(isKeyPressed(KEY_NSPIRE_TAB))		return '\t';
 
 	return 0;
 }

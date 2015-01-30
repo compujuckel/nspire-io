@@ -33,6 +33,7 @@
 #include <string.h>
 #include <errno.h>
 #include <SDL2/SDL.h>
+#include "../../../Ndless/ndless-sdk/include/keys.h"
 
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
@@ -45,6 +46,7 @@ typedef int BOOL;
 #define TRUE 1
 #define FALSE 0
 
+/*
 #define KEY_NSPIRE_ENTER	SDL_SCANCODE_RETURN
 #define KEY_NSPIRE_RET		SDL_SCANCODE_RETURN
 #define KEY_NSPIRE_SHIFT	SDL_SCANCODE_LSHIFT
@@ -88,12 +90,13 @@ typedef int BOOL;
 #define KEY_NSPIRE_7 SDL_SCANCODE_7
 #define KEY_NSPIRE_8 SDL_SCANCODE_8
 #define KEY_NSPIRE_9 SDL_SCANCODE_9
-
+*/
 void clrscr(void);
 void idle(void);
 void wait_key_pressed(void); // blocks until a key is pressed
 void wait_no_key_pressed(void); // blocks until all keys are released
 BOOL any_key_pressed(void); // non-blocking, TRUE if any key pressed
-BOOL isKeyPressed(int key);
+BOOL isKeyPressed(const t_key* key);
+#define isKeyPressed(x) isKeyPressed(&x)
 
 #endif

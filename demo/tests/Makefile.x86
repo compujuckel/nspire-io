@@ -6,7 +6,7 @@ GXX = g++
 LD  = gcc
 
 GCCFLAGS = -Wall -W -I../../include
-LDFLAGS = ../../lib/libnspireio.a -lSDL2
+LDFLAGS = ../../lib/libnspireio.a -lSDL2 -lSDL2_ttf
 
 ifeq ($(DEBUG),FALSE)
 	GCCFLAGS += -Os
