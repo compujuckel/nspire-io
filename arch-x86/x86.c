@@ -42,6 +42,17 @@ static unsigned short* screen_px = NULL;
 static unsigned short keymap[8];
 static BOOL initialized = FALSE;
 
+static const char keynames[8][11][6] = {
+	{ "ret",   "enter", "space",  "(-)",   "Z",     ".",     "Y",     "0",     "X",     "on",     "theta" },
+	{ ",",     "+",     "W",      "3",     "V",     "2",     "U",     "1",     "T",     "e^x",    "pi"    },
+	{ "?",     "-",     "S",      "6",     "R",     "5",     "Q",     "4",     "P",     "10^x",   "EE"    },
+	{ ":",     "*",     "O",      "9",     "N",     "8",     "M",     "7",     "L",     "x^2",    "i"     },
+	{ "\"",    "/",     "K",      "tan",   "J",     "cos",   "I",     "sin",   "H",     "^",      ">"     },
+	{ "'",     "cat",   "G",      ")",     "F",     "(",     "E",     "var",   "D",     "shift",  "<"     },
+	{ "flag",  "click", "C",      "home",  "B",     "menu",  "A",     "esc",   "|",     "tab",    ""      },
+	{ "up",    "u+r",   "right",  "r+d",   "down",  "d+l",   "left",  "l+u",   "del",   "ctrl",   "="     }
+};
+
 static unsigned int nio_sdl_callback(unsigned int interval, void* param);
 static void nio_sdl_update(void);
 static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y);
@@ -51,7 +62,7 @@ static void nio_sdl_printf(int x, int y, const char* format, ...);
 static int nio_sdl_main(void* data) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Nspire I/O", 100, 100, 500, SCREEN_HEIGHT + 160, 0);
+	window = SDL_CreateWindow("Nspire I/O", 100, 100, 550, SCREEN_HEIGHT + 160, 0);
 	if(window == NULL)
 		exit_with_error(__FUNCTION__,"window is null");
 
@@ -100,7 +111,6 @@ static int nio_sdl_main(void* data) {
 					int row, col;
 					row = (ev.button.y - SCREEN_HEIGHT) / 20;
 					col = ev.button.x / 50;
-					printf("Row %d col %d\n",row,col);
 					if(ev.button.state == SDL_RELEASED)
 						keymap[row] |= 1 << col;
 					else
@@ -129,7 +139,7 @@ void idle(void) {
 
 void clrscr(void) {
 	SDL_LockMutex(screen_px_lock);
-	memset(screen_px,0,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
+	memset(screen_px,0xFFFF,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
 	SDL_UnlockMutex(screen_px_lock);
 }
 
@@ -230,7 +240,7 @@ unsigned int nio_sdl_callback(unsigned int interval, void* param) {
 static void nio_sdl_drawKeymap(void) {
 	int i, j;
 	for(j = 0; j < 8; j++) {
-		for(i = 0; i < 10; i++) {
+		for(i = 0; i <= 10; i++) {
 			SDL_Rect r;
 			r.x = i * 50;
 			r.y = SCREEN_HEIGHT + j * 20;
@@ -244,7 +254,8 @@ static void nio_sdl_drawKeymap(void) {
 			else
 				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 			SDL_RenderFillRect(renderer, &r);
-			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, "%d", i);
+			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, "%s", keynames[j][i]);
 		}
 	}
 }
