@@ -112,9 +112,9 @@ static const struct sdltondls_key key_translation[] = {
 
 static unsigned int nio_sdl_callback(unsigned int interval, void* param);
 static void nio_sdl_update(void);
-static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y);
-static void nio_sdl_print(int x, int y, char* text);
-static void nio_sdl_printf(int x, int y, const char* format, ...);
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int w, int h);
+static void nio_sdl_print(int x, int y, int w, int h, char* text);
+static void nio_sdl_printf(int x, int y, int w, int h, const char* format, ...);
 
 static int nio_sdl_main(void* data) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -260,30 +260,30 @@ unsigned short getPaletteColor(unsigned int color)
 	return 0;
 }
 
-static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y) {
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int w, int h) {
 	SDL_Rect dst;
-	dst.x = x;
-	dst.y = y;
 	SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
+	dst.x = w > 0 ? (float)(w - dst.w) / 2 + x : x;
+	dst.y = h > 0 ? (float)(h - dst.h) / 2 + y : y;
 	SDL_RenderCopy(renderer, tex, NULL, &dst);
 }
 
-static void nio_sdl_print(int x, int y, char* text)  {
+static void nio_sdl_print(int x, int y, int w, int h, char* text)  {
 	SDL_Color c = {0, 0, 0};
 	SDL_Surface* f = TTF_RenderText_Blended(font, text, c);
 	SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, f);
 
 	SDL_FreeSurface(f);
-	nio_sdl_renderTexture(t, x, y);
+	nio_sdl_renderTexture(t, x, y, w, h);
 	SDL_DestroyTexture(t);
 }
 
-static void nio_sdl_printf(int x, int y, const char* format, ...) {
+static void nio_sdl_printf(int x, int y, int w, int h, const char* format, ...) {
 	char buffer[200];
 	va_list args;
 	va_start(args, format);
 	vsnprintf(buffer, 200, format, args);
-	nio_sdl_print(x, y, buffer);
+	nio_sdl_print(x, y, w, h, buffer);
 	va_end(args);
 }
 
@@ -321,7 +321,7 @@ static void nio_sdl_drawKeymap(void) {
 				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 			SDL_RenderFillRect(renderer, &r);
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, "%s", keynames[j][i]);
+			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, 50, 20, "%s", keynames[j][i]);
 		}
 	}
 }
