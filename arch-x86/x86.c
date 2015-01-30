@@ -53,6 +53,63 @@ static const char keynames[8][11][6] = {
 	{ "up",    "u+r",   "right",  "r+d",   "down",  "d+l",   "left",  "l+u",   "del",   "ctrl",   "="     }
 };
 
+struct sdltondls_key {
+	const int sdl;
+	const t_key* ndls;
+};
+
+static const struct sdltondls_key key_translation[] = {
+	{ SDLK_0, &KEY_NSPIRE_0},
+	{ SDLK_1, &KEY_NSPIRE_1},
+	{ SDLK_2, &KEY_NSPIRE_2},
+	{ SDLK_3, &KEY_NSPIRE_3},
+	{ SDLK_4, &KEY_NSPIRE_4},
+	{ SDLK_5, &KEY_NSPIRE_5},
+	{ SDLK_6, &KEY_NSPIRE_6},
+	{ SDLK_7, &KEY_NSPIRE_7},
+	{ SDLK_8, &KEY_NSPIRE_8},
+	{ SDLK_9, &KEY_NSPIRE_9},
+
+	{ SDLK_a, &KEY_NSPIRE_A},
+	{ SDLK_b, &KEY_NSPIRE_B},
+	{ SDLK_c, &KEY_NSPIRE_C},
+	{ SDLK_d, &KEY_NSPIRE_D},
+	{ SDLK_e, &KEY_NSPIRE_E},
+	{ SDLK_f, &KEY_NSPIRE_F},
+	{ SDLK_g, &KEY_NSPIRE_G},
+	{ SDLK_h, &KEY_NSPIRE_H},
+	{ SDLK_i, &KEY_NSPIRE_I},
+	{ SDLK_j, &KEY_NSPIRE_J},
+	{ SDLK_k, &KEY_NSPIRE_K},
+	{ SDLK_l, &KEY_NSPIRE_L},
+	{ SDLK_m, &KEY_NSPIRE_M},
+	{ SDLK_n, &KEY_NSPIRE_N},
+	{ SDLK_o, &KEY_NSPIRE_O},
+	{ SDLK_p, &KEY_NSPIRE_P},
+	{ SDLK_q, &KEY_NSPIRE_Q},
+	{ SDLK_r, &KEY_NSPIRE_R},
+	{ SDLK_s, &KEY_NSPIRE_S},
+	{ SDLK_t, &KEY_NSPIRE_T},
+	{ SDLK_u, &KEY_NSPIRE_U},
+	{ SDLK_v, &KEY_NSPIRE_V},
+	{ SDLK_w, &KEY_NSPIRE_W},
+	{ SDLK_x, &KEY_NSPIRE_X},
+	{ SDLK_y, &KEY_NSPIRE_Y},
+	{ SDLK_z, &KEY_NSPIRE_Z},
+
+	{ SDLK_BACKSPACE, &KEY_NSPIRE_DEL },
+	{ SDLK_RETURN, &KEY_NSPIRE_ENTER },
+	{ SDLK_LSHIFT, &KEY_NSPIRE_SHIFT },
+	{ SDLK_LCTRL, &KEY_NSPIRE_CTRL },
+	{ SDLK_ESCAPE, &KEY_NSPIRE_ESC },
+
+	{ SDLK_DOWN, &KEY_NSPIRE_DOWN },
+	{ SDLK_UP, &KEY_NSPIRE_UP },
+	{ SDLK_LEFT, &KEY_NSPIRE_LEFT },
+	{ SDLK_RIGHT, &KEY_NSPIRE_RIGHT },
+	{ 0, NULL }
+};
+
 static unsigned int nio_sdl_callback(unsigned int interval, void* param);
 static void nio_sdl_update(void);
 static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y);
@@ -105,6 +162,15 @@ static int nio_sdl_main(void* data) {
 				nio_sdl_update();
 			} else if(ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
 				//printf("Physical %s -> %s\n",SDL_GetScancodeName(ev.key.keysym.scancode),SDL_GetKeyName(ev.key.keysym.sym));
+				int i;
+				for(i = 0; key_translation[i].ndls != NULL; i++) {
+					if(ev.key.keysym.sym == key_translation[i].sdl) {
+						if(ev.key.state == SDL_RELEASED)
+							keymap[(key_translation[i].ndls->row / 2) - 0x8] |= key_translation[i].ndls->col;
+						else
+							keymap[(key_translation[i].ndls->row / 2) - 0x8] &= ~(key_translation[i].ndls->col);
+					}
+				}
 			}
 			else if(ev.type == SDL_MOUSEBUTTONDOWN || ev.type == SDL_MOUSEBUTTONUP) {
 				if(ev.button.button == SDL_BUTTON_LEFT && ev.button.y - SCREEN_HEIGHT >= 0) {
@@ -262,7 +328,9 @@ static void nio_sdl_drawKeymap(void) {
 
 void nio_sdl_update(void) {
 	SDL_UpdateTexture(screen, NULL, screen_px, SCREEN_WIDTH * sizeof(short));
+	SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
 	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect r;
 	r.x = 0;
 	r.y = 0;
