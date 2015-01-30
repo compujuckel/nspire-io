@@ -4,3 +4,4 @@
 *.tns
 *.swp
 bin/*
+!bin/*.ttf

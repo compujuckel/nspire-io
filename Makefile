@@ -1,20 +1,22 @@
 ifeq ($(strip $(ARCH)),)
-ARCH = x86
+	ARCH = x86
 endif
 include arch-$(ARCH)/$(ARCH).mk
 
 DEBUG = FALSE
 ifeq ($(DEBUG),FALSE)
-	GCCFLAGS += -O3
+	GCCFLAGS += -O3 -Wno-unused-result
 else
 	GCCFLAGS += -O0 -g
 	LDFLAGS += --debug
 endif
 
+NDLESS_DIR = $(HOME)/dev/Ndless
+
 GCCFLAGS +=
 
 CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard common/cpp/*.cpp))
-OBJS = $(patsubst %.c,%.o,$(wildcard common/*.c)) $(patsubst %.c,%.o,$(wildcard arch-$(ARCH)/*.c)) $(CPPOBJS)
+OBJS = $(patsubst %.c,%.o,$(wildcard common/*.c)) $(patsubst %.c,%.o,$(shell find arch-$(ARCH)/ -type f -name '*.c')) $(CPPOBJS)
 ifneq ($(strip $(CPPOBJS)),)
 	LDFLAGS += --cpp
 endif
@@ -24,11 +26,11 @@ LIB = libnspireio.a
 .PHONY: all lib clean install uninstall demo
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -c $< -o $@
+	$(GCC) $(GCCFLAGS) -I$(NDLESS_DIR) -c $< -o $@
 
 %.o: %.cpp
-	$(GXX) $(GCCFLAGS) -c $< -o $@
-	
+	$(GXX) $(GCCFLAGS) -I$(NDLESS_DIR) -c $< -o $@
+
 %.o: %.S
 	$(AS) -c $< -o $@
 
@@ -49,13 +51,13 @@ demo:
 	make -C demo/splitscreen ARCH=$(ARCH)
 	make -C demo/tests ARCH=$(ARCH)
 	make -C demo/cplusplus ARCH=$(ARCH)
-	
+
 install:
 	mkdir -p "$(DESTDIR)/include/nspireio"
 	cp include/nspireio2.h "$(DESTDIR)/include/nspireio2.h"
 	cp include/nspireio/* "$(DESTDIR)/include/nspireio"
 	cp lib/$(LIB) "$(DESTDIR)/lib"
-	
+
 uninstall:
 	rm -rf "$(DESTDIR)/include/nspireio" "$(DESTDIR)/lib/$(LIB)" "$(DESTDIR)/include/nspireio2.h"
 
@@ -68,4 +70,4 @@ clean:
 	make -C demo/splitscreen ARCH=$(ARCH) clean
 	make -C demo/tests ARCH=$(ARCH) clean
 	make -C demo/cplusplus ARCH=$(ARCH) clean
-	
+

@@ -34,7 +34,7 @@
 int main(void)
 {
 	nio_console csl;
-    nio_InitConsole(&csl,53,30,0,0,WHITE,BLACK);
+    nio_InitConsole(&csl,53,30,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
     nio_PrintStr(&csl,"Hello World!");
     nio_CleanUp(&csl);
     

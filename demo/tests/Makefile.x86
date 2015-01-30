@@ -5,6 +5,8 @@ AS  = as
 GXX = g++
 LD  = gcc
 
+NDLESS_DIR = $(HOME)/dev/Ndless
+
 GCCFLAGS = -Wall -W -I../../include
 LDFLAGS = ../../lib/libnspireio.a -lSDL2 -lSDL2_ttf
 
@@ -24,10 +26,10 @@ vpath %.elf $(DISTDIR)
 all: $(EXE)
 
 %.o: %.c
-	$(GCC) $(GCCFLAGS) -c $<
+	$(GCC) $(GCCFLAGS) -I$(NDLESS_DIR) -c $<
 
 %.o: %.cpp
-	$(GXX) $(GCCFLAGS) -c $<
+	$(GXX) $(GCCFLAGS) -I$(NDLESS_DIR) -c $<
 	
 %.o: %.S
 	$(AS) -c $<

@@ -36,10 +36,10 @@
 static SDL_Window* window = NULL;
 static SDL_Renderer* renderer = NULL;
 static SDL_Texture* screen = NULL;
-static SDL_mutex* screen_px_lock = NULL;
+SDL_mutex* screen_px_lock = NULL;
 static TTF_Font* font = NULL;
-static unsigned short* screen_px = NULL;
-static unsigned short keymap[8];
+unsigned short* screen_px = NULL;
+unsigned short keymap[8];
 static BOOL initialized = FALSE;
 
 static const char keynames[8][11][6] = {
@@ -198,42 +198,6 @@ void nio_platform_init(void) {
 	while(!initialized)
 		SDL_Delay(10);
 }
-
-void idle(void) {
-	SDL_Delay(10);
-}
-
-void clrscr(void) {
-	SDL_LockMutex(screen_px_lock);
-	memset(screen_px,0xFFFF,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(short));
-	SDL_UnlockMutex(screen_px_lock);
-}
-
-void wait_key_pressed(void) {
-	wait_no_key_pressed();
-	while(!any_key_pressed())
-		idle();
-}
-
-void wait_no_key_pressed(void) {
-	while(any_key_pressed())
-		idle();
-}
-
-BOOL any_key_pressed(void) {
-	int i;
-	for(i = 0; i < 8; i++) {
-		if(keymap[i] != 0xFFFF)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-#undef isKeyPressed
-BOOL isKeyPressed(const t_key* key) {
-	return ~(*(keymap + (key->row / 2) - 0x8)) & key->col;
-}
-#define isKeyPressed(x) isKeyPressed(&x)
 
 unsigned short getPaletteColor(unsigned int color)
 {

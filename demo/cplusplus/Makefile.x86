@@ -8,7 +8,7 @@ LD  = gcc
 NDLESS_DIR = $(HOME)/dev/Ndless
 
 GCCFLAGS = -Wall -W -I../../include
-LDFLAGS = ../../lib/libnspireio.a -lSDL2 -lSDL2_ttf
+LDFLAGS = ../../lib/libnspireio.a -lSDL2 -lSDL2_ttf -lstdc++
 
 ifeq ($(DEBUG),FALSE)
 	GCCFLAGS += -Os
@@ -19,7 +19,7 @@ endif
 OBJS = $(patsubst %.c, %.o, $(shell find . -name \*.c))
 OBJS += $(patsubst %.cpp, %.o, $(shell find . -name \*.cpp))
 OBJS += $(patsubst %.S, %.o, $(shell find . -name \*.S))
-EXE = hello
+EXE = cplusplus
 DISTDIR = ../../bin
 vpath %.elf $(DISTDIR)
 
