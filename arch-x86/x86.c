@@ -39,15 +39,14 @@ static SDL_Texture* screen = NULL;
 static SDL_mutex* screen_px_lock = NULL;
 static TTF_Font* font = NULL;
 static unsigned short* screen_px = NULL;
-static char* keystates = NULL;
 static unsigned short keymap[8];
-static int kcount = 0;
 static BOOL initialized = FALSE;
 
 static unsigned int nio_sdl_callback(unsigned int interval, void* param);
 static void nio_sdl_update(void);
-static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int fill);
-static void nio_sdl_print(int x, int y, char* text, int fill);
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y);
+static void nio_sdl_print(int x, int y, char* text);
+static void nio_sdl_printf(int x, int y, const char* format, ...);
 
 static int nio_sdl_main(void* data) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -82,8 +81,6 @@ static int nio_sdl_main(void* data) {
 
 	SDL_AddTimer(20, &nio_sdl_callback, NULL);
 
-	keystates = SDL_GetKeyboardState(&kcount);
-
 	memset(keymap, 0xFFFF, sizeof(short) * 8);
 	initialized = TRUE;
 
@@ -96,8 +93,7 @@ static int nio_sdl_main(void* data) {
 			} else if(ev.type == SDL_USEREVENT) {
 				nio_sdl_update();
 			} else if(ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP) {
-				printf("Physical %s -> %s\n",SDL_GetScancodeName(ev.key.keysym.scancode),SDL_GetKeyName(ev.key.keysym.sym));
-				break;
+				//printf("Physical %s -> %s\n",SDL_GetScancodeName(ev.key.keysym.scancode),SDL_GetKeyName(ev.key.keysym.sym));
 			}
 			else if(ev.type == SDL_MOUSEBUTTONDOWN || ev.type == SDL_MOUSEBUTTONUP) {
 				if(ev.button.button == SDL_BUTTON_LEFT && ev.button.y - SCREEN_HEIGHT >= 0) {
@@ -159,7 +155,6 @@ BOOL any_key_pressed(void) {
 
 #undef isKeyPressed
 BOOL isKeyPressed(const t_key* key) {
-//	return keystates[key];
 	return ~(*(keymap + (key->row / 2) - 0x8)) & key->col;
 }
 #define isKeyPressed(x) isKeyPressed(&x)
@@ -189,40 +184,30 @@ unsigned short getPaletteColor(unsigned int color)
 	return 0;
 }
 
-static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y, int fill) {
+static void nio_sdl_renderTexture(SDL_Texture* tex, int x, int y) {
 	SDL_Rect dst;
 	dst.x = x;
 	dst.y = y;
 	SDL_QueryTexture(tex, NULL, NULL, &dst.w, &dst.h);
-	if(fill){
-		SDL_SetRenderDrawColor(renderer, 127, 127, 127, 255);
-		SDL_RenderFillRect(renderer, &dst);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	}
-	if(fill == 2){
-		SDL_SetRenderDrawColor(renderer, 127, 0, 0, 255);
-		SDL_RenderFillRect(renderer, &dst);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	}
 	SDL_RenderCopy(renderer, tex, NULL, &dst);
 }
 
-static void nio_sdl_print(int x, int y, char* text, int fill)  {
-	SDL_Color white = {255, 255, 255};
-	SDL_Surface* f = TTF_RenderText_Blended(font, text, white);
+static void nio_sdl_print(int x, int y, char* text)  {
+	SDL_Color c = {0, 0, 0};
+	SDL_Surface* f = TTF_RenderText_Blended(font, text, c);
 	SDL_Texture* t = SDL_CreateTextureFromSurface(renderer, f);
 
 	SDL_FreeSurface(f);
-	nio_sdl_renderTexture(t, x, y, fill);
+	nio_sdl_renderTexture(t, x, y);
 	SDL_DestroyTexture(t);
 }
 
-static void nio_sdl_printf(int x, int y, int fill, const char* format, ...) {
+static void nio_sdl_printf(int x, int y, const char* format, ...) {
 	char buffer[200];
 	va_list args;
 	va_start(args, format);
 	vsnprintf(buffer, 200, format, args);
-	nio_sdl_print(x, y, buffer, fill);
+	nio_sdl_print(x, y, buffer);
 	va_end(args);
 }
 
@@ -251,9 +236,15 @@ static void nio_sdl_drawKeymap(void) {
 			r.y = SCREEN_HEIGHT + j * 20;
 			r.w = 50;
 			r.h = 20;
-			SDL_SetRenderDrawColor(renderer, (255/8) * j, (255/10) * i, 0, 255);
+			t_key k;
+			k.row = 0x10 + 2*j;
+			k.col = 1 << i;
+			if(isKeyPressed(k))
+				SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+			else
+				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 			SDL_RenderFillRect(renderer, &r);
-			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, 1, "%d", i);
+			nio_sdl_printf(i*50, SCREEN_HEIGHT + j * 20, "%d", i);
 		}
 	}
 }
