@@ -8,7 +8,7 @@ GENZEHN = genzehn
 
 GCCFLAGS = -Wall -W -marm -I../../include
 LDFLAGS = ../../lib/libnspireio.a
-ZEHNFLAGS = --name "hello"
+ZEHNFLAGS = --name "hello" --uses-lcd-blit false
 
 ifeq ($(DEBUG),FALSE)
 	GCCFLAGS += -Os
