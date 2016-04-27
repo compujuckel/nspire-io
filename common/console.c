@@ -176,8 +176,8 @@ void nio_load(const char* path, nio_console* csl)
 	if(feof(f) || ferror(f))
 		exit_with_error(__FUNCTION__,"fread failed or reached end of file");
 	
-    if(c->drawing_enabled)
-        nio_fflush(csl);
+	if(c->drawing_enabled)
+		nio_fflush(csl);
     
 	if(fclose(f) == EOF)
 		exit_with_error(__FUNCTION__,"fclose failed");
