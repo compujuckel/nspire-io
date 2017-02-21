@@ -185,14 +185,16 @@ void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, con
 /** Loads a console from a file on flash storage.
     @param path File path
 	@param c Console
+	@return true if successful
 */
-void nio_load(const char* path, nio_console* c);
+bool nio_load(const char* path, nio_console* c);
 
 /** Saves a console to a file on flash storage.
 	@param path File path
 	@param c Console
+	@return true if successful
 */
-void nio_save(const char* path, const nio_console* c);
+bool nio_save(const char* path, const nio_console* c);
 
 /** Sets a default console that will be used for all functions without console argument, e.g. nio_puts()
 	@param c Console
@@ -267,8 +269,9 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing);
 	@param background_color Background color. Use predefined colors (NIO_COLOR_*)
 	@param foreground_color Text color. Use predefined colors (NIO_COLOR_*)
 	@param drawing_enabled See nio_drawing_enabled()
+	@return true if successful
 */
-void nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled);
+bool nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled);
 
 /** Uninitializes a console. This should always be called before the program ends.
 	@param c Console

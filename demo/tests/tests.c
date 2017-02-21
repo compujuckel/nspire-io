@@ -34,7 +34,6 @@
 int main(void)
 {
 	assert_ndless_rev(874);
-	clrscr();
 	
 	nio_console csl;
 	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
@@ -80,7 +79,6 @@ int main(void)
 	nio_puts("Saving console. Press any key...\n");
 	nio_save("/documents/nio_tests.tns",&csl);
 	wait_key_pressed();
-	clrscr();
 	nio_free(&csl);
 	nio_load("/documents/nio_tests.tns",&csl);
 	nio_puts("If the text above is the same, everything is OK\n");
