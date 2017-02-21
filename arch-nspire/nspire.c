@@ -55,6 +55,7 @@ void nio_scrbuf_free()
 {
 	free(scrbuf);
 	scrbuf = NULL;
+	lcd_init(SCR_TYPE_INVALID);
 }
 
 unsigned short getPaletteColor(unsigned int color)
