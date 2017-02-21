@@ -30,7 +30,8 @@
 #include "charmap.h"
 #include "util.h"
 
-nio_console* nio_default = NULL;
+static nio_console* nio_default = NULL;
+static unsigned int csl_count = 0;
 
 unsigned char adaptive_cursor[5][6] =
 {
@@ -128,8 +129,9 @@ void nio_vram_grid_putc(const int offset_x, const int offset_y, const int x, con
 bool nio_load(const char* path, nio_console* csl)
 {
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
-	if (!c) return false;
+	if (!c) goto err2;
 	*c = (nio_console_private){0};
+	++csl_count;
 
 	FILE* f = fopen(path,"rb");
 	if (!f) goto err2;
@@ -172,6 +174,8 @@ bool nio_load(const char* path, nio_console* csl)
 	fread(c->color,sizeof(short),c->max_x*c->max_y,f);
 
 	if(feof(f) || ferror(f)) goto err1;
+
+	if (!nio_scrbuf_init()) goto err1;
 
 	if(c->drawing_enabled)
 		nio_fflush(csl);
@@ -244,8 +248,9 @@ void nio_set_idle_callback(nio_console* csl, int (*callback)(void*), void* data)
 bool nio_init(nio_console* csl, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled)
 {
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
-	if (!c) return false;
+	if (!c) goto err;
 	*c = (nio_console_private){0};
+	++csl_count;
 
 	c->max_x = size_x;
 	c->max_y = size_y;
@@ -277,6 +282,7 @@ bool nio_init(nio_console* csl, const int size_x, const int size_y, const int of
 
 	c->history_line = -1;
 
+	if (!nio_scrbuf_init()) goto err;
 	nio_clear(csl);
 
 	return true;
@@ -458,7 +464,10 @@ int nio_fputc(int character, nio_console* csl)
 		nio_csl_savechar(csl,character,c->cursor_x,c->cursor_y);
 		
 		// Draw it when BOOL draw is true
-		if(c->drawing_enabled) nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
+		if(c->drawing_enabled) {
+			nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
+			nio_vram_draw();
+		}
 		
 		// Increment X cursor. It will be checked for validity next time.
 		c->cursor_x++;
@@ -706,5 +715,8 @@ void nio_free(nio_console* csl)
 
 		free(c);
 		*csl = NULL;
+		--csl_count;
+		if (!csl_count)
+			nio_scrbuf_free();
 	}
 }

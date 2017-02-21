@@ -29,27 +29,26 @@
 #include "../include/nspireio/nspireio.h"
 #include "../common/util.h"
 
-void* scrbuf = NULL;
+static void* scrbuf;
+static unsigned scrsize;
+static bool is_color;
 
-void nio_scrbuf_flip()
-{
-	memcpy(SCREEN_BASE_ADDRESS,scrbuf,SCREEN_BYTES_SIZE);
-}
-
-void nio_scrbuf_init()
+bool nio_scrbuf_init()
 {
 	if(scrbuf == NULL)
 	{
-		scrbuf = malloc(SCREEN_BYTES_SIZE);
-		if(scrbuf == NULL)
-			exit_with_error(__FUNCTION__,"malloc failed");
-		memcpy(scrbuf,SCREEN_BASE_ADDRESS,SCREEN_BYTES_SIZE);
+		is_color = (lcd_type() != SCR_320x240_4);
+		if (!lcd_init(is_color ? SCR_320x240_565 : SCR_320x240_4)) return false;
+		scrsize = (is_color ? SCREEN_WIDTH*SCREEN_HEIGHT*2 : SCREEN_WIDTH*SCREEN_HEIGHT/2);
+		scrbuf = malloc(scrsize);
+		if(!scrbuf) return false;
 	}
+	return true;
 }
 
 void nio_scrbuf_clear()
 {
-	memset(scrbuf,0xFF,SCREEN_BYTES_SIZE);
+	memset(scrbuf,0xFF,scrsize);
 }
 
 void nio_scrbuf_free()
@@ -91,15 +90,15 @@ void nio_pixel_set(unsigned int x, unsigned int y, unsigned int c)
 	
 	c = getPaletteColor(c);
 
-	if(lcd_isincolor())
+	if(is_color)
 	{
-		unsigned short* ptr = SCREEN_BASE_ADDRESS + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
+		unsigned short* ptr = scrbuf + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
 		*ptr = c;
 	}
 	else
 	{
 		c = getBW(c);
-		unsigned char* p = (unsigned char*)(SCREEN_BASE_ADDRESS + ((x >> 1) + (y << 7) + (y << 5)));
+		unsigned char* p = (unsigned char*)(scrbuf + ((x >> 1) + (y << 7) + (y << 5)));
 		*p = (x & 1) ? ((*p & 0xF0) | c) : ((*p & 0x0F) | (c << 4));
 	}
 }
@@ -112,22 +111,22 @@ void nio_vram_pixel_set(const unsigned int x, const unsigned int y, const unsign
 void nio_vram_fill(unsigned int color)
 {
 	color = getPaletteColor(color);
-	if(!lcd_isincolor())
+	if(!is_color)
 	{
 		color = getBW(color);
-		memset(SCREEN_BASE_ADDRESS, color | (color << 4), SCREEN_BYTES_SIZE);
+		memset(scrbuf, color | (color << 4), scrsize);
 	}
 	else
 	{
 		color = color | (color << 16);
-		unsigned int *start = SCREEN_BASE_ADDRESS, *end = start + (SCREEN_BYTES_SIZE / sizeof(*start));
+		unsigned int *start = scrbuf, *end = start + (scrsize / sizeof(*start));
 		while(start < end)
 			*start++ = color;
 	}
 }
 
 void nio_vram_draw(void)
-{}
+{lcd_blit(scrbuf, is_color ? SCR_320x240_565 : SCR_320x240_4);}
 
 unsigned int nio_cursor_clock(void) {
     return *(volatile unsigned*)0x90090000;

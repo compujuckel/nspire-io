@@ -105,8 +105,12 @@ int main(void)
 		}
 		
 		if (!strcmp(text, "loadterm")) {
-			nio_clear(&c1);
-			nio_load("nio_consoledemoadv.sav", &c1);
+			nio_console c2;
+			if (nio_load("nio_consoledemoadv.sav", &c2)) {
+				nio_free(&c1);
+				c1 = c2;
+			} else
+				nio_printf(" No terminal state file found.\n");
 		}
 		
 		if (!strcmp(text, "clear")) {

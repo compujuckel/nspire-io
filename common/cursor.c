@@ -117,6 +117,7 @@ void nio_cursor_draw(nio_console* csl)
 			}
 		}
 	}
+	nio_vram_draw();
 }
 
 void nio_cursor_erase(nio_console* csl)
@@ -142,6 +143,7 @@ void nio_cursor_erase(nio_console* csl)
 		}
 		nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 	}
+	nio_vram_draw();
 }
 
 void nio_cursor_blinking_draw(nio_console* csl)

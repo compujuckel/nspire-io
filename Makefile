@@ -11,7 +11,7 @@ else
 	LDFLAGS += --debug
 endif
 
-GCCFLAGS += -DNSPIREIO_BUILD -Wall -Werror -Wextra -D OLD_SCREEN_API
+GCCFLAGS += -DNSPIREIO_BUILD -Wall -Werror -Wextra
 
 CPPOBJS = $(patsubst %.cpp,%.o,$(wildcard common/cpp/*.cpp))
 OBJS = $(patsubst %.c,%.o,$(wildcard common/*.c)) $(patsubst %.c,%.o,$(wildcard arch-$(ARCH)/*.c)) $(CPPOBJS)
