@@ -584,7 +584,8 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 			nio_cursor_blinking_draw(csl);
 			char_repeat = tmp;
 			tmp = nio_ascii_get(&cursor);
-			nio_cursor_custom(csl, &adaptive_cursor[cursor][0]);
+			if (c->cursor_type == 4)
+				nio_cursor_custom(csl, &adaptive_cursor[cursor][0]);
 		} while(tmp == char_repeat || tmp == 0);
 		char_repeat = tmp;
 		nio_cursor_erase(csl);
