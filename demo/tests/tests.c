@@ -39,15 +39,15 @@ int main(void)
 	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
 	nio_set_default(&csl);
 	nio_color(&csl,NIO_COLOR_BLACK,NIO_COLOR_WHITE);
-	nio_puts("Nspire I/O testing tool\n");
+	nio_puts("Nspire I/O testing tool");
 	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
 	nio_printf("Compiled %s %s\n",__DATE__,__TIME__);
-	nio_puts("Press any key to flush console...\n");
+	nio_puts("Press any key to flush console...");
 	nio_drawing_enabled(&csl,FALSE);
 	nio_putchar('A');
 	nio_fputc('a',&csl);
 	nio_putchar('\n');
-	nio_puts("Color palette test:\n");
+	nio_puts("Color palette test:");
 	int i, j;
 	for(i = 0; i < 16; i++)
 	{
@@ -59,11 +59,11 @@ int main(void)
 		nio_putchar('\n');
 	}
 	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
-	nio_puts("This line is too long for the Nspire's screen so we have to continue it on the next line...\n");
+	nio_puts("This line is too long for the Nspire's screen so we have to continue it on the next line...");
 	wait_key_pressed();
 	nio_fflush(&csl);
 	nio_drawing_enabled(&csl,TRUE);
-	nio_puts("Enter text:\n");
+	nio_puts("Enter text:");
 	char input[100] = {0};
 	nio_getsn(input,100);
 	nio_printf("Your text was:\n%s\n",input);
@@ -72,16 +72,15 @@ int main(void)
 	if(nio_scanf("%d",&num) == 1)
 		nio_printf("Your number was: %d\n",num);
 	else
-		nio_puts("You did not enter a number!\n");
+		nio_puts("You did not enter a number!");
 	errno = 1;
-	nio_perror("Error test: ");
-	nio_putchar('\n');
-	nio_puts("Saving console. Press any key...\n");
+	nio_perror("Error test");
+	nio_puts("Saving console. Press any key...");
 	nio_save("/documents/nio_tests.tns",&csl);
 	wait_key_pressed();
 	nio_free(&csl);
 	nio_load("/documents/nio_tests.tns",&csl);
-	nio_puts("If the text above is the same, everything is OK\n");
+	nio_puts("If the text above is the same, everything is OK");
 	
 	#if NIO_TEST_UART == 1
 	nio_puts("Testing UART...\n");

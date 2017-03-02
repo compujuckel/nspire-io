@@ -505,7 +505,9 @@ int nio_fputs(const char* str, nio_console* c)
 
 int nio_puts(const char* str)
 {
-    return nio_fputs(str,nio_default);
+	nio_fputs(str, nio_default);
+	nio_fputc('\n', nio_default);
+	return 1;
 }
 
 int nio_fprintf(nio_console* c, const char *format, ...)
@@ -529,14 +531,16 @@ int nio_printf(const char *format, ...)
     va_start(arglist,format);
     if(vsnprintf(buf,1000,format,arglist) < 0)
 		exit_with_error(__FUNCTION__,"vsnprintf failed");
-    nio_puts(buf);
+    nio_fputs(buf, nio_default);
     va_end(arglist);
     return strlen(buf);
 }
 
 void nio_perror(const char* str)
 {
-    nio_printf("%s%s",str,strerror(errno));
+	if (str && *str)
+		nio_printf("%s: ", str);
+	nio_puts(strerror(errno));
 }
 
 void nio_color(nio_console* csl, const unsigned char background_color, const unsigned char foreground_color)
