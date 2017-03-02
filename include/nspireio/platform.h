@@ -46,8 +46,9 @@
 
 void nio_pixel_set(const unsigned int x, const unsigned int y, const unsigned int color);
 void nio_vram_pixel_set(const unsigned int x, const unsigned int y, const unsigned int color);
-void nio_vram_fill(unsigned int color);
+void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color);
 void nio_vram_draw(void);
+void nio_vram_scroll(const unsigned x, const unsigned y, const unsigned w, const unsigned h, const unsigned scroll, const unsigned color);
 unsigned int nio_cursor_clock(void);
 char nio_ascii_get(int* adaptive_cursor_state);
 

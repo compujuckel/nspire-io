@@ -301,7 +301,7 @@ int nio_fflush(nio_console* csl)
 			nio_vram_csl_drawchar(csl,col,row);
 
 	nio_vram_draw();
-    return 0;
+	return 0;
 }
 
 void nio_clear(nio_console* csl)
@@ -318,10 +318,9 @@ void nio_clear(nio_console* csl)
 	c->cursor_y = 0;
 	if(c->drawing_enabled)
 	{
-		if(c->max_x == NIO_MAX_COLS && c->max_y == NIO_MAX_ROWS && c->offset_x == 0 && c->offset_y == 0)
-			nio_vram_fill(c->default_background_color);
+		nio_vram_fill(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, c->default_background_color);
 		
-		nio_fflush(csl);
+		nio_vram_draw();
 	}
 }
 
@@ -332,6 +331,10 @@ void nio_scroll(nio_console* csl)
 	memmove(c->color,c->color+c->max_x,c->max_x*(c->max_y-1)*2);
 	memset(c->data+(c->max_x*(c->max_y-1)),0,c->max_x);
 	memset(c->color+(c->max_x*(c->max_y-1)*2),0,c->max_x*2);
+	if (c->drawing_enabled) {
+		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT, c->default_background_color);
+		nio_vram_draw();
+	}
 	
 	if(c->cursor_y > 0)
 		c->cursor_y--;
@@ -436,9 +439,8 @@ int nio_fputc(int character, nio_console* csl)
 		if(c->cursor_y >= c->max_y)
 		{
 			nio_scroll(csl);
-			if(c->drawing_enabled)
-				nio_fflush(csl);
-		}
+		} else if(c->drawing_enabled)
+			nio_vram_draw();
 	}
 	// Carriage return. Set X cursor to zero.
 	else if(character == '\r')
@@ -466,7 +468,6 @@ int nio_fputc(int character, nio_console* csl)
 		// Draw it when BOOL draw is true
 		if(c->drawing_enabled) {
 			nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
-			nio_vram_draw();
 		}
 		
 		// Increment X cursor. It will be checked for validity next time.
@@ -482,8 +483,6 @@ int nio_fputc(int character, nio_console* csl)
 	if(c->cursor_y >= c->max_y)
 	{
 		nio_scroll(csl);
-		if(c->drawing_enabled)
-			nio_fflush(csl);
 	}
     return character;
 }
@@ -706,6 +705,7 @@ void nio_free(nio_console* csl)
 {
 	if (*csl) {
 		nio_console_private *c = *csl;
+		nio_fflush(csl);
 		free(c->data);
 		free(c->color);
 		free(c->input_buf);

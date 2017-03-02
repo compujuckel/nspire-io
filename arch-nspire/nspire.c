@@ -109,21 +109,80 @@ void nio_vram_pixel_set(const unsigned int x, const unsigned int y, const unsign
 	nio_pixel_set(x,y,color);
 }
 
-void nio_vram_fill(unsigned int color)
+void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color)
 {
 	color = getPaletteColor(color);
 	if(!is_color)
 	{
 		color = getBW(color);
-		memset(scrbuf, color | (color << 4), scrsize);
+		uint8_t *p;
+		if (x & 1)
+		{
+			p = (uint8_t*)scrbuf + (x/2) + (SCREEN_WIDTH/2)*y;
+			for (unsigned int i = 0; i < h; i++, p += (SCREEN_WIDTH/2))
+				*p = (*p & 0xF0) | color;
+		}
+		if ((x + w) & 1)
+		{
+			p = (uint8_t*)scrbuf + (x+w)/2 + (SCREEN_WIDTH/2)*y;
+			for (unsigned int i = 0; i < h; i++, p += (SCREEN_WIDTH/2))
+				*p = (*p & 0x0F) | (color << 4);
+		}
+		color = color | (color << 4);
+		p = (uint8_t*)scrbuf + (x+1)/2 + (SCREEN_WIDTH/2)*y;
+		size_t n = (w - (x & 1))/2;
+		for (unsigned int i = 0; i < h; i++, p += (SCREEN_WIDTH/2))
+			memset(p, color, n);
 	}
 	else
 	{
-		color = color | (color << 16);
-		unsigned int *start = scrbuf, *end = start + (scrsize / sizeof(*start));
-		while(start < end)
-			*start++ = color;
+		uint16_t *p;
+		for (unsigned int i = 0; i < h; i++)
+		{
+			p = (uint16_t*)scrbuf + x + SCREEN_WIDTH*(y + i);
+			for (unsigned int j = 0; j < w; j++)
+				*p++ = color;
+		}
 	}
+}
+
+void nio_vram_scroll(const unsigned x, const unsigned y, const unsigned w, const unsigned h, const unsigned scroll, const unsigned color) {
+	if (!scroll) return;
+
+	unsigned int r = h - scroll;
+	if (is_color)
+	{
+		uint16_t *p1 = (uint16_t*)scrbuf+x+SCREEN_WIDTH*y;
+		uint16_t *p2 = p1 + SCREEN_WIDTH*scroll;
+		size_t n = sizeof(uint16_t)*w;
+		for (unsigned int i = 0; i < r; ++i, p1 += SCREEN_WIDTH, p2 += SCREEN_WIDTH)
+			memmove(p1, p2, n);
+	}
+	else
+	{
+		uint8_t *p1, *p2;
+		size_t n = (w - (x & 1))/2;
+
+		if (x & 1)
+		{
+			p1 = (uint8_t*)scrbuf+x/2+(SCREEN_WIDTH/2)*y;
+			p2 = p1 + (SCREEN_WIDTH/2)*scroll;
+			for (unsigned int i = 0; i < r; ++i, p1 += SCREEN_WIDTH/2, p2 += SCREEN_WIDTH/2)
+				*p1 = ((*p1 & 0xF0) | (*p2 & 0xF));
+		}
+		if ((x + w) & 1)
+		{
+			p1 = (uint8_t*)scrbuf+(x+w)/2+(SCREEN_WIDTH/2)*y;
+			p2 = p1 + (SCREEN_WIDTH/2)*scroll;
+			for (unsigned int i = 0; i < r; ++i, p1 += SCREEN_WIDTH/2, p2 += SCREEN_WIDTH/2)
+				*p1 = ((*p1 & 0xF) | (*p2 & 0xF0));
+		}
+		p1 = (uint8_t*)scrbuf+(x+1)/2+(SCREEN_WIDTH/2)*y;
+		p2 = p1 + (SCREEN_WIDTH/2)*scroll;
+		for (unsigned int i = 0; i < r; ++i, p1 += SCREEN_WIDTH/2, p2 += SCREEN_WIDTH/2)
+			memmove(p1, p2, n);
+	}
+	nio_vram_fill(x, y + h - scroll, w, scroll, color);
 }
 
 void nio_vram_draw(void)
