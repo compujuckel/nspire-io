@@ -682,12 +682,14 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 	
 	str[str_pos] = 0;
 
-	free(c->history[HISTORY_LINES - 1]);	
-	unsigned int j;
-	for(j = HISTORY_LINES - 1; j > 0; --j)
-		c->history[j] = c->history[j - 1];
+	if (!c->history[0] || strcmp(str, c->history[0])) {
+		free(c->history[HISTORY_LINES - 1]);
+		for(unsigned int j = HISTORY_LINES - 1; j > 0; --j)
+			c->history[j] = c->history[j - 1];
 
-	c->history[0] = strdup(str);
+		c->history[0] = strdup(str);
+	}
+
 	c->history_line = -1;
 	
 	return str;
