@@ -571,8 +571,6 @@ int nio_getchar(void)
 char* nio_fgets(char* str, int num, nio_console* csl)
 {
 	nio_console_private *c = *csl;
-	int old_x = c->cursor_x;
-	int old_y = c->cursor_y;
 	
 	int str_pos = 0;
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
@@ -604,27 +602,31 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 
 		if(tmp == NIO_KEY_ESC)
 		{
-			nio_fputc('\n', csl);
+			if (c->cursor_x > 0 || i == 0)
+				nio_fputc('\n', csl);
 			return NULL;
 		}
 		if(tmp == '\n')
 		{
-			nio_fputc('\n', csl);
+			queue_put(c->input_buf, '\n');
+			if (c->cursor_x > 0 || i == 0)
+				nio_fputc('\n', csl);
 			break;
 		}
-		else if(tmp == '\b')
+		else if(tmp == '\b' && i > 0)
 		{
-			if(c->cursor_x == 0 && c->cursor_y > old_y && i > 0)
+			if(c->cursor_x == 0 && c->cursor_y > 0)
 			{
 				c->cursor_y--;
-				c->cursor_x = c->max_x;
+				c->cursor_x = c->max_x - 1;
+				nio_fputc(' ', csl);
+				c->cursor_y--;
+				c->cursor_x = c->max_x - 1;
 			}
-			if((c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y )) && i > 0)
-			{
+			else
 				nio_fputs("\b \b", csl);
-				queue_get_top(c->input_buf);
-				i--;
-			}
+			queue_get_top(c->input_buf);
+			i--;
 		}
 		else if(tmp == NIO_KEY_UP || tmp == NIO_KEY_DOWN)
 		{
@@ -636,16 +638,17 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 			{
 				while(i--)
 				{
-		                        if(c->cursor_x == 0 && c->cursor_y > old_y)
+		                        if(c->cursor_x == 0 && c->cursor_y > 0)
 		                        {
-		                                c->cursor_y--;
-		                                c->cursor_x = c->max_x;
-		                        }
-		                        if(c->cursor_x > old_x || (c->cursor_x > 0 && c->cursor_y > old_y))
-		                        {
-		                                nio_fputs("\b \b", csl);
-		                                queue_get_top(c->input_buf);
-		                        }
+						c->cursor_y--;
+						c->cursor_x = c->max_x - 1;
+						nio_fputc(' ', csl);
+						c->cursor_y--;
+						c->cursor_x = c->max_x - 1;
+					}
+					else
+						nio_fputs("\b \b", csl);
+					queue_get_top(c->input_buf);
 				}
 				++i;
 
@@ -682,7 +685,7 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 	
 	str[str_pos] = 0;
 
-	if (!c->history[0] || strcmp(str, c->history[0])) {
+	if (str[0] != '\n' && (!c->history[0] || strcmp(str, c->history[0]))) {
 		free(c->history[HISTORY_LINES - 1]);
 		for(unsigned int j = HISTORY_LINES - 1; j > 0; --j)
 			c->history[j] = c->history[j - 1];
@@ -702,9 +705,14 @@ char* nio_gets(char* str)
 
 char* nio_getsn(char* str, int num)
 {
-	nio_fgets(str,num,nio_default);
-	str[strlen(str)] = '\0';
-	return str;
+	if (nio_fgets(str,num,nio_default))
+	{
+		size_t s = strlen(str);
+		if (s && str[s-1] == '\n')
+			str[s-1] = '\0';
+		return str;
+	}
+	return NULL;
 }
 
 void nio_free(nio_console* csl)

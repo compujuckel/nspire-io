@@ -48,7 +48,7 @@ int main(void)
 		if(!nio_fgets(text,100,&c1))
 			break;
 		// Write the text into 2nd console
-		nio_fprintf(&c2,"%s\n",text);
+		nio_fputs(text,&c2);
 	}
 	
 	nio_free(&c1);
