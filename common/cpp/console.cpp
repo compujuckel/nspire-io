@@ -181,13 +181,20 @@ void console::get(int& ch)
 
 void console::get(char* s, streamsize n)
 {
-	size_t len = 0;
-	if (nio_fgets(s,n,c))
+	int len = 0;
+
+	if (n == 1)
+		s[0] = '\0';
+	else if (n > 1)
 	{
-		len = strlen(s);
-		if (len && s[--len] == '\n')
+		len = nio_read(c,s,n-1);
+		if (len > 0) {
+			if (s[len - 1] == '\n')
+				--len;
 			s[len] = '\0';
+		}
 	}
+
 	count = len;
 }
 

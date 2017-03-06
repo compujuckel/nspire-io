@@ -568,18 +568,20 @@ int nio_getchar(void)
     return nio_fgetc(nio_default);
 }
 
-char* nio_fgets(char* str, int num, nio_console* csl)
+int nio_read(nio_console *csl, char* str, int num)
 {
 	nio_console_private *c = *csl;
 	
+	if (num < 1)
+		return 0;
+
 	int str_pos = 0;
 	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
 	
-	if(str_pos >= num - 1)
+	if(str_pos > 0)
 	{
-		str[str_pos] = 0;
-		return str;
+		return str_pos;
 	}
 	
 	int i = 0, cursor;
@@ -604,7 +606,7 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 		{
 			if (c->cursor_x > 0 || i == 0)
 				nio_fputc('\n', csl);
-			return NULL;
+			return 0;
 		}
 		if(tmp == '\n')
 		{
@@ -613,20 +615,23 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 				nio_fputc('\n', csl);
 			break;
 		}
-		else if(tmp == '\b' && i > 0)
+		else if(tmp == '\b')
 		{
-			if(c->cursor_x == 0 && c->cursor_y > 0)
+			if (i > 0)
 			{
-				c->cursor_y--;
-				c->cursor_x = c->max_x - 1;
-				nio_fputc(' ', csl);
-				c->cursor_y--;
-				c->cursor_x = c->max_x - 1;
+				if(c->cursor_x == 0 && c->cursor_y > 0)
+				{
+					c->cursor_y--;
+					c->cursor_x = c->max_x - 1;
+					nio_fputc(' ', csl);
+					c->cursor_y--;
+					c->cursor_x = c->max_x - 1;
+				}
+				else
+					nio_fputs("\b \b", csl);
+				queue_get_top(c->input_buf);
+				i--;
 			}
-			else
-				nio_fputs("\b \b", csl);
-			queue_get_top(c->input_buf);
-			i--;
 		}
 		else if(tmp == NIO_KEY_UP || tmp == NIO_KEY_DOWN)
 		{
@@ -680,21 +685,36 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 		}
 	}
 	
-	for(; str_pos < num - 1 && !queue_empty(c->input_buf); str_pos++)
+	for(; str_pos < num && !queue_empty(c->input_buf); str_pos++)
 		str[str_pos] = queue_get(c->input_buf);
 	
-	str[str_pos] = 0;
-
-	if (str[0] != '\n' && (!c->history[0] || strcmp(str, c->history[0]))) {
+	if (str[0] != '\n' && (!c->history[0] || strncmp(str, c->history[0], str_pos) || !c->history[0][str_pos])) {
 		free(c->history[HISTORY_LINES - 1]);
 		for(unsigned int j = HISTORY_LINES - 1; j > 0; --j)
 			c->history[j] = c->history[j - 1];
 
-		c->history[0] = strdup(str);
+		c->history[0] = strndup(str, str_pos);
 	}
 
 	c->history_line = -1;
 	
+	return str_pos;
+}
+
+char *nio_fgets(char* str, int num, nio_console* csl)
+{
+	int n = 0;
+
+	if (num < 1)
+		return NULL;
+	else if (num > 1)
+	{
+		n = nio_read(csl, str, num - 1);
+		if (!n)
+			return NULL;
+	}
+
+	str[n] = '\0';
 	return str;
 }
 
@@ -705,14 +725,21 @@ char* nio_gets(char* str)
 
 char* nio_getsn(char* str, int num)
 {
-	if (nio_fgets(str,num,nio_default))
+	int n = 0;
+
+	if (num < 1)
+		return NULL;
+	else if (num > 1)
 	{
-		size_t s = strlen(str);
-		if (s && str[s-1] == '\n')
-			str[s-1] = '\0';
-		return str;
+		n = nio_read(nio_default, str, num - 1);
+		if (!n)
+			return NULL;
 	}
-	return NULL;
+	if (n > 0 && str[n - 1] == '\n')
+		--n;
+
+	str[n] = '\0';
+	return str;
 }
 
 void nio_free(nio_console* csl)

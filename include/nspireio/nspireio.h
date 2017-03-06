@@ -307,6 +307,10 @@ int nio_fgetc(nio_console* c);
 */
 int nio_getchar(void);
 
+/** See [read](http://pubs.opengroup.org/onlinepubs/9699919799/functions/read.html)
+*/
+int nio_read(nio_console *csl, char *str, int num);
+
 /** See [fgets](http://www.cplusplus.com/reference/clibrary/cstdio/fgets/)
 */
 char* nio_fgets(char* str, int num, nio_console* c);
