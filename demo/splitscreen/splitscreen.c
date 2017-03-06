@@ -33,10 +33,10 @@ int main(void)
 	
 	nio_console c1;
 	// 53 columns, 15 rows. 0px offset for x/y. Background color 15 (white), foreground color 0 (black)
-	nio_init(&c1,53,15,0,0,WHITE,BLACK,TRUE);
+	nio_init(&c1,53,15,0,0,WHITE,BLACK,true);
 	
 	nio_console c2;
-	nio_init(&c2,53,15,0,15*8,BLACK,WHITE,TRUE);
+	nio_init(&c2,53,15,0,15*8,BLACK,WHITE,true);
 	
 	// Just showing printf
 	nio_fprintf(&c1,"%s build at %s, %s\n",__FILE__,__DATE__,__TIME__);

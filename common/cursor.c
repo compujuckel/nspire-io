@@ -170,7 +170,7 @@ void nio_cursor_blinking_reset(nio_console* csl)
 	c->cursor_blink_timestamp = nio_cursor_clock();
 }
 
-void nio_cursor_enable(nio_console* csl, BOOL enable_cursor)
+void nio_cursor_enable(nio_console* csl, bool enable_cursor)
 {
 	nio_console_private *c = *csl;
 	c->cursor_enabled = enable_cursor;
@@ -180,7 +180,7 @@ void nio_cursor_enable(nio_console* csl, BOOL enable_cursor)
 		nio_cursor_draw(csl);
 }
 
-void nio_cursor_blinking_enable(nio_console* csl, BOOL enable_cursor_blink)
+void nio_cursor_blinking_enable(nio_console* csl, bool enable_cursor_blink)
 {
 	nio_console_private *c = *csl;
 	c->cursor_blink_enabled = enable_cursor_blink;

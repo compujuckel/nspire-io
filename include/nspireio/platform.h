@@ -33,6 +33,7 @@
 #define NIO_CHAR_WIDTH 6
 #define NIO_CHAR_HEIGHT 8
 
+#include <stdbool.h>
 
 #ifdef _TINSPIRE
 	#include "platform-nspire.h"
@@ -53,9 +54,9 @@ unsigned int nio_cursor_clock(void);
 char nio_ascii_get(int* adaptive_cursor_state);
 
 /** Checks if there is data available at the serial port.
-	@return TRUE if new data is available.
+	@return true if new data is available.
 */
-BOOL uart_ready(void);
+bool uart_ready(void);
 
 /** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
 	@return Char

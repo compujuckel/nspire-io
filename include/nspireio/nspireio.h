@@ -70,13 +70,13 @@ typedef struct
 	int offset_y;
 	unsigned char default_background_color;
 	unsigned char default_foreground_color;
-	BOOL drawing_enabled;
-	BOOL cursor_enabled;
+	bool drawing_enabled;
+	bool cursor_enabled;
 	int cursor_type;
 	int cursor_line_width;
 	unsigned char cursor_custom_data[6];
-	BOOL cursor_blink_enabled;
-	BOOL cursor_blink_status;
+	bool cursor_blink_enabled;
+	bool cursor_blink_status;
 	unsigned cursor_blink_timestamp;
 	unsigned cursor_blink_duration;
 	int (*idle_callback)(void*);
@@ -258,7 +258,7 @@ void nio_color(nio_console* c, const unsigned char background_color, const unsig
 	@param c Console
 	@param enable_drawing If this is true, a console will automatically be updated if text is written to it.
 */
-void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing);
+void nio_drawing_enabled(nio_console* c, const bool enable_drawing);
 
 /** Initializes a console.
 	@param c Console
@@ -271,7 +271,7 @@ void nio_drawing_enabled(nio_console* c, const BOOL enable_drawing);
 	@param drawing_enabled See nio_drawing_enabled()
 	@return true if successful
 */
-bool nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled);
+bool nio_init(nio_console* c, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled);
 
 /** Uninitializes a console. This should always be called before the program ends.
 	@param c Console
@@ -374,9 +374,9 @@ int nio_getche(nio_console* c);
 int nio__getche(void);
 
 /** Checks if there is data available at the serial port.
-	@return TRUE if new data is available.
+	@return true if new data is available.
 */
-BOOL uart_ready(void);
+bool uart_ready(void);
 
 /** See [getchar](http://www.cplusplus.com/reference/clibrary/cstdio/getchar/)
 */
@@ -428,13 +428,13 @@ void nio_cursor_blinking_reset(nio_console* c);
 	@param c Console
 	@param enable_cursor When this is true, a cursor will be drawn to the screen, false: no cursor shown.
 */
-void nio_cursor_enable(nio_console* c, BOOL enable_cursor);
+void nio_cursor_enable(nio_console* c, bool enable_cursor);
 
 /** Enables console cursor blinking.
 	@param c Console
 	@param enable_cursor_blink When this is true, the cursor will blink, false: no cursor blinking will occur.
 */
-void nio_cursor_blinking_enable(nio_console* c, BOOL enable_cursor_blink);
+void nio_cursor_blinking_enable(nio_console* c, bool enable_cursor_blink);
 
 /** Sets the console cursor blink duration (the time it takes to switch on or off)
 	@param c Console
@@ -473,7 +473,7 @@ void nio_cursor_type(nio_console* c, int cursor_type);
 	CHAR_WIDTH is 6. Therefore, for a vertical bar cursor, 0 < cursor_width < 6.
 	
 	If you wish to draw a blank cursor, you probably should disable the cursor
-	altogether with EnableCursor(nio_console, FALSE).
+	altogether with nio_cursor_enable(nio_console, false).
 	
 	Note that if you specify an out-of-range value, NspireIO will silently fail
 	and reset the cursor width to 1.
@@ -494,7 +494,7 @@ void nio_cursor_width(nio_console* c, int cursor_width);
 void nio_cursor_custom(nio_console* c, unsigned char cursor_data[6]);
 
 #ifdef NIO_KEEP_COMPATIBILITY
-#define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,TRUE)
+#define nio_InitConsole(a,b,c,d,e,f,g)  nio_init(a,b,c,d,e,f,g,true)
 #define nio_DrawConsole                 nio_fflush
 #define nio_Clear                       nio_clear
 #define nio_PrintChar(a,b)              nio_fputc(b,a)

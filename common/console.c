@@ -148,16 +148,16 @@ bool nio_load(const char* path, nio_console* csl)
 	fread(&c->default_background_color,sizeof(char),1,f);
 	fread(&c->default_foreground_color,sizeof(char),1,f);
 
-	fread(&c->drawing_enabled,sizeof(BOOL),1,f);
+	fread(&c->drawing_enabled,sizeof(bool),1,f);
 
-	fread(&c->cursor_enabled,sizeof(BOOL),1,f);
+	fread(&c->cursor_enabled,sizeof(bool),1,f);
 	fread(&c->cursor_type,sizeof(int),1,f);
 	fread(&c->cursor_line_width,sizeof(int),1,f);
 	fread(&c->cursor_custom_data,sizeof(char)*6,1,f);
-	fread(&c->cursor_blink_enabled,sizeof(BOOL),1,f);
-	fread(&c->cursor_blink_status,sizeof(BOOL),1,f);
-	fread(&c->cursor_blink_timestamp,sizeof(BOOL),1,f);
-	fread(&c->cursor_blink_duration,sizeof(BOOL),1,f);
+	fread(&c->cursor_blink_enabled,sizeof(bool),1,f);
+	fread(&c->cursor_blink_status,sizeof(bool),1,f);
+	fread(&c->cursor_blink_timestamp,sizeof(bool),1,f);
+	fread(&c->cursor_blink_duration,sizeof(bool),1,f);
 
 	if(feof(f) || ferror(f)) goto err1;
 
@@ -209,16 +209,16 @@ bool nio_save(const char* path, const nio_console* csl)
 	fwrite(&c->default_background_color,sizeof(char),1,f);
 	fwrite(&c->default_foreground_color,sizeof(char),1,f);
 
-	fwrite(&c->drawing_enabled,sizeof(BOOL),1,f);
+	fwrite(&c->drawing_enabled,sizeof(bool),1,f);
 
-	fwrite(&c->cursor_enabled,sizeof(BOOL),1,f);
+	fwrite(&c->cursor_enabled,sizeof(bool),1,f);
 	fwrite(&c->cursor_type,sizeof(int),1,f);
 	fwrite(&c->cursor_line_width,sizeof(int),1,f);
 	fwrite(&c->cursor_custom_data,sizeof(char)*6,1,f);
-	fwrite(&c->cursor_blink_enabled,sizeof(BOOL),1,f);
-	fwrite(&c->cursor_blink_status,sizeof(BOOL),1,f);
-	fwrite(&c->cursor_blink_timestamp,sizeof(BOOL),1,f);
-	fwrite(&c->cursor_blink_duration,sizeof(BOOL),1,f);
+	fwrite(&c->cursor_blink_enabled,sizeof(bool),1,f);
+	fwrite(&c->cursor_blink_status,sizeof(bool),1,f);
+	fwrite(&c->cursor_blink_timestamp,sizeof(bool),1,f);
+	fwrite(&c->cursor_blink_duration,sizeof(bool),1,f);
 
 	fwrite(c->data,sizeof(char),c->max_x*c->max_y,f);
 	fwrite(c->color,sizeof(short),c->max_x*c->max_y,f);
@@ -245,7 +245,7 @@ void nio_set_idle_callback(nio_console* csl, int (*callback)(void*), void* data)
 	c->idle_callback_data = data;
 }
 
-bool nio_init(nio_console* csl, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const BOOL drawing_enabled)
+bool nio_init(nio_console* csl, const int size_x, const int size_y, const int offset_x, const int offset_y, const unsigned char background_color, const unsigned char foreground_color, const bool drawing_enabled)
 {
 	nio_console_private *c = *csl = malloc(sizeof(nio_console_private));
 	if (!c) goto err;
@@ -271,8 +271,8 @@ bool nio_init(nio_console* csl, const int size_x, const int size_y, const int of
 	if (!c->input_buf) goto err;
 	queue_init(c->input_buf);
 
-	c->cursor_enabled = TRUE;
-	c->cursor_blink_enabled = TRUE;
+	c->cursor_enabled = true;
+	c->cursor_blink_enabled = true;
 	c->cursor_blink_duration = 1;
 	c->cursor_type = 4; // Defaults to "adaptive" cursor
 	c->cursor_line_width = 1;
@@ -465,7 +465,7 @@ int nio_fputc(int character, nio_console* csl)
 		// Store char.
 		nio_csl_savechar(csl,character,c->cursor_x,c->cursor_y);
 		
-		// Draw it when BOOL draw is true
+		// Draw it when bool draw is true
 		if(c->drawing_enabled) {
 			nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 		}
@@ -550,7 +550,7 @@ void nio_color(nio_console* csl, const unsigned char background_color, const uns
 	c->default_foreground_color = foreground_color;
 }
 
-void nio_drawing_enabled(nio_console* csl, const BOOL enable_drawing)
+void nio_drawing_enabled(nio_console* csl, const bool enable_drawing)
 {
 	nio_console_private *c = *csl;
 	c->drawing_enabled = enable_drawing;
@@ -587,7 +587,7 @@ char* nio_fgets(char* str, int num, nio_console* csl)
 	while(1)
 	{
 		nio_cursor_draw(csl);
-		c->cursor_blink_status = TRUE;
+		c->cursor_blink_status = true;
 		nio_cursor_blinking_reset(csl);
 
 		do {
@@ -719,7 +719,8 @@ void nio_free(nio_console* csl)
 {
 	if (*csl) {
 		nio_console_private *c = *csl;
-		nio_fflush(csl);
+		if (c->drawing_enabled)
+			nio_fflush(csl);
 		free(c->data);
 		free(c->color);
 		free(c->input_buf);

@@ -66,8 +66,8 @@ char queue_get(queue* q);
 
 /** Check if the queue is empty.
 	@param q Queue
-	@return TRUE if empty
+	@return true if empty
 */
-BOOL queue_empty(queue* q);
+bool queue_empty(queue* q);
 
 #endif

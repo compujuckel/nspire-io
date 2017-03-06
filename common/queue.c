@@ -77,7 +77,7 @@ char queue_get(queue* q)
 	return val;
 }
 
-BOOL queue_empty(queue* q)
+bool queue_empty(queue* q)
 {
-	return (q->count <= 0) ? TRUE : FALSE;
+	return (q->count <= 0);
 }

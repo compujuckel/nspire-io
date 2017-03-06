@@ -198,8 +198,8 @@ unsigned int nio_cursor_clock(void) {
 
 char nio_ascii_get(int* adaptive_cursor_state)
 {
-	BOOL ctrl = isKeyPressed(KEY_NSPIRE_CTRL);
-	BOOL shift = isKeyPressed(KEY_NSPIRE_SHIFT);
+	bool ctrl = isKeyPressed(KEY_NSPIRE_CTRL);
+	bool shift = isKeyPressed(KEY_NSPIRE_SHIFT);
 
 	*adaptive_cursor_state = SHIFTCTRL(0, 1, 4);
 	

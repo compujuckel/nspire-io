@@ -34,7 +34,7 @@ int main(void)
 	// Initialize console 1.
 	nio_console c1;
 	
-	nio_init(&c1,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_BLACK,NIO_COLOR_WHITE,TRUE);
+	nio_init(&c1,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_BLACK,NIO_COLOR_WHITE,true);
 	nio_set_default(&c1);
 	nio_fflush(&c1);
 	
@@ -53,7 +53,7 @@ int main(void)
 		
 		// Check for interesting text
 		if (!strcmp(text, "help")) {
-			nio_drawing_enabled(&c1,FALSE);
+			nio_drawing_enabled(&c1,false);
 			nio_printf("ConsoleDemo+ Help\n");
 			nio_printf("  setcursor cursor\n");
 			nio_printf("    Set the cursor type.\n");
@@ -74,7 +74,7 @@ int main(void)
 			nio_printf("    Clear the console.\n");
 			nio_printf("  exit\n");
 			nio_printf("    Exit this console.\n");
-			nio_drawing_enabled(&c1,TRUE);
+			nio_drawing_enabled(&c1,true);
 			nio_fflush(&c1);
 		}
 		
@@ -107,6 +107,7 @@ int main(void)
 		if (!strcmp(text, "loadterm")) {
 			nio_console c2;
 			if (nio_load("nio_consoledemoadv.sav", &c2)) {
+				nio_drawing_enabled(&c1, false);
 				nio_free(&c1);
 				c1 = c2;
 			} else

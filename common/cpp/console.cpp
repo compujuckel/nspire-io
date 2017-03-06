@@ -35,7 +35,7 @@ using namespace nio;
 console::console(const int size_x, const int size_y, const int offset_x, const int offset_y, enum color background_color, enum color foreground_color, const bool drawing_enabled)
 {
 	c = new nio_console;
-	BOOL drawing_enabled_b = drawing_enabled ? TRUE : FALSE;
+	bool drawing_enabled_b = drawing_enabled ? true : false;
 	nio_init(c,size_x,size_y,offset_x,offset_y,background_color,foreground_color,drawing_enabled_b);
 	
 	f = (fmtflags)(dec | right | fixed | skipws | (drawing_enabled_b ? unitbuf : 0) );
@@ -49,7 +49,7 @@ console::console(const char* path)
 {
 	nio_load(path,c);
 	
-	f = (fmtflags)(dec | right | fixed | skipws | ((*c)->drawing_enabled == TRUE ? unitbuf : 0) );
+	f = (fmtflags)(dec | right | fixed | skipws | ((*c)->drawing_enabled == true ? unitbuf : 0) );
 	s = goodbit;
 	w = 0;
 	p = 5;
@@ -118,13 +118,13 @@ void console::background_color(enum color clr)
 
 void console::drawing_enable(const bool enable_drawing)
 {
-	BOOL enable_drawing_b = enable_drawing ? TRUE : FALSE;
+	bool enable_drawing_b = enable_drawing ? true : false;
 	nio_drawing_enabled(c,enable_drawing_b);
 }
 
 void console::cursor_enable(const bool enable_cursor)
 {
-	BOOL enable_cursor_b = enable_cursor ? TRUE : FALSE;
+	bool enable_cursor_b = enable_cursor ? true : false;
 	nio_cursor_enable(c,enable_cursor_b);
 }
 
@@ -145,7 +145,7 @@ void console::cursor_custom(unsigned char cursor_data[6])
 
 void console::put(char ch)
 {
-	nio_drawing_enabled(c,(f & unitbuf) ? TRUE : FALSE);
+	nio_drawing_enabled(c,(f & unitbuf) ? true : false);
 	nio_fputc(ch,c);
 }
 
@@ -181,14 +181,14 @@ void console::get(int& ch)
 
 void console::get(char* s, streamsize n)
 {
-	size_t s = 0;
+	size_t len = 0;
 	if (nio_fgets(s,n,c))
 	{
-		s = strlen(str);
-		if (s && str[s-1] == '\n')
-			str[--s] = '\0';
+		len = strlen(s);
+		if (len && s[--len] == '\n')
+			s[len] = '\0';
 	}
-	count = s;
+	count = len;
 }
 
 void console::getline(char* s, streamsize n)

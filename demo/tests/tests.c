@@ -36,14 +36,14 @@ int main(void)
 	assert_ndless_rev(874);
 	
 	nio_console csl;
-	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,TRUE);
+	nio_init(&csl,NIO_MAX_COLS,NIO_MAX_ROWS,0,0,NIO_COLOR_WHITE,NIO_COLOR_BLACK,true);
 	nio_set_default(&csl);
 	nio_color(&csl,NIO_COLOR_BLACK,NIO_COLOR_WHITE);
 	nio_puts("Nspire I/O testing tool");
 	nio_color(&csl,NIO_COLOR_WHITE,NIO_COLOR_BLACK);
 	nio_printf("Compiled %s %s\n",__DATE__,__TIME__);
 	nio_puts("Press any key to flush console...");
-	nio_drawing_enabled(&csl,FALSE);
+	nio_drawing_enabled(&csl,false);
 	nio_putchar('A');
 	nio_fputc('a',&csl);
 	nio_putchar('\n');
@@ -62,7 +62,7 @@ int main(void)
 	nio_puts("This line is too long for the Nspire's screen so we have to continue it on the next line...");
 	wait_key_pressed();
 	nio_fflush(&csl);
-	nio_drawing_enabled(&csl,TRUE);
+	nio_drawing_enabled(&csl,true);
 	nio_puts("Enter text:");
 	char input[100] = {0};
 	nio_getsn(input,100);
