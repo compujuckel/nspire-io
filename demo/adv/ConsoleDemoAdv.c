@@ -111,7 +111,7 @@ int main(void)
 				nio_free(&c1);
 				c1 = c2;
 			} else
-				nio_printf(" No terminal state file found.\n");
+				nio_perror(" Couldn't load terminal state file");
 		}
 		
 		if (!strcmp(text, "clear")) {
