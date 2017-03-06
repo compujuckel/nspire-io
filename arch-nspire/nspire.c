@@ -93,13 +93,13 @@ void nio_pixel_set(unsigned int x, unsigned int y, unsigned int c)
 
 	if(is_color)
 	{
-		unsigned short* ptr = scrbuf + sizeof(uint16_t) * (x + SCREEN_WIDTH * y);
+		uint16_t *ptr = (uint16_t*)scrbuf + (x + SCREEN_WIDTH * y);
 		*ptr = c;
 	}
 	else
 	{
 		c = getBW(c);
-		unsigned char* p = (unsigned char*)(scrbuf + ((x >> 1) + (y << 7) + (y << 5)));
+		uint8_t* p = (uint8_t*)scrbuf + ((x >> 1) + (y << 7) + (y << 5));
 		*p = (x & 1) ? ((*p & 0xF0) | c) : ((*p & 0x0F) | (c << 4));
 	}
 }
@@ -112,7 +112,17 @@ void nio_vram_pixel_set(const unsigned int x, const unsigned int y, const unsign
 void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color)
 {
 	color = getPaletteColor(color);
-	if(!is_color)
+	if(is_color)
+	{
+		uint16_t *p = (uint16_t*)scrbuf + x + SCREEN_WIDTH*y;
+		for (unsigned int i = 0; i < h; i++)
+		{
+			for (unsigned int j = 0; j < w; j++)
+				*p++ = color;
+			p += (SCREEN_WIDTH - w);
+		}
+	}
+	else
 	{
 		color = getBW(color);
 		uint8_t *p;
@@ -133,16 +143,6 @@ void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const u
 		size_t n = (w - (x & 1))/2;
 		for (unsigned int i = 0; i < h; i++, p += (SCREEN_WIDTH/2))
 			memset(p, color, n);
-	}
-	else
-	{
-		uint16_t *p;
-		for (unsigned int i = 0; i < h; i++)
-		{
-			p = (uint16_t*)scrbuf + x + SCREEN_WIDTH*(y + i);
-			for (unsigned int j = 0; j < w; j++)
-				*p++ = color;
-		}
 	}
 }
 
