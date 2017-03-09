@@ -52,7 +52,7 @@ void nio_cursor_draw(nio_console* csl)
 			{
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 1) {
@@ -70,7 +70,7 @@ void nio_cursor_draw(nio_console* csl)
 				//for(j = NIO_CHAR_HEIGHT; j > (NIO_CHAR_HEIGHT - c->cursor_line_width); j--)
 				for(j = 0; j < c->cursor_line_width; j++)
 				{
-					nio_pixel_set(cursor_x_start+i,cursor_y_start-j-1, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j-1, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 2) {
@@ -86,7 +86,7 @@ void nio_cursor_draw(nio_console* csl)
 			for(i = 0; i < c->cursor_line_width; i++) {
 				for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 				{
-					nio_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
+					nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, foreground_color);
 				}
 			}
 		} else if (c->cursor_type == 3 || c->cursor_type == 4) {
@@ -111,8 +111,8 @@ void nio_cursor_draw(nio_console* csl)
 				{
 					pixelOn = c->cursor_custom_data[i] << j;
 					pixelOn = pixelOn & 0x80 ;
-					if (pixelOn)   nio_pixel_set(cursor_x_start+i,cursor_y_start-j,foreground_color);
-					else if(!pixelOn)  nio_pixel_set(cursor_x_start+i,cursor_y_start-j,background_color);
+					if (pixelOn)   nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j,foreground_color);
+					else if(!pixelOn)  nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j,background_color);
 				}
 			}
 		}
@@ -138,10 +138,10 @@ void nio_cursor_erase(nio_console* csl)
 		{
 			for(j = NIO_CHAR_HEIGHT; j > 0; j--)
 			{
-				nio_pixel_set(cursor_x_start+i,cursor_y_start-j, background_color);
+				nio_vram_pixel_set(cursor_x_start+i,cursor_y_start-j, background_color);
 			}
 		}
-		nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
+		nio_vram_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 	}
 	nio_vram_draw();
 }

@@ -102,46 +102,6 @@ typedef void *nio_console;
 #define NIO_CURSOR_CUSTOM 3
 #define NIO_CURSOR_ADAPTIVE 4
 
-/** Draws a char to the screen on the given position. For internal use.
-	@param x x position in columns
-	@param y y position in rows
-	@param ch Char
-	@param bgColor Background color
-	@param textColor text color
-*/
-void nio_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor);
-
-/** Draws a string to the screen on the given position. For internal use.
-	@param x x position in columns
-	@param y y position in rows
-	@param str String
-	@param bgColor Background color
-	@param textColor text color
-*/
-void nio_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor);
-
-/** Draws a string to the screen on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
-	@param x x position in columns (px*NIO_CHAR_WIDTH)
-	@param y y position in rows (px*NIO_CHAR_HEIGHT)
-	@param str String
-	@param bgColor Background color
-	@param textColor text color
-*/
-void nio_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor);
-
-/** Draws a char to the screen on the given position. For internal use.
-	@param offset_x x offset in px
-	@param offset_y y offset in px
-	@param x x position in columns (px*NIO_CHAR_WIDTH)
-	@param y y position in rows (px*NIO_CHAR_HEIGHT)
-	@param ch Char
-	@param bgColor Background color
-	@param textColor text color
-*/
-void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor);
-
 /** Draws a char to the VRAM on the given position. For internal use.
 	@param x x position in columns
 	@param y y position in rows
@@ -224,13 +184,6 @@ void nio_clear(nio_console* c);
 	@param c Console
 */
 void nio_scroll(nio_console* c);
-
-/** Draws a char from the console to the screen. For internal use.
-	@param c Console
-	@param pos_x x position
-	@param pos_y y position
-*/
-void nio_csl_drawchar(nio_console* c, const int pos_x, const int pos_y);
 
 /** Draws a char from the console to the VRAM. For internal use.
 	@param c Console

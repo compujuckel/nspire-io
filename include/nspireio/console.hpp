@@ -101,7 +101,6 @@ namespace nio
 		virtual void getline(char* s, streamsize n);
 		
 	protected:
-		void csl_drawchar(const int pos_x, const int pos_y);
 		void vram_csl_drawchar(const int pos_x, const int pos_y);
 		void csl_savechar(const char ch, const int pos_x, const int pos_y);
 		void scroll();

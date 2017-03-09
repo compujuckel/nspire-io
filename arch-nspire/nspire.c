@@ -84,7 +84,7 @@ unsigned short getPaletteColor(unsigned int color)
 }
 
 // by totorigolo
-void nio_pixel_set(unsigned int x, unsigned int y, unsigned int c)
+void nio_vram_pixel_set(unsigned int x, unsigned int y, unsigned int c)
 {
 	if (x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT)
 		return;
@@ -102,11 +102,6 @@ void nio_pixel_set(unsigned int x, unsigned int y, unsigned int c)
 		uint8_t* p = (uint8_t*)scrbuf + ((x >> 1) + (y << 7) + (y << 5));
 		*p = (x & 1) ? ((*p & 0xF0) | c) : ((*p & 0x0F) | (c << 4));
 	}
-}
-
-void nio_vram_pixel_set(const unsigned int x, const unsigned int y, const unsigned int color)
-{
-	nio_pixel_set(x,y,color);
 }
 
 void nio_vram_fill(const unsigned x, const unsigned y, const unsigned w, const unsigned h, unsigned color)

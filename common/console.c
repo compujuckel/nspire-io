@@ -42,47 +42,6 @@ unsigned char adaptive_cursor[5][6] =
 	{0xDB,0x81,0xDB,0xDB,0x81,0xDB}  // '#' cursor
 };
 
-void nio_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor)
-{
-	int i, j, pixelOn;
-	for(i = 0; i < NIO_CHAR_WIDTH; i++)
-	{
-		for(j = NIO_CHAR_HEIGHT; j > 0; j--)
-		{
-			pixelOn = MBCharSet8x6_definition[(unsigned char)ch][i] << j ;
-			pixelOn = pixelOn & 0x80 ;
-			if (pixelOn) 		nio_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,textColor);
-			else if(!pixelOn) 	nio_pixel_set(x+i,y+NIO_CHAR_HEIGHT-j,bgColor);
-		}
-	}
-}
-
-void nio_pixel_puts(const int x, const int y, const char* str, const int bgColor, const int textColor)
-{
-	int l = strlen(str);
-	int i;
-	int stop=0;
-	int xtemp = x;
-	for (i = 0; i < l && !stop; i++)
-	{
-		nio_pixel_putc(xtemp, y, str[i], bgColor, textColor);
-		xtemp += NIO_CHAR_WIDTH;
-		if (xtemp >= SCREEN_WIDTH-NIO_CHAR_WIDTH)
-		{
-			stop=1;
-		}
-	}
-}
-
-void nio_grid_puts(const int offset_x, const int offset_y, const int x, const int y, const char *str, const unsigned char bgColor, const unsigned char textColor)
-{
-	nio_pixel_puts(offset_x+x*NIO_CHAR_WIDTH,offset_y+y*NIO_CHAR_HEIGHT,str,bgColor,textColor);
-}
-void nio_grid_putc(const int offset_x, const int offset_y, const int x, const int y, const char ch, const unsigned char bgColor, const unsigned char textColor)
-{
-	nio_pixel_putc(offset_x+x*NIO_CHAR_WIDTH,offset_y+y*NIO_CHAR_HEIGHT,ch,bgColor,textColor);
-}
-
 void nio_vram_pixel_putc(const int x, const int y, const char ch, const int bgColor, const int textColor)
 {
 	// Put a char in VRAM
@@ -341,18 +300,6 @@ void nio_scroll(nio_console* csl)
 	c->cursor_x = 0;
 }
 
-void nio_csl_drawchar(nio_console* csl, const int pos_x, const int pos_y)
-{
-	nio_console_private *c = *csl;
-	char ch = c->data[pos_y*c->max_x+pos_x];
-	unsigned short color = c->color[pos_y*c->max_x+pos_x];
-	
-	char background_color = color >> 8;
-	char foreground_color = color;
-	
-	nio_grid_putc(c->offset_x, c->offset_y, pos_x, pos_y, ch == 0 ? ' ' : ch, background_color, foreground_color);
-}
-
 void nio_vram_csl_drawchar(nio_console* csl, const int pos_x, const int pos_y)
 {
 	nio_console_private *c = *csl;
@@ -467,7 +414,7 @@ int nio_fputc(int character, nio_console* csl)
 		
 		// Draw it when bool draw is true
 		if(c->drawing_enabled) {
-			nio_csl_drawchar(csl,c->cursor_x,c->cursor_y);
+			nio_vram_csl_drawchar(csl,c->cursor_x,c->cursor_y);
 		}
 		
 		// Increment X cursor. It will be checked for validity next time.
