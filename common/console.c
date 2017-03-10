@@ -292,7 +292,6 @@ void nio_scroll(nio_console* csl)
 	memset(c->color+(c->max_x*(c->max_y-1)*2),0,c->max_x*2);
 	if (c->drawing_enabled) {
 		nio_vram_scroll(c->offset_x, c->offset_y, c->max_x*NIO_CHAR_WIDTH, c->max_y*NIO_CHAR_HEIGHT, NIO_CHAR_HEIGHT, c->default_background_color);
-		nio_vram_draw();
 	}
 	
 	if(c->cursor_y > 0)
@@ -374,7 +373,7 @@ int nio__getche(void)
 	return nio_getche(nio_default);
 }
 
-int nio_fputc(int character, nio_console* csl)
+int nio_vram_fputc(int character, nio_console* csl)
 {
 	nio_console_private *c = *csl;
 	// Newline. Increment Y cursor, set X cursor to zero. Scroll if necessary.
@@ -386,8 +385,7 @@ int nio_fputc(int character, nio_console* csl)
 		if(c->cursor_y >= c->max_y)
 		{
 			nio_scroll(csl);
-		} else if(c->drawing_enabled)
-			nio_vram_draw();
+		}
 	}
 	// Carriage return. Set X cursor to zero.
 	else if(character == '\r')
@@ -404,7 +402,6 @@ int nio_fputc(int character, nio_console* csl)
 	{
 		// tabs are 8 character long
 		c->cursor_x += 8 - c->cursor_x % 8;
-		character = ' ';
 	}
 	// Must be a normal character...
 	else
@@ -432,6 +429,27 @@ int nio_fputc(int character, nio_console* csl)
 		nio_scroll(csl);
 	}
     return character;
+}
+
+int nio_fputc(int character, nio_console* csl)
+{
+	nio_console_private *c = *csl;
+	nio_vram_fputc(character, csl);
+	++c->pending;
+	if (c->drawing_enabled && (character == '\n' || c->pending >= 512))
+	{
+		nio_vram_draw();
+		c->pending = 0;
+	}
+	return character;
+}
+
+int nio_write(nio_console *c, char *ptr, int len)
+{
+	for (int i = len; i > 0; ++ptr, --i)
+		nio_vram_fputc(*ptr, c);
+	nio_vram_draw();
+	return len;
 }
 
 int nio_putchar(int character)

@@ -83,6 +83,7 @@ typedef struct
 	void* idle_callback_data;
 	int history_line;
 	char *history[HISTORY_LINES];
+	int pending;
 } nio_console_private;
 
 typedef nio_console_private *nio_console;
@@ -240,6 +241,11 @@ int nio_fflush(nio_console* c);
 */
 int nio_fputc(int character, nio_console* c);
 
+/** See [write](http://pubs.opengroup.org/onlinepubs/9699919799/functions/write.html)
+	\note For use in libsyscalls.
+*/
+int nio_write(nio_console *c, char *ptr, int len);
+
 /** See [putchar](http://www.cplusplus.com/reference/clibrary/cstdio/putchar/)
 */
 int nio_putchar(int character);
@@ -261,6 +267,7 @@ int nio_fgetc(nio_console* c);
 int nio_getchar(void);
 
 /** See [read](http://pubs.opengroup.org/onlinepubs/9699919799/functions/read.html)
+	\note For use in libsyscalls.
 */
 int nio_read(nio_console *csl, char *str, int num);
 
