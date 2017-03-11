@@ -655,7 +655,7 @@ int nio_read(nio_console *csl, char* str, int num)
 	
 	if (str[0] != '\n' && (!c->history[0] || strncmp(str, c->history[0], str_pos) || c->history[0][str_pos])) {
 		char *s;
-		if (s = strndup(str, str_pos))
+		if ((s = strndup(str, str_pos)))
 		{
 			free(c->history[HISTORY_LINES - 1]);
 			for(unsigned int j = HISTORY_LINES - 1; j > 0; --j)
