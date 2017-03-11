@@ -38,10 +38,15 @@ bool nio_scrbuf_init()
 	if(scrbuf == NULL)
 	{
 		is_color = (lcd_type() != SCR_320x240_4);
-		if (!lcd_init(is_color ? SCR_320x240_565 : SCR_320x240_4)) return false;
 		scrsize = (is_color ? SCREEN_WIDTH*SCREEN_HEIGHT*2 : SCREEN_WIDTH*SCREEN_HEIGHT/2);
 		scrbuf = malloc(scrsize);
-		if(!scrbuf) return false;
+		if (!scrbuf) return false;
+		if (!lcd_init(is_color ? SCR_320x240_565 : SCR_320x240_4))
+		{
+			free(scrbuf);
+			scrbuf = NULL;
+			return false;
+		}
 	}
 	return true;
 }
