@@ -28,7 +28,7 @@
 #include <stdarg.h>
 #include "../include/nspireio/platform.h"
 
-BOOL uart_ready(void)
+bool uart_ready(void)
 {
 	volatile unsigned *line_status_reg = IO(0x90020014,0x90020018);
 	return is_classic ? *line_status_reg & 0b1 : !(*line_status_reg & 0b10);

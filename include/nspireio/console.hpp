@@ -72,7 +72,7 @@ namespace nio
 	{
 	public:
 		console(const int size_x = MAX_COLS, const int size_y = MAX_ROWS, const int offset_x = 0, const int offset_y = 0, enum color background_color = COLOR_WHITE, enum color foreground_color = COLOR_BLACK, const bool drawing_enabled = true);
-		console(const char* path);
+		explicit console(const char* path);
 		~console();
 		
 		void cls();
@@ -101,7 +101,6 @@ namespace nio
 		virtual void getline(char* s, streamsize n);
 		
 	protected:
-		void csl_drawchar(const int pos_x, const int pos_y);
 		void vram_csl_drawchar(const int pos_x, const int pos_y);
 		void csl_savechar(const char ch, const int pos_x, const int pos_y);
 		void scroll();

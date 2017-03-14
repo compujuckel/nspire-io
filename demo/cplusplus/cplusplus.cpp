@@ -34,7 +34,6 @@
 
 int main(void)
 {
-	clrscr();
 	#if NIO_TEST_UART == 1
 	nio::uart u;
 	#endif

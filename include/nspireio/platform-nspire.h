@@ -52,15 +52,11 @@
 
 /** Initializes double buffering.
 */
-void nio_scrbuf_init();
+bool nio_scrbuf_init();
 
 /** Clears the screen buffer.
 */
 void nio_scrbuf_clear();
-
-/** Flips screen and screenbuffer.
-*/
-void nio_scrbuf_flip();
 
 /** Frees the screenbuffer and restores the screen to its original state.
 */
