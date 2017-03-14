@@ -134,12 +134,12 @@ bool nio_load(const char* path, nio_console* csl)
 
 	if(feof(f) || ferror(f)) goto err1;
 
+	if(fclose(f) == EOF) goto err2;
+
 	if (!nio_scrbuf_init()) goto err1;
 
 	if(c->drawing_enabled)
 		nio_fflush(csl);
-
-	if(fclose(f) == EOF) goto err2;
 
 	return true;
 
