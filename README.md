@@ -1,3 +1,5 @@
+**This version of Nspire I/O is not maintained anymore. Please use the fork at https://github.com/Vogtinator/nspire-io/**
+
 Nspire I/O 3.1
 ==============
 
